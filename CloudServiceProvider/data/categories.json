@@ -1,0 +1,26 @@
+[
+  {
+    "name": "kategorija1",
+    "coreNumber": 10,
+    "RAM": 16,
+    "GPUcores": 2
+  },
+  {
+    "name": "kategorija2",
+    "coreNumber": 11,
+    "RAM": 8,
+    "GPUcores": 1
+  },
+  {
+    "name": "kategorija3",
+    "coreNumber": 40,
+    "RAM": 32,
+    "GPUcores": 4
+  },
+  {
+    "name": "kategorija4",
+    "coreNumber": 50,
+    "RAM": 16,
+    "GPUcores": 4
+  }
+]

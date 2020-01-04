@@ -1,0 +1,39 @@
+[
+  {
+    "name": "JAVA-VM",
+    "category": {
+      "name": "kategorija1",
+      "coreNumber": 10,
+      "RAM": 16,
+      "GPUcores": 2
+    },
+    "drives": [
+      "C"
+    ],
+    "activityLog": []
+  },
+  {
+    "name": "ORACLE-VM",
+    "category": {
+      "name": "kategorija2",
+      "coreNumber": 11,
+      "RAM": 8,
+      "GPUcores": 1
+    },
+    "drives": [
+      "D"
+    ],
+    "activityLog": []
+  },
+  {
+    "name": "WINDOWS10-VM",
+    "category": {
+      "name": "kategorija3",
+      "coreNumber": 40,
+      "RAM": 32,
+      "GPUcores": 4
+    },
+    "drives": [],
+    "activityLog": []
+  }
+]

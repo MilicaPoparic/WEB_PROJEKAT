@@ -1,9 +1,6 @@
 package rest;
-import static spark.Spark.get;
 import static spark.Spark.port;
-import static spark.Spark.post;
 import static spark.Spark.staticFiles;
-import static spark.Spark.webSocket;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -13,14 +10,20 @@ import java.util.ArrayList;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import spark.Session;
+import beans.cloudprovider.Reader;
 
 public class Main {
     
 	private static Gson g = new Gson();
 	private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
-	
+	private static Reader r = new Reader(); 
 
+	private static void writeToFiles(ArrayList<Object> listForWrite, String string) throws IOException {
+		String json = gson.toJson(listForWrite);
+		FileWriter file = new FileWriter(string);
+		file.write(json);
+		file.close();
+	}
 
 	
 	public static void main(String[] args) throws IOException {
