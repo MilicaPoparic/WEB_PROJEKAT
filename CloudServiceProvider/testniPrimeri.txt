@@ -1,0 +1,75 @@
+Allert: Ovo treba poboljsati i napisati sve realne karakteristike!
+
+//upisivanje fajlova 
+		
+		//pr za upis kategorija 
+		Category cat = new Category("kategorija1", 10, 16, 2);
+		Category cat1 = new Category("kategorija2", 11, 8, 1);
+		Category cat2 = new Category("kategorija3", 40, 32, 4);
+		Category cat3 = new Category("kategorija4", 50, 16, 4);
+	 //
+     ArrayList<Object> ar1 = new ArrayList<Object>();
+     
+     ar1.add(cat);
+     ar1.add(cat1);
+     ar1.add(cat2);
+     ar1.add(cat3);
+	 writeToFiles(ar1,"./categories.json");
+	
+	
+	//pr za upis vm
+	 	VirtualMachine vm = new VirtualMachine("JAVA-VM",cat);
+	 	VirtualMachine vm1 = new VirtualMachine("ORACLE-VM",cat1);
+	 	VirtualMachine vm2 = new VirtualMachine("WINDOWS10-VM",cat2);
+	//
+	 	
+	 ArrayList<Object> ar2= new ArrayList<Object>();
+	     
+	 ar2.add(vm);
+	 ar2.add(vm1);
+	 ar2.add(vm2);
+	 writeToFiles(ar2,"./virtMachines.json");
+	 
+	 
+	//pr za upis diskova
+	 	Drive d = new Drive("C",DriveType.SSD, 256, "JAVA-VM");
+	 	Drive d1 = new Drive("D",DriveType.HDD, 512, "ORACLE-VM");
+	//
+
+	 ArrayList<Object> ar3 = new ArrayList<Object>();
+	     
+	 ar3.add(d);
+	 ar3.add(d1);
+	    
+	 writeToFiles(ar3,"./disc.json");
+	
+	 
+	 
+	 //pr za upis organizacija
+	 	Organization org = new Organization("IOS","opisIOS", "logoIOS");
+	 	Organization org1 = new Organization("Microsoft","opisMic", "logoMic");
+	 	Organization org2 = new Organization("Oracle","opisOrac", "logoOrac");
+	 	
+	 //
+	 ArrayList<Object> ar4= new ArrayList<Object>();
+	   
+	 ar4.add(org);
+	 ar4.add(org1);
+	 ar4.add(org2);
+	 writeToFiles(ar4,"./organizations.json");
+	 
+	 //pr za upis korisnika
+	 	User ussee = new User("trajkovic@gmail.com","andjela", "trajkovic","IOS", Role.user,"sifra1");
+	 	User ussee1 = new User("poparic@gmail.com","milica", "poparic","Microsoft", Role.user,"sifra2");
+	 	User ussee2 = new User("korisnik@gmail.com","joca", "jovic","Oracle", Role.user,"sifra3");
+	//
+
+	 ArrayList<Object> ar5 = new ArrayList<Object>();
+	     
+	 ar5.add(ussee);
+	 ar5.add(ussee1);
+	 ar5.add(ussee2);
+	 
+	 writeToFiles(ar5,"./users.json");
+		
+		//
