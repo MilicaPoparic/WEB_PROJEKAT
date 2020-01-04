@@ -1,0 +1,23 @@
+[
+  {
+    "name": "IOS",
+    "caption": "opisIOS",
+    "logo": "C:\Users\Admin\Desktop\jj\0402\0401\0401\images\apple.png",
+    "users": [],
+    "resources": []
+  },
+  {
+    "name": "Microsoft",
+    "caption": "opisMic",
+    "logo": "C:\Users\Admin\Desktop\jj\0402\0401\0401\images\mic.jpg",
+    "users": [],
+    "resources": []
+  },
+  {
+    "name": "Oracle",
+    "caption": "opisOrac",
+    "logo": "C:\Users\Admin\Desktop\jj\0402\0401\0401\images\oracle.png",
+    "users": [],
+    "resources": []
+  }
+]

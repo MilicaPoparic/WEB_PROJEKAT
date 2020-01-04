@@ -1,0 +1,26 @@
+[
+  {
+    "email": "trajkovic@gmail.com",
+    "name": "andjela",
+    "surname": "trajkovic",
+    "nameORG": "IOS",
+    "role": "user",
+    "password": "sifra1"
+  },
+  {
+    "email": "poparic@gmail.com",
+    "name": "milica",
+    "surname": "poparic",
+    "nameORG": "Microsoft",
+    "role": "user",
+    "password": "sifra2"
+  },
+  {
+    "email": "korisnik@gmail.com",
+    "name": "joca",
+    "surname": "jovic",
+    "nameORG": "Oracle",
+    "role": "user",
+    "password": "sifra3"
+  }
+]
