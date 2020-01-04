@@ -81,6 +81,13 @@ public class Main {
 			return g.toJson(listOfVMO);
 		});
 		
+<<<<<<< HEAD
+		get("/rest/getOrganizations", (req, res) -> {
+			res.type("application/json");
+			return g.toJson(r.organizationList);
+		});
+=======
+>>>>>>> f7651cff12516e20932ef40292728a4f415df656
 		
 		get("/rest/testLogin", (req, res) -> {
 			res.type("application/json");
