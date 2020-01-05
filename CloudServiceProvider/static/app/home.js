@@ -35,13 +35,19 @@ Vue.component("home-page", {
 		<button v-on:click="filter()">Filtriraj</button>
 	</p>
 	 
-		<button v-on:click="dodajVM()">Dodaj novu VM</button>
+	<button v-on:click="dodajVM()">Dodaj novu VM</button>
 	<a href="#/o">Organizations</a>
 	<button v-on:click="logout">Logout</button>
+	<button v-on:click="kategorija()">Kategorija</button>
 </div>		  
 `
 	, 
 	methods : {
+		kategorija: function(){
+			axios
+		      .post('rest/category', "")
+		      .then(response => location.href = '#/c');
+		},
 		research : function() {
 			alert("Treba da implementiramo pocetnu stranicu!");
 		},
@@ -71,9 +77,10 @@ Vue.component("home-page", {
 			    	  location.href = '#/';
 			      })
         axios
-        .get('rest/virtualne')
-        .then(response => (this.virtMachines = response.data));
+         .get('rest/virtualne')
+         .then(response => (this.virtMachines = response.data));
       
+        
     },
 
 });

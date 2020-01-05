@@ -10,10 +10,16 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
+import beans.cloudprovider.Category;
+import beans.cloudprovider.CategoryToAdd;
 import beans.cloudprovider.Organization;
 import beans.cloudprovider.Reader;
 import beans.cloudprovider.SendVMO;
@@ -28,7 +34,7 @@ public class Main {
 	private static Gson g = new Gson();
 	private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 	private static Reader r = new Reader(); 
-	
+	private static Category c = new Category();
 	
 	private static void writeToFiles(ArrayList<Object> listForWrite, String string) throws IOException {
 		String json = gson.toJson(listForWrite);
@@ -53,41 +59,16 @@ public class Main {
 	
 		get("/rest/virtualne", (req, res) -> {		
 			res.type("application/json");
-			ArrayList<SendVMO> listOfVMO = new ArrayList<SendVMO>();
-			for(VirtualMachine vm : r.virtMachineList) {
-				SendVMO sv = new SendVMO();
-				int i = 0;
-				sv.setCategoryCoreNumber(vm.getCategory().getCoreNumber());
-				sv.setCategoryGPU(vm.getCategory().getGPUcores());
-				sv.setCategoryRAM(vm.getCategory().getRAM());
-				sv.setNameVM(vm.getName());
-				
-				for(Organization os : r.organizations.values()) {
-					if(os.getResources().contains(vm.getName()))
-					{
-						i++;
-						sv.setNameORG(os.getName());
-						break;
-					}
-				}
-				if(i ==0) {
-					sv.setNameORG("Nema organizaciju");
-				}
-				listOfVMO.add(sv);
-				System.out.println(sv.getNameVM()+" "+sv.getNameORG()+" "+sv.getCategoryRAM()
-						+" "+sv.getCategoryGPU()+" "+sv.getCategoryCoreNumber());
-				
-			}
+			ArrayList<SendVMO> listOfVMO = loadVMO();
 			return g.toJson(listOfVMO);
 		});
 		
-<<<<<<< HEAD
+
 		get("/rest/getOrganizations", (req, res) -> {
 			res.type("application/json");
 			return g.toJson(r.organizationList);
 		});
-=======
->>>>>>> f7651cff12516e20932ef40292728a4f415df656
+
 		
 		get("/rest/testLogin", (req, res) -> {
 			res.type("application/json");
@@ -101,6 +82,15 @@ public class Main {
 			return ("OK");
 		});
 		
+		get("/rest/getCategories", (req,res)-> {
+			res.type("application/json");
+			return g.toJson(r.categoryList);
+		});
+		get("/rest/getCategory", (req,res)-> {
+			res.type("application/json");
+			return g.toJson(c);
+			
+		});
 				
 		post("/rest/login", (req, res) -> {
 			res.type("application/json");
@@ -134,11 +124,195 @@ public class Main {
 			return ("OK");
 		});
 		
+		post("/rest/category", (req,res)-> {
+			res.type("application/json");
+			return"OK";
+		});
 		
+	
+		post("/rest/addCategory", (req,res)-> {
+			res.type("application/json");
+			return"OK";
+		});
+		
+		post("/rest/addNewCategory", (req, res) -> {
+			res.type("application/json");
+			String reqData = req.body();
+			CategoryToAdd cat = g.fromJson(reqData, CategoryToAdd.class);
+			Category c = checkCategory(cat);
+			if(c != null) {
+				res.status(200);
+				r.categoryList.add(c);
+				writeToFiles((ArrayList<Object>)(Object) r.categoryList, "./data/categories.json"); //automatski refresh
+			}
+			else {
+				res.status(400);
+			}
+			return ("OK");
+		});
+		post("/rest/categoryDetail", (req,res)-> {
+			res.type("application/json");
+			String reqData = req.body();
+			JsonObject jsonObject = new JsonParser().parse(reqData).getAsJsonObject();
+			JsonElement object = (JsonElement) jsonObject.get("category"); 
+			JsonElement nameID = (JsonElement) ((JsonObject) object).get("name"); 
+			JsonElement CPU = (JsonElement) ((JsonObject) object).get("coreNumber"); 
+			JsonElement RAM = (JsonElement) ((JsonObject) object).get("RAM"); 
+			JsonElement GPU = (JsonElement) ((JsonObject) object).get("GPUcores"); 
+			
+			c = new Category(nameID.getAsString(),CPU.getAsInt(),RAM.getAsInt(),GPU.getAsInt());
+			
+			return "OK";
+		});
+		
+		post("/rest/forChange", (req,res)-> {
+			res.type("application/json");
+			String reqData = req.body();
+			System.out.println(reqData);
+			CategoryToAdd cat = g.fromJson(reqData, CategoryToAdd.class);
+			if(cat.nameID == null) {
+				cat.nameID =c.getName();
+			}
+			if(cat.numCPU == 0) {
+				cat.numCPU=c.getCoreNumber();
+			}
+			if(cat.numRAM ==0) {
+				cat.numRAM =c.getRAM();
+			}
+			if(cat.numGPU ==0) {
+				cat.numGPU =c.getGPUcores();
+			}
+			Category category = checkCategoryChange(cat);
+			
+			if(category == null) {
+				res.status(400);
+			}
+			else {
+				res.status(200);
+				checkCategoryChangeVM(category);
+				categoryChange(category);		
+				
+				writeToFiles((ArrayList<Object>)(Object) r.categoryList, "./data/categories.json"); //automatski refresh
+				writeToFiles((ArrayList<Object>)(Object) r.virtMachineList, "./data/virtMachines.json"); //automatski refresh
+				
+				c =null;
+			}
+			return "OK";
+		});
+		post("/rest/removeCategory", (req,res)-> {
+			res.type("application/json");
+			String reqData = req.body();
+			JsonObject jsonObject = new JsonParser().parse(reqData).getAsJsonObject();
+			JsonElement object = (JsonElement) jsonObject.get("category"); 
+			JsonElement nameID = (JsonElement) ((JsonObject) object).get("name"); 
+            String key = nameID.getAsString();
+    		int i = checkCategoryExistVM(key);
+			if(i == 1) {
+				res.status(400);
+			}
+			else {
+				res.status(200);
+				removeCategory(key);
+				writeToFiles((ArrayList<Object>)(Object) r.categoryList, "./data/categories.json"); //automatski refresh
+    		}
+			return "OK";
+		});
+	}
+	private static int checkCategoryExistVM(String nameID) {
+		int i = 0;
+		for(VirtualMachine vm : r.virtMachines.values()) 
+		{
+			if(vm.getCategory().getName().contains(nameID))
+			{
+				i=1;
+			}
+		}
+		return i;
+	}
+	private static void checkCategoryChangeVM(Category category) {
+		for(VirtualMachine vm : r.virtMachines.values()) 
+		{
+			if(vm.getCategory().getName().equalsIgnoreCase(c.getName())) 
+			{
+				vm.getCategory().setName(category.getName());
+				vm.getCategory().setGPUcores(category.getGPUcores());
+				vm.getCategory().setCoreNumber(category.getCoreNumber());
+				vm.getCategory().setRAM(category.getRAM());
+			}
+			
+		}
+		r.virtMachineList.clear();
+		for(VirtualMachine v: r.virtMachines.values()) {
+			r.virtMachineList.add(v);
+		}
+	}
+	private static void categoryChange(Category category) {
+		for(Category categ: r.categories.values()) {
+			if(categ.getName().equals(c.getName())) {
+				categ.setName(category.getName());
+				categ.setGPUcores(category.getGPUcores());
+				categ.setRAM(category.getRAM());
+				categ.setCoreNumber(category.getCoreNumber());
+			}
+		}
+		r.categoryList.clear();
+		for(Category v: r.categories.values()) {
+			r.categoryList.add(v);
+			
+		}
+	}
+	private static void removeCategory(String key) {
+		HashMap<String,Category> mapCategory = new HashMap<String,Category>();
+		for(Category v: r.categories.values()) {
+			if(!v.getName().equals(key)) {
+				mapCategory.put(v.getName(),v);
+			}
+		}
+		r.categories.clear();
+		for(Category v: mapCategory.values()) {
+			r.categories.put(v.getName(),v);
+			
+		}
+		mapCategory.clear();
+		r.categoryList.clear();
+		for(Category v: r.categories.values()) {
+			r.categoryList.add(v);
+			
+		}
 		
 	}
 	
-	
+			
+	private static Category checkCategory(CategoryToAdd cat) {
+		
+		if(r.categories.containsKey(cat.nameID) || cat.nameID.isEmpty()) {
+			return null;
+		}
+		if(cat.numCPU <= 0) {
+			return null;
+		}
+		if(cat.numRAM <=0) {
+			return null;
+		}
+		Category categ = new Category(cat.nameID,cat.numCPU,cat.numRAM,cat.numGPU);
+		
+		return categ;
+	}
+	private static Category checkCategoryChange(CategoryToAdd cat) {
+		
+		if(r.categories.containsKey(cat.nameID) && !cat.nameID.equalsIgnoreCase(c.getName())) {
+			return null;
+		}
+		if(cat.numCPU <= 0) {
+			return null;
+		}
+		if(cat.numRAM <=0) {
+			return null;
+		}
+		Category categ = new Category(cat.nameID,cat.numCPU,cat.numRAM,cat.numGPU);
+		
+		return categ;
+	}
 	private static User testLogin(UserToLog u) {
 		if (r.users.isEmpty()) {
 			return null; //nema korisnika
@@ -154,6 +328,31 @@ public class Main {
 		else {
 			return null;
 		}
+	}
+	private static ArrayList<SendVMO> loadVMO() {
+		ArrayList<SendVMO> listOfVMO = new ArrayList<SendVMO>();
+		for(VirtualMachine vm : r.virtMachineList) {
+			SendVMO sv = new SendVMO();
+			int i = 0;
+			sv.setCategoryCoreNumber(vm.getCategory().getCoreNumber());
+			sv.setCategoryGPU(vm.getCategory().getGPUcores());
+			sv.setCategoryRAM(vm.getCategory().getRAM());
+			sv.setNameVM(vm.getName());
+			
+			for(Organization os : r.organizations.values()) {
+				if(os.getResources().contains(vm.getName()))
+				{
+					i++;
+					sv.setNameORG(os.getName());
+					break;
+				}
+			}
+			if(i ==0) {
+				sv.setNameORG("Nema organizaciju");
+			}
+			listOfVMO.add(sv);		
+		}
+		return listOfVMO;
 	}
 
 }

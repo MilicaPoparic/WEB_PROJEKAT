@@ -2,21 +2,29 @@
   {
     "name": "IOS",
     "caption": "opisIOS",
-    "logo": "C:\Users\Admin\Desktop\jj\0402\0401\0401\images\apple.png",
-    "users": [],
-    "resources": []
+    "logo": "logoIOS",
+    "users": [
+    	"trajkovic@gmail.com"
+    ],
+    "resources": [
+     	"JAVA-VM"
+    ]
   },
   {
     "name": "Microsoft",
     "caption": "opisMic",
-    "logo": "C:\Users\Admin\Desktop\jj\0402\0401\0401\images\mic.jpg",
-    "users": [],
-    "resources": []
+    "logo": "logoMic",
+    "users": [
+    	"poparic@gmail.com"
+    ],
+    "resources": [
+    	"ORACLE-VM"
+    ]
   },
   {
     "name": "Oracle",
     "caption": "opisOrac",
-    "logo": "C:\Users\Admin\Desktop\jj\0402\0401\0401\images\oracle.png",
+    "logo": "logoOrac",
     "users": [],
     "resources": []
   }

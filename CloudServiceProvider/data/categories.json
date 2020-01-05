@@ -1,26 +1,38 @@
 [
   {
-    "name": "kategorija1",
-    "coreNumber": 10,
+    "name": "kategorija4",
+    "coreNumber": 50,
     "RAM": 16,
-    "GPUcores": 2
+    "GPUcores": 4
   },
   {
-    "name": "kategorija2",
-    "coreNumber": 11,
-    "RAM": 8,
-    "GPUcores": 1
-  },
-  {
-    "name": "kategorija3",
+    "name": "kaguhurh434835834n",
     "coreNumber": 40,
     "RAM": 32,
     "GPUcores": 4
   },
   {
-    "name": "kategorija4",
-    "coreNumber": 50,
-    "RAM": 16,
+    "name": "kateg4",
+    "coreNumber": 3,
+    "RAM": 4,
+    "GPUcores": 5
+  },
+  {
+    "name": "sadjasjda",
+    "coreNumber": 4,
+    "RAM": 3,
     "GPUcores": 4
+  },
+  {
+    "name": "kategewqeqwwqeworija5",
+    "coreNumber": 3,
+    "RAM": 3,
+    "GPUcores": 3
+  },
+  {
+    "name": "kategorija5",
+    "coreNumber": 4,
+    "RAM": 3,
+    "GPUcores": 2
   }
 ]

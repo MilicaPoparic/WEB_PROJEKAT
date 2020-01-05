@@ -1,0 +1,2 @@
+1.Kod provere praznih polja na serveru sto se tice Kategorija, da li je cat ==0 pokriveno time
+2.Istestirati detaljno izmenu kategorije

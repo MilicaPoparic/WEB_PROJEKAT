@@ -6,11 +6,11 @@ Vue.component("organization", {
 	},
 	template: ` 
 <div>
-	Organizations:
+	Organizacije:
 	<table border="1">
 	<tr bgcolor="lightgrey">
-		<th>Name</th>
-		<th>Caption</th>
+		<th>Ime</th>
+		<th>Opis</th>
 		<th>Logo</th>
 		<th>&nbsp;</th>
 	</tr>
