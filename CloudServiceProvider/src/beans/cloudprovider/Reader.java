@@ -77,7 +77,7 @@ public class Reader {
 		
 	}
 	
-	private static void readOrganizations(String file) throws JsonSyntaxException, JsonIOException, FileNotFoundException {
+	public static void readOrganizations(String file) throws JsonSyntaxException, JsonIOException, FileNotFoundException {
 		JsonReader reader = new JsonReader(new FileReader(file));
 		Organization[] data = g.fromJson(reader, Organization[].class);
 		for (Organization org:data) {

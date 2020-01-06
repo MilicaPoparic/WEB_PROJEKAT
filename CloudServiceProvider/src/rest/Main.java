@@ -35,7 +35,7 @@ public class Main {
 	private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 	private static Reader r = new Reader(); 
 	private static Category c = new Category();
-	
+	private static Organization o = new Organization();
 	private static void writeToFiles(ArrayList<Object> listForWrite, String string) throws IOException {
 		String json = gson.toJson(listForWrite);
 		FileWriter file = new FileWriter(string);
@@ -46,9 +46,7 @@ public class Main {
 	public static void main(String[] args) throws IOException {
 		port(8080);
 		webSocket("/ws", WsHandler.class);		
-		User superadmin  = new User("admin", "admin");
-		r.users.put(superadmin.getEmail(), superadmin);
-	
+		
 		
 		staticFiles.externalLocation(new File("./static").getCanonicalPath()); 
 
@@ -59,8 +57,28 @@ public class Main {
 	
 		get("/rest/virtualne", (req, res) -> {		
 			res.type("application/json");
-			ArrayList<SendVMO> listOfVMO = loadVMO();
-			return g.toJson(listOfVMO);
+			Session ss = req.session(true);
+			User user = ss.attribute("user");
+			if (user!=null) {
+			if (user.getRole().toString().equals("user")) {
+				ArrayList<SendVMO> listOfVMO = loadVMOUser(user);
+				return g.toJson(listOfVMO);
+			}
+			else if  (user.getRole().toString().equals("superadmin")){
+				ArrayList<SendVMO> listOfVMO = loadVMO();
+				return g.toJson(listOfVMO);
+			}
+			else {
+				ArrayList<SendVMO> listOfVMO = loadVMOUser(user);
+				return g.toJson(listOfVMO);
+			}
+		}
+		else {
+				ArrayList<SendVMO> listOfVMO = new ArrayList<SendVMO>();
+				return g.toJson(listOfVMO);
+			}
+			
+			
 		});
 		
 
@@ -69,6 +87,10 @@ public class Main {
 			return g.toJson(r.organizationList);
 		});
 
+		get("/rest/getOrganization", (req, res) -> {
+			res.type("application/json");
+			return g.toJson(o);
+		});
 		
 		get("/rest/testLogin", (req, res) -> {
 			res.type("application/json");
@@ -97,13 +119,8 @@ public class Main {
 			String payload = req.body(); 
 			UserToLog u = g.fromJson(payload, UserToLog.class);
 			Session ss = req.session(true);
-			User user = ss.attribute("user");
-			if (user == null) {
-				//namestice ga na prijavljenog ako ga ima 
-				//ako ne ostaje null
-				user = testLogin(u);
-				ss.attribute("user",user);
-			}
+			User user = testLogin(u);
+			ss.attribute("user", user);
 			if (user != null) {
 				res.status(200);
 			}
@@ -115,12 +132,64 @@ public class Main {
 		
 		post("/rest/logout", (req,res)-> {
 			res.type("application/json");
-			
 			Session ss = req.session(true);
-			User user = ss.attribute("user");
+			User user = ss.attribute("user");	
 			if (user != null) {
 				ss.invalidate();
 			}
+			return ("OK");
+		});
+		
+		post("/rest/requestAddOrg", (req,res)-> {
+			res.type("application/json");
+			return ("OK");
+		});
+
+		post("/rest/captureOrg", (req,res)-> {
+			res.type("application/json");
+			String payload = req.body(); 
+			Organization checkMe = g.fromJson(payload, Organization.class);
+			if (r.organizations.get(checkMe.getName())!=null) {
+				o = r.organizations.get(checkMe.getName());
+			}
+			return ("OK");
+		});
+	
+		
+		post("/rest/addOrganization", (req,res)-> {
+			res.type("application/json");
+			String payload = req.body(); 
+			Organization org = g.fromJson(payload, Organization.class);
+			if (org!=null) {
+				r.organizationList.add(org);
+				r.organizations.put(org.getName(),org);
+				res.status(200);
+				writeToFiles((ArrayList<Object>)(Object) r.organizationList, "./data/organizations.json"); 
+			}
+			else {
+				res.status(400);
+			}
+			return ("OK");
+		});
+		
+		post("/rest/changeOrg", (req,res)-> {
+			res.type("application/json");
+			String payload = req.body(); 
+			System.out.println(payload);
+			Organization org = g.fromJson(payload, Organization.class);
+			refreshOrgData(org);
+			writeToFiles((ArrayList<Object>)(Object) r.organizationList, "./data/organizations.json"); 
+			return ("OK");
+		});
+		
+		//stavicu mu da brise onu koju je oznacio za izmenu!
+		post("/rest/deleteOrg", (req,res)-> {
+			res.type("application/json");
+			String payload = req.body(); 
+			System.out.println(payload);
+			Organization org = g.fromJson(payload, Organization.class);
+			deleteOrgData();
+			writeToFiles((ArrayList<Object>)(Object) r.organizationList, "./data/organizations.json"); 
 			return ("OK");
 		});
 		
@@ -329,6 +398,34 @@ public class Main {
 			return null;
 		}
 	}
+	private static void deleteOrgData() throws IOException {
+		r.organizationList.remove(o);
+		r.organizations.remove(o.getName(), o);
+		for (User user : r.userList) {
+			if (user.getOrganization().equals(o.getName())) {
+			}
+			if (r.users.get(user.getEmail()).getOrganization().equals(o.getName())) {
+			}
+		}
+		writeToFiles((ArrayList<Object>)(Object) r.userList, "./data/users.json");
+	}
+	private static void refreshOrgData(Organization org) throws IOException {
+		r.organizationList.remove(o);
+		r.organizationList.add(org);
+		r.organizations.remove(o.getName(), o);
+		r.organizations.put(org.getName(), org);
+		for (User user : r.userList) {
+			if (user.getOrganization().equals(o.getName())) {
+				user.setOrganization(org.getName());
+			}
+			if (r.users.get(user.getEmail()).getOrganization().equals(o.getName())) {
+				r.users.get(user.getEmail()).setOrganization(org.getName());
+			}
+		}
+		writeToFiles((ArrayList<Object>)(Object) r.userList, "./data/users.json");
+		
+	}
+	
 	private static ArrayList<SendVMO> loadVMO() {
 		ArrayList<SendVMO> listOfVMO = new ArrayList<SendVMO>();
 		for(VirtualMachine vm : r.virtMachineList) {
@@ -354,5 +451,24 @@ public class Main {
 		}
 		return listOfVMO;
 	}
+	private static ArrayList<SendVMO> loadVMOUser(User user) {
+		ArrayList<SendVMO> data = new ArrayList<SendVMO>();
+		//prvo mi treba organizacija kojoj pripada!
+		ArrayList<VirtualMachine> machines = new ArrayList<VirtualMachine>();
+		String organization = r.users.get(user.getEmail()).getOrganization();
+		for (String resource : r.organizations.get(organization).getResources()) {
+			for (VirtualMachine vm : r.virtMachineList) {
+				if (vm.getName().equals(resource)) {
+					machines.add(vm);
+				}
+			}
+		}
+		for (VirtualMachine vm : machines) {
+			SendVMO sendData = new SendVMO(vm.getName(),vm.getCategory().getCoreNumber(), vm.getCategory().getRAM(),vm.getCategory().getGPUcores(),organization);
+			data.add(sendData);
+		}
+		return data;
+	}
+
 
 }

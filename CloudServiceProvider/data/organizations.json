@@ -1,24 +1,13 @@
 [
   {
-    "name": "IOS",
-    "caption": "opisIOS",
-    "logo": "logoIOS",
-    "users": [
-    	"trajkovic@gmail.com"
-    ],
-    "resources": [
-     	"JAVA-VM"
-    ]
-  },
-  {
     "name": "Microsoft",
-    "caption": "opisMic",
+    "caption": "micCaption",
     "logo": "logoMic",
     "users": [
-    	"poparic@gmail.com"
+      "poparic@gmail.com"
     ],
     "resources": [
-    	"ORACLE-VM"
+      "JAVA-VM", "ORACLE-VM"
     ]
   },
   {
@@ -27,5 +16,16 @@
     "logo": "logoOrac",
     "users": [],
     "resources": []
+  },
+  {
+    "name": "IOS",
+    "caption": "opisIOS",
+    "logo": "logoIOS",
+    "users": [
+      "trajkovic@gmail.com"
+    ],
+    "resources": [
+      "JAVA-VM"
+    ]
   }
 ]

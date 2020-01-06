@@ -22,5 +22,12 @@
     "nameORG": "Oracle",
     "role": "user",
     "password": "sifra3"
+  },
+  {
+    "email": "admin",
+    "name": "",
+    "surname": "",
+    "role": "superAdmin",
+    "password": "admin"
   }
 ]

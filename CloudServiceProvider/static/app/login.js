@@ -52,4 +52,17 @@ Vue.component("log-in", {
 			  
 			}
 		  },
+			mounted () {
+		        axios
+		          .get('rest/testLogin')
+		          .then((response) => {
+					    	  if(response.status == 200) {
+					    		  location.href = '#/h';
+					    		  //ako je status 200 treba usput i da dobavi podatke koje ce da prikaze za vm 
+					    	  }
+					      })
+					      .catch((response)=>{
+					    	  location.href = '#/';
+					      })
+		  },
 });
