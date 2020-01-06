@@ -6,6 +6,7 @@ const AddCateg = { template: '<addCateg></addCateg>' }
 const DetailCateg = { template: '<detailCateg></detailCateg>' }
 const AddOrg = { template: '<add-org></add-org>' }
 const ChangeOrg = { template: '<change-org></change-org>' }
+const Forbidden = { template: '<forbidden></forbidden>' }
 
 const router = new VueRouter({
 	  mode: 'hash',
@@ -18,6 +19,7 @@ const router = new VueRouter({
 	    { path: '/d', component: DetailCateg},
 	    { path: '/addOrg', component: AddOrg},
 	    { path: '/changeOrg', component: ChangeOrg},
+	    { path: '/forbidden', component: Forbidden},
 	  ]
 });
 

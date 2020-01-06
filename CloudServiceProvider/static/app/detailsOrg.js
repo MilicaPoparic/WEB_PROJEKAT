@@ -4,7 +4,8 @@ Vue.component("change-org",{
 			org: null,
 			nameErr: '',
 		    captionErr: '',
-		    logoErr: ''
+		    logoErr: '',
+		    role: ''
 		}
 	},
 	template:
@@ -21,11 +22,11 @@ Vue.component("change-org",{
 				<td> Caption: </td>
 				<td><input type="text" style="width:60px" size="3" v-model="org.caption" name="caption"></td> {{captionErr}}
 		</tr>
-			
-		<tr>
-				<td> Log: </td>
-				<td><input type="text" style="width:60px" size="3" v-model="org.logo" name="logo"></td> {{logoErr}}
-
+		
+		<tr v-if="role=='superAdmin'">
+				<td> Upload logo: </td>
+				<td><input type="file" @change = "upload" ></td> {{logoErr}}
+				
 		</tr>
 		<tr>
 			<td><button v-on:click="change()">Change data</button></td> 
@@ -51,18 +52,29 @@ Vue.component("change-org",{
 			if (this.org.name && this.org.caption && this.org.logo) {
 				axios
 				.post('rest/changeOrg', this.org)
-				.then(response => location.href = '#/o');	
+				.then((response) => {
+		    	  if(response.status == 200) {
+		    		  location.href = '#/o';
+		    	  }
+		      })
+				.catch(response=>this.nameErr = 'Name must me unique!')
 			}
 		},
 		deleteOrg : function() {
 		axios
 		.post('rest/deleteOrg', this.org)
 		.then(response => location.href = '#/o');	
-	}
+		},
+		onUpload(event) {
+			this.org.imagePath = (event.target.files)[0].name;
+		}
 	},
 	mounted () {	
         axios
           .get('rest/getOrganization')
           .then(response => (this.org = response.data))
+        axios
+          .get('rest/getRole')
+          .then(response => (this.role = response.data));
     },
 });

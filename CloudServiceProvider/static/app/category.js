@@ -50,6 +50,17 @@ Vue.component("categ",{
 		 axios
          	.get('rest/getCategories')
          	.then(response => (this.categories = response.data));
+		 axios
+      	.get('rest/checkRole')
+      	.then((response) => {
+			    	  if(response.status == 403) {
+			    		  location.href = '#/forbidden';
+			    	  }
+			      })
+		.catch((response)=>{
+			location.href = '#/forbidden';
+					  })
+			      
 	}
 
 });

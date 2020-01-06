@@ -2,20 +2,21 @@ Vue.component("home-page", {
 	data: function(){
 		return{
 			virtMachines: null,
-			pretraga: ""
+			pretraga: "",
+			role: ""
 		}
 	},
 	template: ` 
 <div>
 		
-	<p>Pregled virtualnih mašina:</p>
+	<p>Virtual machines</p>
 	<table border="1">
 		<tr bgcolor="blue">
-			<th> Naziv </th>
-			<th> Broj jezgara </th>
+			<th> Name </th>
+			<th> Core </th>
 			<th> RAM </th>
 			<th> GPU </th>
-			<th> Organizacija </th>
+			<th> Organization </th>
 		</tr>
 		
 		<tr v-for="m in virtMachines">
@@ -32,13 +33,13 @@ Vue.component("home-page", {
 		<button v-on:click="research()">Pretrazi</button>
 	</span>
 	 <p>
-		<button v-on:click="filter()">Filtriraj</button>
+		<button v-on:click="filter()">Filter</button>
 	</p>
 	 
-	<button v-on:click="dodajVM()">Dodaj novu VM</button>
-	<a href="#/o">Organizations</a>
+	<button v-on:click="dodajVM()">Add new vm</button>
+	<a href="#/o" v-if="role=='superAdmin' || role=='admin'">Organizations</a>
 	<button v-on:click="logout">Logout</button>
-	<button v-on:click="kategorija()">Kategorija</button>
+	<button v-if="role=='superAdmin'" v-on:click="kategorija()">Categories</button>
 </div>		  
 `
 	, 
@@ -70,7 +71,6 @@ Vue.component("home-page", {
           .then((response) => {
 			    	  if(response.status == 200) {
 			    		  location.href = '#/h';
-			    		  //ako je status 200 treba usput i da dobavi podatke koje ce da prikaze za vm 
 			    	  }
 			      })
 			      .catch((response)=>{
@@ -79,6 +79,9 @@ Vue.component("home-page", {
         axios
          .get('rest/virtualne')
          .then(response => (this.virtMachines = response.data));
+        axios
+        .get('rest/getRole')
+        .then(response => (this.role = response.data));
       
         
     },

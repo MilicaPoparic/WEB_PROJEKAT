@@ -54,7 +54,33 @@ public class Main {
 		get("/test", (req, res) -> {
 			return "Works";
 		});
-	
+
+		get("/rest/getRole", (req, res) -> {
+			res.type("application/json");
+			User user = req.session(true).attribute("user");
+			if (user !=null) {
+				return g.toJson(user.getRole());
+			}
+			else {
+				return ("OK");
+			}
+			});
+		
+		//za kategoriju da ide forbidden
+		get("/rest/checkRole", (req, res) -> {
+			res.type("application/json");
+			User user = req.session(true).attribute("user");
+			if (user !=null) {
+				if (!user.getRole().toString().equals("superAdmin")) {
+					res.status(403);
+				}
+			}
+			else {
+				res.status(403);
+			}
+			return ("OK");
+			});
+		
 		get("/rest/virtualne", (req, res) -> {		
 			res.type("application/json");
 			Session ss = req.session(true);
@@ -83,8 +109,28 @@ public class Main {
 		
 
 		get("/rest/getOrganizations", (req, res) -> {
+
 			res.type("application/json");
-			return g.toJson(r.organizationList);
+			Session ss = req.session(true);
+			User user = ss.attribute("user");
+			if (user!=null) {
+			if  (user.getRole().toString().equals("superAdmin")){
+				return g.toJson(r.organizations);
+			}
+			else {
+				String org = user.getOrganization();
+				ArrayList<Organization> organizationL = new ArrayList<Organization>();
+				if (r.organizations.get(org)!=null) {
+					organizationL.add(r.organizations.get(org));
+				}
+				return g.toJson(organizationL);
+			}
+			}
+			else {
+				return ("OK");
+			}
+		
+			
 		});
 
 		get("/rest/getOrganization", (req, res) -> {
@@ -160,7 +206,8 @@ public class Main {
 			res.type("application/json");
 			String payload = req.body(); 
 			Organization org = g.fromJson(payload, Organization.class);
-			if (org!=null) {
+			
+			if (org!=null && r.organizations.get(org.getName())==null) {
 				r.organizationList.add(org);
 				r.organizations.put(org.getName(),org);
 				res.status(200);
@@ -177,9 +224,17 @@ public class Main {
 			String payload = req.body(); 
 			System.out.println(payload);
 			Organization org = g.fromJson(payload, Organization.class);
-			refreshOrgData(org);
-			writeToFiles((ArrayList<Object>)(Object) r.organizationList, "./data/organizations.json"); 
+			if (!o.getName().equals(org.getName()) && r.organizations.get(org.getName())!=null) {
+				res.status(400);
+			}
+			else {
+				res.status(200);
+				refreshOrgData(org);
+				writeToFiles((ArrayList<Object>)(Object) r.organizationList, "./data/organizations.json"); 
+				
+			}
 			return ("OK");
+		
 		});
 		
 		//stavicu mu da brise onu koju je oznacio za izmenu!

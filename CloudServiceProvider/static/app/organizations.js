@@ -1,7 +1,8 @@
 Vue.component("organization", {
 	data: function () {
 		    return {
-		      organizations: null
+		      organizations: null,
+		      role: ''
 		    }
 	},
 	template: ` 
@@ -21,7 +22,7 @@ Vue.component("organization", {
 		<td><img src="{{o.logo}}" alt="Logo" height=5 width=5></td>	
 	</tr>
 </table>
-		<p><button v-on:click="addOrg">Add</button></p>
+		<p><button v-if="role=='superAdmin'" v-on:click="addOrg">Add</button></p>
 	
 </div>		  
 `,
@@ -40,8 +41,22 @@ Vue.component("organization", {
 	}
 	,
 	mounted () {
+		axios
+        .get('rest/testLogin')
+        .then((response) => {
+			    	  if(response.status == 200) {
+			    		  location.href = '#/o';
+			    	  }
+			      })
+			      .catch((response)=>{
+			    	  location.href = '#/';
+			      })
         axios
           .get('rest/getOrganizations')
           .then(response => (this.organizations = response.data))
+        axios
+          .get('rest/getRole')
+          .then(response => (this.role = response.data));
+
     },
 });
