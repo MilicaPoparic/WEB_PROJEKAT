@@ -11,13 +11,6 @@
     ]
   },
   {
-    "name": "Oracle",
-    "caption": "opisOrac",
-    "logo": "logoOrac",
-    "users": [],
-    "resources": []
-  },
-  {
     "name": "Microsoft",
     "caption": "micCaption",
     "logo": "logoMic",
@@ -28,5 +21,12 @@
       "JAVA-VM",
       "ORACLE-VM"
     ]
+  },
+  {
+    "name": "Oracle",
+    "caption": "opisOrac",
+    "logo": "IMG-20180203-WA0005.jpg",
+    "users": [],
+    "resources": []
   }
 ]

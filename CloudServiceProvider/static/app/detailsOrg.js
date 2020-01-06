@@ -23,9 +23,9 @@ Vue.component("change-org",{
 				<td><input type="text" style="width:60px" size="3" v-model="org.caption" name="caption"></td> {{captionErr}}
 		</tr>
 		
-		<tr v-if="role=='superAdmin'">
-				<td> Upload logo: </td>
-				<td><input type="file" @change = "upload" ></td> {{logoErr}}
+		<tr >
+				<td v-if="role=='superAdmin'"> Upload logo: </td>
+				<td><input type="file" v-if="role=='superAdmin'" @change = "onUpload" ></td> {{logoErr}}
 				
 		</tr>
 		<tr>
@@ -46,10 +46,7 @@ Vue.component("change-org",{
 			if(!this.org.caption){
 				this.captionErr = 'Caption is required!'
 			}
-			if (!this.org.logo){
-				this.logoErr = 'Logo is required!'
-			}
-			if (this.org.name && this.org.caption && this.org.logo) {
+			if (this.org.name && this.org.caption) {
 				axios
 				.post('rest/changeOrg', this.org)
 				.then((response) => {
@@ -66,7 +63,7 @@ Vue.component("change-org",{
 		.then(response => location.href = '#/o');	
 		},
 		onUpload(event) {
-			this.org.imagePath = (event.target.files)[0].name;
+			this.org.logo = (event.target.files)[0].name;
 		}
 	},
 	mounted () {	
