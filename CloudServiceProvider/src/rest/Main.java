@@ -64,7 +64,7 @@ public class Main {
 				ArrayList<SendVMO> listOfVMO = loadVMOUser(user);
 				return g.toJson(listOfVMO);
 			}
-			else if  (user.getRole().toString().equals("superadmin")){
+			else if  (user.getRole().toString().equals("superAdmin")){
 				ArrayList<SendVMO> listOfVMO = loadVMO();
 				return g.toJson(listOfVMO);
 			}
@@ -402,10 +402,13 @@ public class Main {
 		r.organizationList.remove(o);
 		r.organizations.remove(o.getName(), o);
 		for (User user : r.userList) {
-			if (user.getOrganization().equals(o.getName())) {
+			if (user.getOrganization()!=null) {
+				if (user.getOrganization().equals(o.getName())) {
+				}
+				if (r.users.get(user.getEmail()).getOrganization().equals(o.getName())) {
+				}
 			}
-			if (r.users.get(user.getEmail()).getOrganization().equals(o.getName())) {
-			}
+			
 		}
 		writeToFiles((ArrayList<Object>)(Object) r.userList, "./data/users.json");
 	}
@@ -415,11 +418,16 @@ public class Main {
 		r.organizations.remove(o.getName(), o);
 		r.organizations.put(org.getName(), org);
 		for (User user : r.userList) {
-			if (user.getOrganization().equals(o.getName())) {
-				user.setOrganization(org.getName());
+			if  (user.getOrganization() != null) {
+				if (user.getOrganization().equals(o.getName())) {
+					user.setOrganization(org.getName());
+				}
+				if (r.users.get(user.getEmail()).getOrganization().equals(o.getName())) {
+					r.users.get(user.getEmail()).setOrganization(org.getName());
+				}
 			}
-			if (r.users.get(user.getEmail()).getOrganization().equals(o.getName())) {
-				r.users.get(user.getEmail()).setOrganization(org.getName());
+			else {
+				continue;
 			}
 		}
 		writeToFiles((ArrayList<Object>)(Object) r.userList, "./data/users.json");

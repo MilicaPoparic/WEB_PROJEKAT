@@ -7,15 +7,9 @@
       "poparic@gmail.com"
     ],
     "resources": [
-      "JAVA-VM", "ORACLE-VM"
+      "JAVA-VM",
+      "ORACLE-VM"
     ]
-  },
-  {
-    "name": "Oracle",
-    "caption": "opisOrac",
-    "logo": "logoOrac",
-    "users": [],
-    "resources": []
   },
   {
     "name": "IOS",
@@ -27,5 +21,12 @@
     "resources": [
       "JAVA-VM"
     ]
+  },
+  {
+    "name": "Oracle",
+    "caption": "opisOrac",
+    "logo": "logoOrac",
+    "users": [],
+    "resources": []
   }
 ]
