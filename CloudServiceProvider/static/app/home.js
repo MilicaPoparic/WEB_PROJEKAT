@@ -40,6 +40,7 @@ Vue.component("home-page", {
 	<a href="#/o" v-if="role=='superAdmin' || role=='admin'">Organizations</a>
 	<button v-on:click="logout">Logout</button>
 	<button v-if="role=='superAdmin'" v-on:click="kategorija()">Categories</button>
+	<button v-on:click="drivess()">Drives</button>
 </div>		  
 `
 	, 
@@ -62,6 +63,12 @@ Vue.component("home-page", {
 			axios
 		      .post('rest/logout', "nesto")
 		      .then(response => location.href = '#/');
+
+		},
+		drivess : function() {
+			axios
+		      .post('rest/viewDrives', "")
+		      .then(response => location.href = '#/drives');
 
 		}
 	},

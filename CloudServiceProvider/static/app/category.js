@@ -31,8 +31,7 @@ Vue.component("categ",{
 	<button v-on:click="addCategory()">Dodaj kategoriju</button>
 	</p>
 </div>	
-	`//<a :href="product.id | formatParam(product.category,product.count)"></a>
-		//</td><td><a v-bind:href="#/d">{{cat.name}}</a></td>
+	`
 	,
 	methods:{
 		addCategory:function(){

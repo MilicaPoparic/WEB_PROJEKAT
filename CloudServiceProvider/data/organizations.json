@@ -1,16 +1,5 @@
 [
   {
-    "name": "IOS",
-    "caption": "opisIOS",
-    "logo": "logoIOS",
-    "users": [
-      "trajkovic@gmail.com"
-    ],
-    "resources": [
-      "JAVA-VM"
-    ]
-  },
-  {
     "name": "Microsoft",
     "caption": "micCaption",
     "logo": "logoMic",
@@ -20,6 +9,17 @@
     "resources": [
       "JAVA-VM",
       "ORACLE-VM"
+    ]
+  },
+  {
+    "name": "IOS",
+    "caption": "opisIOS",
+    "logo": "logoIOS",
+    "users": [
+      "trajkovic@gmail.com"
+    ],
+    "resources": [
+      "JAVA-VM"
     ]
   },
   {

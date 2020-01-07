@@ -7,6 +7,10 @@ const DetailCateg = { template: '<detailCateg></detailCateg>' }
 const AddOrg = { template: '<add-org></add-org>' }
 const ChangeOrg = { template: '<change-org></change-org>' }
 const Forbidden = { template: '<forbidden></forbidden>' }
+const Drives = { template: '<drive></drive>' }
+const AddDrive ={template: '<addDr></addDr>'}
+const DetailDrive ={template: '<detailDr></detailDr>'}
+const searchDrive ={template: '<searchDr></searchDr>'}
 
 const router = new VueRouter({
 	  mode: 'hash',
@@ -20,6 +24,10 @@ const router = new VueRouter({
 	    { path: '/addOrg', component: AddOrg},
 	    { path: '/changeOrg', component: ChangeOrg},
 	    { path: '/forbidden', component: Forbidden},
+	    { path: '/drives', component: Drives},
+	    { path: '/ad', component: AddDrive},
+	    { path: '/detailDrive', component: DetailDrive},
+	    { path: '/resultSearchingDrive', component: searchDrive}
 	  ]
 });
 
