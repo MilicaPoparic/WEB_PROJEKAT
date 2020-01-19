@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.jws.soap.SOAPBinding.Use;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -40,6 +42,7 @@ public class Main {
 	private static Category c = new Category();
 	private static Organization o = new Organization();
 	private static Drive d = new Drive();
+	private static User u = new User();
 	private static ArrayList<Drive>  retDrive = new ArrayList<Drive>();
 
 	private static void writeToFiles(ArrayList<Object> listForWrite, String string) throws IOException {
@@ -52,8 +55,6 @@ public class Main {
 	public static void main(String[] args) throws IOException {
 		port(8080);
 		webSocket("/ws", WsHandler.class);		
-		
-		
 		staticFiles.externalLocation(new File("./static").getCanonicalPath()); 
 
 	
@@ -64,33 +65,27 @@ public class Main {
 		get("/rest/getRole", (req, res) -> {
 			res.type("application/json");
 			User user = req.session(true).attribute("user");
-			if (user !=null) {
+			if (user != null) {
 				return g.toJson(user.getRole());
 			}
-			else {
-				return ("OK");
-			}
+			return ("OK");
 			});
 		
-		//za kategoriju da ide forbidden
 		get("/rest/checkRole", (req, res) -> {
 			res.type("application/json");
 			User user = req.session(true).attribute("user");
-			if (user !=null) {
+			if (user != null) {
 				if (!user.getRole().toString().equals("superAdmin")) {
 					res.status(403);
-				}
-			}
-			else {
-				res.status(403);
-			}
+					return gson.toJson(user);
+				}}
+			res.status(403);
 			return ("OK");
 			});
 		
 		get("/rest/virtualne", (req, res) -> {		
 			res.type("application/json");
-			Session ss = req.session(true);
-			User user = ss.attribute("user");
+			User user = req.session().attribute("user");
 			if (user!=null) {
 			if (user.getRole().toString().equals("user")) {
 				ArrayList<SendVMO> listOfVMO = loadVMOUser(user);
@@ -105,38 +100,33 @@ public class Main {
 				return g.toJson(listOfVMO);
 			}
 		}
-		else {
-				ArrayList<SendVMO> listOfVMO = new ArrayList<SendVMO>();
-				return g.toJson(listOfVMO);
-			}
+		return g.toJson(new ArrayList<SendVMO>());
 		});
 		
+		get("/rest/getUsers", (req, res) -> {
+			res.type("application/json");
+			User user = req.session().attribute("user");
+			return gson.toJson(takeUsers(user));
+		});
 
 		get("/rest/getOrganizations", (req, res) -> {
-
 			res.type("application/json");
-			Session ss = req.session(true);
-			User user = ss.attribute("user");
-			if (user!=null) {
-			if  (user.getRole().toString().equals("superAdmin")){
-				return g.toJson(r.organizations);
-			}
-			else {
-				String org = user.getOrganization();
-				ArrayList<Organization> organizationL = new ArrayList<Organization>();
-				if (r.organizations.get(org)!=null) {
-					organizationL.add(r.organizations.get(org));
-				}
-				return g.toJson(organizationL);
-			}
-			}
-			else {
-				return ("OK");
-			}
-		
-			
+			User user = req.session().attribute("user");
+			return gson.toJson(takeOrganizations(user));
 		});
 
+		get("/rest/getUser", (req, res) -> {
+			res.type("application/json");
+			return g.toJson(u);
+		});
+		
+		//ovo je moglo tipa onde gde vraca ulogu da vraca usera pa da uzima ulogu, a ovde vraca usera!!
+		get("/rest/getLoggedInUser", (req, res) -> {
+			res.type("application/json");
+			User loggedUser = req.session().attribute("user");
+			return g.toJson(loggedUser);
+		});
+		
 		get("/rest/getOrganization", (req, res) -> {
 			res.type("application/json");
 			return g.toJson(o);
@@ -144,13 +134,12 @@ public class Main {
 		
 		get("/rest/testLogin", (req, res) -> {
 			res.type("application/json");
-			Session ss = req.session(true);
-			User user = ss.attribute("user");
+			User user = req.session().attribute("user");
 			if (user == null) {
 				res.status(400);
-			} else {
-				res.status(200);
-			}
+				return ("OK");
+			} 
+			res.status(200);
 			return ("OK");
 		});
 		
@@ -162,8 +151,8 @@ public class Main {
 		get("/rest/getCategory", (req,res)-> {
 			res.type("application/json");
 			return g.toJson(c);
-			
 		});
+		
 		get("/rest/getDrives", (req,res)-> {
 			res.type("application/json");
 			Session ss = req.session(true);
@@ -191,29 +180,28 @@ public class Main {
 				return ("OK");
 			}
 		});
+		
 		get("/rest/getDrive", (req,res)-> {
 			res.type("application/json");
-			return g.toJson(d);
-			
+			return g.toJson(d);	
 		});
+		
 		get("/rest/getDVM", (req,res)-> {
 			res.type("application/json");
 			HashMap<String, Integer> dvm = new HashMap<String, Integer>();
 			for(VirtualMachine vmm: r.virtMachineList) {
 				dvm.put(vmm.getName(), r.virtMachineList.indexOf(vmm));
 			}
-			return g.toJson(dvm);
-			
+			return g.toJson(dvm);	
 		});
+		
 		get("/rest/getDTypes", (req,res)-> {
 			res.type("application/json");
 			HashMap<String, Integer> dc = new HashMap<String, Integer>();
 			for(DriveType dType : DriveType.values()) {
 				dc.put(dType.name(),dType.ordinal());
-			}
-			
+			}	
 			return g.toJson(dc);
-			
 		});
 		
 		get("/rest/getSearchDrives", (req,res)-> {
@@ -224,103 +212,153 @@ public class Main {
 		
 		post("/rest/login", (req, res) -> {
 			res.type("application/json");
-			String payload = req.body(); 
-			UserToLog u = g.fromJson(payload, UserToLog.class);
-			Session ss = req.session(true);
+			UserToLog u = g.fromJson(req.body(), UserToLog.class);
 			User user = testLogin(u);
-			ss.attribute("user", user);
+			req.session().attribute("user", user);
 			if (user != null) {
 				res.status(200);
+				return ("OK");
 			}
-			else {
-				res.status(400);
-			}
+			res.status(400);
 			return ("OK");
 		});
 		
 		post("/rest/logout", (req,res)-> {
 			res.type("application/json");
-			Session ss = req.session(true);
-			User user = ss.attribute("user");	
+			User user = req.session().attribute("user");	
 			if (user != null) {
-				ss.invalidate();
+				req.session().invalidate();
 			}
 			return ("OK");
 		});
 		
-		post("/rest/requestAddOrg", (req,res)-> {
-			res.type("application/json");
-			return ("OK");
-		});
-
 		post("/rest/captureOrg", (req,res)-> {
 			res.type("application/json");
-			String payload = req.body(); 
-			Organization checkMe = g.fromJson(payload, Organization.class);
+			Organization checkMe = g.fromJson(req.body(), Organization.class);
 			if (r.organizations.get(checkMe.getName())!=null) {
 				o = r.organizations.get(checkMe.getName());
 			}
 			return ("OK");
 		});
-	
 		
+		post("/rest/captureUser", (req,res)-> {
+			res.type("application/json");
+			User catchMe = g.fromJson(req.body(), User.class);
+			if (r.users.get(catchMe.getEmail())!=null) {
+				u = r.users.get(catchMe.getEmail());
+			}
+			return ("OK");
+		});
+	
 		post("/rest/addOrganization", (req,res)-> {
 			res.type("application/json");
-			String payload = req.body(); 
-			Organization org = g.fromJson(payload, Organization.class);
-			
+			Organization org = g.fromJson(req.body(), Organization.class);
 			if (org!=null && r.organizations.get(org.getName())==null) {
-				r.organizationList.add(org);
-				r.organizations.put(org.getName(),org);
+				org.setUsers(new ArrayList<String>());
+				org.setResources(new ArrayList<String>());
+				manageListsOrg(org, false);
 				res.status(200);
 				writeToFiles((ArrayList<Object>)(Object) r.organizationList, "./data/organizations.json"); 
+				return ("OK");
 			}
-			else {
-				res.status(400);
+			res.status(400);
+			return ("OK");
+		});
+		
+		post("/rest/addUser", (req,res)-> {
+			res.type("application/json");
+			User loggedIn = req.session().attribute("user");
+			User newUser = g.fromJson(req.body(), User.class);
+			if (newUser!=null && r.users.get(newUser.getEmail())==null) {
+				ArrayList<String> users = new ArrayList<String>();
+				if (loggedIn.getRole().toString().equals("admin")) 
+					newUser.setOrganization(loggedIn.getOrganization());
+				r.organizations.get(newUser.getOrganization()).getUsers().add(newUser.getEmail());
+				manageListsUser(newUser, false);
+				res.status(200);
+				refreshFiles();
+				return ("OK");
 			}
+			res.status(400);
 			return ("OK");
 		});
 		
 		post("/rest/changeOrg", (req,res)-> {
 			res.type("application/json");
-			String payload = req.body(); 
-			System.out.println(payload);
-			Organization org = g.fromJson(payload, Organization.class);
+			Organization org = g.fromJson(req.body(), Organization.class);
 			if (!o.getName().equals(org.getName()) && r.organizations.get(org.getName())!=null) {
 				res.status(400);
+				return ("OK");
 			}
-			else {
-				res.status(200);
-				refreshOrgData(org);
-				writeToFiles((ArrayList<Object>)(Object) r.organizationList, "./data/organizations.json"); 
-				
-			}
+			res.status(200);
+			refreshOrgData(org);
+			refreshFiles();
 			return ("OK");
 		
 		});
 		
-		//stavicu mu da brise onu koju je oznacio za izmenu!
+		post("/rest/changeUser", (req,res)-> {
+			res.type("application/json");
+			User change= g.fromJson(req.body(), User.class);
+			res.status(200);
+			changeUser(change);
+			writeToFiles((ArrayList<Object>)(Object) r.userList, "./data/users.json"); 
+			return ("OK");
+		
+		});
+		
+		post("/rest/changeProfile", (req,res)-> {
+			res.type("application/json");
+			User change = g.fromJson(req.body(), User.class);
+			User loggedIn = req.session().attribute("user");
+			change.setOrganization(loggedIn.getOrganization());
+			if (!change.getEmail().equals(loggedIn.getEmail())) {	//ako menja email
+				manageListsUser(loggedIn, true);
+				if (r.users.get(change.getEmail())==null) { //ako email nije zauzet vec
+					res.status(200);
+					manageListsUser(change, false);
+					removeOrgUser(loggedIn); 
+					r.organizations.get(change.getOrganization()).getUsers().add(change.getEmail());
+					for (Organization o:r.organizationList) {
+						if (o.getName().equals(change.getOrganization())) {
+							o.getUsers().add(change.getEmail());
+						}
+					}
+				}
+				//else {
+					//res.status(400);
+				//}
+			}
+			//ako nije menjan email
+			else {
+				changeUser(change);
+			}
+			refreshFiles();
+			return ("OK");
+		
+		});
+		
 		post("/rest/deleteOrg", (req,res)-> {
 			res.type("application/json");
-			String payload = req.body(); 
-			System.out.println(payload);
-			Organization org = g.fromJson(payload, Organization.class);
+			Organization org = g.fromJson(req.body(), Organization.class);
 			deleteOrgData();
-			writeToFiles((ArrayList<Object>)(Object) r.organizationList, "./data/organizations.json"); 
+			refreshFiles();
 			return ("OK");
 		});
 		
-		post("/rest/category", (req,res)-> {
+		post("/rest/deleteUser", (req,res)-> {
 			res.type("application/json");
-			return"OK";
+			User deleteMe = g.fromJson(req.body(), User.class);
+			User loggedIn = req.session().attribute("user");
+			if (!deleteMe.getEmail().equals(loggedIn.getEmail())) {
+				deleteUserData();
+				res.status(200);
+				return ("OK");
+			}
+			res.status(400);
+			return ("OK");
 		});
-		
-	
-		post("/rest/addCategory", (req,res)-> {
-			res.type("application/json");
-			return"OK";
-		});
-		
+
 		post("/rest/addNewCategory", (req, res) -> {
 			res.type("application/json");
 			String reqData = req.body();
@@ -337,6 +375,7 @@ public class Main {
 			}
 			return ("OK");
 		});
+
 		post("/rest/categoryDetail", (req,res)-> {
 			res.type("application/json");
 			String reqData = req.body();
@@ -386,6 +425,7 @@ public class Main {
 			}
 			return "OK";
 		});
+		
 		post("/rest/removeCategory", (req,res)-> {
 			res.type("application/json");
 			String reqData = req.body();
@@ -404,15 +444,10 @@ public class Main {
     		}
 			return "OK";
 		});
-		
-		post("/rest/viewDrives", (req,res)-> {
-			res.type("application/json");
-			return"OK";
-		});
+
 		post("/rest/detailDrive", (req,res)-> {
 			res.type("application/json");
-			String reqData = req.body();
-            Drive detailD = g.fromJson(reqData, Drive.class);
+            Drive detailD = g.fromJson(req.body(), Drive.class);
             if(r.drives.containsKey(detailD.getName())) {
             	d =r.drives.get(detailD.getName()); 
             }
@@ -483,14 +518,10 @@ public class Main {
 			}
 			return "OK";
 		});
-		post("/rest/addDrive", (req, res) -> {
-			res.type("application/json");
-			return ("OK");
-		});
+		
 		post("/rest/addNewDrive", (req, res) -> {
 			res.type("application/json");
-			String reqData = req.body();
-			Drive drive = g.fromJson(reqData, Drive.class);
+			Drive drive = g.fromJson(req.body(), Drive.class);
 			Drive dCheck = checkDrive(drive);
 			if(dCheck != null) {
 				res.status(200);
@@ -505,8 +536,7 @@ public class Main {
 		});
 		post("/rest/removeDrive", (req, res) -> {
 			res.type("application/json");
-			String reqData = req.body();
-			Drive drive = g.fromJson(reqData, Drive.class);
+			Drive drive = g.fromJson(req.body(), Drive.class);
 			boolean valid = false;
 			boolean valid1 = false;
 			valid = checkDriveInOrg(drive.getName());
@@ -539,7 +569,10 @@ public class Main {
 		});
 		
 	}
-	
+	private static void refreshFiles() throws IOException {
+		writeToFiles((ArrayList<Object>)(Object) r.userList, "./data/users.json");
+		writeToFiles((ArrayList<Object>)(Object) r.organizationList, "./data/organizations.json");
+	}
 
 	private static ArrayList<Drive> checkParamSearch(DriveSearch retDrive) {
 		ArrayList<Drive>  ret = new ArrayList<Drive>();
@@ -616,7 +649,26 @@ public class Main {
 		}
 		
 	}
-
+	private static void manageListsUser(User loggedIn, Boolean remove) {
+		if (remove) {
+			r.userList.remove(loggedIn);
+			r.users.remove(loggedIn.getEmail(), loggedIn);
+			return;
+		}
+		r.userList.add(loggedIn);
+		r.users.put(loggedIn.getEmail(), loggedIn);
+		
+	}
+	private static void manageListsOrg(Organization o, Boolean remove) {
+		if (remove) {
+			r.organizationList.remove(o);
+			r.organizations.remove(o.getName(), o);
+			return;
+		}
+		r.organizationList.add(o);
+		r.organizations.put(o.getName(), o);
+		
+	}
 	private static void troughtDiscType(ArrayList<Drive> ret, String check1) {
 		for (Drive drive : new ArrayList<Drive>(ret)) {
 			if(!drive.getDriveType().equals(DriveType.valueOf(check1))) {
@@ -677,6 +729,13 @@ public class Main {
 			}
 		}
 		return i;
+	}
+	private static void changeUser(User change) {
+		User oldOne = r.users.get(change.getEmail());
+		r.userList.remove(oldOne);
+		r.userList.add(change);
+		r.users.remove(oldOne.getEmail(), oldOne);
+		r.users.put(change.getEmail(), change);
 	}
 
 	private static boolean checkDriveInOrg(String name) {
@@ -859,39 +918,53 @@ public class Main {
 	}
 	private static User testLogin(UserToLog u) {
 		if (r.users.isEmpty()) {
-			return null; //nema korisnika
+			return null; 
 		}
 		if(r.users.get(u.email) != null) {
 			if (r.users.get(u.email).getPassword().equals(u.password)) {
 				return r.users.get(u.email);
-			}
-			else {
-				return null;
+		}}
+		return null;
+	}
+	private static void removeOrgUser(User user) {
+		for (Organization org : r.organizationList) {
+			if (org.getUsers().contains(user.getEmail())) {
+				org.getUsers().remove(user.getEmail());
 			}
 		}
-		else {
-			return null;
+		for (Organization or : r.organizations.values()) {
+			if (or.getUsers().contains(user.getEmail())) {
+				or.getUsers().remove(user.getEmail());
+			}
 		}
 	}
+	private static void deleteUserData() throws IOException {
+		r.organizations.get(u.getOrganization()).getUsers().remove(u.getEmail());
+		//ArrayList<String> newUsers = new ArrayList<String>();
+		removeOrgUser(u);
+		r.users.remove(u.getEmail(),u);
+		r.userList.remove(u);
+		refreshFiles();
+		
+	}
+	
 	private static void deleteOrgData() throws IOException {
-		r.organizationList.remove(o);
-		r.organizations.remove(o.getName(), o);
+		manageListsOrg(o, true);
 		for (User user : r.userList) {
 			if (user.getOrganization()!=null) {
-				if (user.getOrganization().equals(o.getName())) {
+				if (user.getOrganization().equals(o.getName())) { //ako user ima tu org moramo da je obrisemo
+					user.setOrganization(null);
 				}
 				if (r.users.get(user.getEmail()).getOrganization().equals(o.getName())) {
+					user.setOrganization(null);
 				}
 			}
-			
 		}
-		writeToFiles((ArrayList<Object>)(Object) r.userList, "./data/users.json");
 	}
+	
 	private static void refreshOrgData(Organization org) throws IOException {
-		r.organizationList.remove(o);
-		r.organizationList.add(org);
-		r.organizations.remove(o.getName(), o);
-		r.organizations.put(org.getName(), org);
+		manageListsOrg(o, true);
+		manageListsOrg(org, false);
 		for (User user : r.userList) {
 			if  (user.getOrganization() != null) {
 				if (user.getOrganization().equals(o.getName())) {
@@ -901,12 +974,7 @@ public class Main {
 					r.users.get(user.getEmail()).setOrganization(org.getName());
 				}
 			}
-			else {
-				continue;
-			}
 		}
-		writeToFiles((ArrayList<Object>)(Object) r.userList, "./data/users.json");
-		
 	}
 	
 	private static ArrayList<SendVMO> loadVMO() {
@@ -920,11 +988,13 @@ public class Main {
 			sv.setNameVM(vm.getName());
 			
 			for(Organization os : r.organizations.values()) {
-				if(os.getResources().contains(vm.getName()))
-				{
-					i++;
-					sv.setNameORG(os.getName());
-					break;
+				if (os.getResources()!=null) {
+					if(os.getResources().contains(vm.getName()))
+					{
+						i++;
+						sv.setNameORG(os.getName());
+						break;
+					}
 				}
 			}
 			if(i ==0) {
@@ -933,6 +1003,37 @@ public class Main {
 			listOfVMO.add(sv);		
 		}
 		return listOfVMO;
+	}
+	private static ArrayList<User> takeUsers(User user) {
+		ArrayList<User> userL = new ArrayList<User>();
+		if (user!=null) {
+			if  (user.getRole().toString().equals("superAdmin")){
+				return r.userList;
+			}
+			else { 
+				String org = user.getOrganization();
+				if (r.organizations.get(org) != null )  {
+					for (String email : r.organizations.get(org).getUsers()) {
+						userL.add(r.users.get(email));
+					}}}
+			}
+		return userL; 
+	}
+	
+	//DA SMO IMALI CELE OBJEKTE NE BI NAM TREBALE OVE TAKE FJE
+	private static ArrayList<Organization> takeOrganizations(User user) {
+		ArrayList<Organization> organizationL = new ArrayList<Organization>();
+		if (user!=null) {
+		if  (user.getRole().toString().equals("superAdmin")){
+			return r.organizationList;
+		}
+		else {
+			String org = user.getOrganization();
+			if (r.organizations.get(org)!=null) {
+				organizationL.add(r.organizations.get(org));
+			}}
+		}
+		return organizationL;
 	}
 	private static ArrayList<SendVMO> loadVMOUser(User user) {
 		ArrayList<SendVMO> data = new ArrayList<SendVMO>();
@@ -952,6 +1053,4 @@ public class Main {
 		}
 		return data;
 	}
-
-
 }

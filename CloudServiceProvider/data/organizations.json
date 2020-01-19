@@ -4,7 +4,8 @@
     "caption": "micCaption",
     "logo": "logoMic",
     "users": [
-      "poparic@gmail.com"
+      "poparic@gmail.com",
+      "nnn"
     ],
     "resources": [
       "JAVA-VM",
@@ -12,21 +13,31 @@
     ]
   },
   {
+    "name": "Oracle",
+    "caption": "opisOrac",
+    "logo": "IMG-20180203-WA0005.jpg",
+    "users": [],
+    "resources": []
+  },
+  {
     "name": "IOS",
     "caption": "opisIOS",
     "logo": "logoIOS",
     "users": [
-      "trajkovic@gmail.com"
+      "trajkovic@gmail.com",
+      "k1"
     ],
     "resources": [
       "JAVA-VM"
     ]
   },
   {
-    "name": "Oracle",
-    "caption": "opisOrac",
-    "logo": "IMG-20180203-WA0005.jpg",
-    "users": [],
+    "name": "ORG1",
+    "caption": "caption",
+    "logo": "logo",
+    "users": [
+      "LEGO"
+    ],
     "resources": []
   }
 ]

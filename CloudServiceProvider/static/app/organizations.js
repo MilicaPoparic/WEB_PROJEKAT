@@ -13,7 +13,6 @@ Vue.component("organization", {
 		<th>Name</th>
 		<th>Caption</th>
 		<th>Logo</th>
-		<th>&nbsp;</th>
 	</tr>
 		
 	<tr v-for="o in organizations">
@@ -28,9 +27,7 @@ Vue.component("organization", {
 `,
 	methods : {
 		addOrg : function() {
-			axios
-		      .post('rest/requestAddOrg')
-		      .then(response => location.href = '#/addOrg');
+			location.href = '#/addOrg'
 		},
 		showDetails : function(o) {
 			axios

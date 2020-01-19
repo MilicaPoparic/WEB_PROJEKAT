@@ -11,6 +11,10 @@ const Drives = { template: '<drive></drive>' }
 const AddDrive ={template: '<addDr></addDr>'}
 const DetailDrive ={template: '<detailDr></detailDr>'}
 const searchDrive ={template: '<searchDr></searchDr>'}
+const Users = {template: '<users></users>'}
+const AddUser = {template: '<add-user></add-user>'}
+const ChangeUser = {template: '<change-user></change-user>'}
+const Profile = {template: '<profile-info></profile-info>'}
 
 const router = new VueRouter({
 	  mode: 'hash',
@@ -27,7 +31,11 @@ const router = new VueRouter({
 	    { path: '/drives', component: Drives},
 	    { path: '/ad', component: AddDrive},
 	    { path: '/detailDrive', component: DetailDrive},
-	    { path: '/resultSearchingDrive', component: searchDrive}
+	    { path: '/resultSearchingDrive', component: searchDrive},
+	    { path: '/users', component: Users},
+	    { path: '/addUser', component: AddUser},
+	    { path: '/changeUser', component: ChangeUser},
+	    { path: '/profile', component: Profile}
 	  ]
 });
 

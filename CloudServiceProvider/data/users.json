@@ -8,26 +8,66 @@
     "password": "sifra1"
   },
   {
+    "email": "korisnik@gmail.com",
+    "name": "milica",
+    "surname": "poparic",
+    "nameORG": "Microsoft",
+    "role": "admin",
+    "password": "a"
+  },
+  {
     "email": "poparic@gmail.com",
     "name": "milica",
     "surname": "poparic",
     "nameORG": "Microsoft",
     "role": "admin",
-    "password": "sifra2"
+    "password": "a"
   },
   {
-    "email": "korisnik@gmail.com",
-    "name": "joca",
-    "surname": "jovic",
-    "nameORG": "Oracle",
+    "email": "k1",
+    "name": "SENIDA",
+    "surname": "k1",
+    "nameORG": "IOS",
     "role": "user",
-    "password": "sifra3"
+    "password": "k1"
+  },
+  {
+    "email": "novi",
+    "name": "n",
+    "surname": "n",
+    "nameORG": "ORG1",
+    "role": "user",
+    "password": "n"
+  },
+  {
+    "email": "nnn",
+    "name": "n",
+    "surname": "n",
+    "nameORG": "Microsoft",
+    "role": "user",
+    "password": "n"
+  },
+  {
+    "email": "mile",
+    "name": "cile",
+    "surname": "j",
+    "nameORG": "ORG1",
+    "role": "admin",
+    "password": "j"
   },
   {
     "email": "admin",
-    "name": "",
-    "surname": "",
+    "name": "BORKO",
+    "surname": "MACAN",
     "role": "superAdmin",
     "password": "admin"
+  },
+  {
+    "email": "LEGO",
+    "name": "GEGO",
+    "surname": "THCF",
+    "nameORG": "ORG1",
+    "role": "user",
+    "password": "AGJAWR"
   }
 ]

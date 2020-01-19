@@ -37,19 +37,18 @@ Vue.component("home-page", {
 	</p>
 	 
 	<button v-on:click="dodajVM()">Add new vm</button>
+	<a href="#/profile">Profile</a>
+	<a href="#/drives" @click="drivess()">Drives</a>
 	<a href="#/o" v-if="role=='superAdmin' || role=='admin'">Organizations</a>
+	<a href="#/users" v-if="role=='superAdmin' || role=='admin'">Users</a>
+	<a href="#/c" v-if="role=='superAdmin'">Categories</a>
 	<button v-on:click="logout">Logout</button>
-	<button v-if="role=='superAdmin'" v-on:click="kategorija()">Categories</button>
-	<button v-on:click="drivess()">Drives</button>
+	
+	
 </div>		  
 `
 	, 
 	methods : {
-		kategorija: function(){
-			axios
-		      .post('rest/category', "")
-		      .then(response => location.href = '#/c');
-		},
 		research : function() {
 			alert("Treba da implementiramo pocetnu stranicu!");
 		},
@@ -63,12 +62,6 @@ Vue.component("home-page", {
 			axios
 		      .post('rest/logout', "nesto")
 		      .then(response => location.href = '#/');
-
-		},
-		drivess : function() {
-			axios
-		      .post('rest/viewDrives', "")
-		      .then(response => location.href = '#/drives');
 
 		}
 	},

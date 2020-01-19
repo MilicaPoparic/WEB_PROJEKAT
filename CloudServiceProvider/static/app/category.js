@@ -35,9 +35,7 @@ Vue.component("categ",{
 	,
 	methods:{
 		addCategory:function(){
-			axios
-		      .post('rest/addCategory', "")
-		      .then(response => location.href = '#/ac');
+			location.href = '#/ac';
 		},
 		goToDetail:function(category){
 			axios

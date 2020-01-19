@@ -113,9 +113,7 @@ Vue.component("drive",{
 			
 		},
 		addDrive: function(){
-			axios
-		      .post('rest/addDrive', "")
-		      .then(response => location.href = '#/ad');
+			location.href = '#/ad';
 		},
 	    goToDetail:function(d){
 			axios
