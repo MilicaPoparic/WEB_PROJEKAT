@@ -5,11 +5,12 @@
     "logo": "logoMic",
     "users": [
       "poparic@gmail.com",
+      "korisnik@gmail.com",
       "nnn"
     ],
     "resources": [
-      "ORACLE-VM",
-      "JAVA-VM"
+      "D",
+      "WINDOWS10-VM"
     ]
   },
   {
@@ -17,7 +18,10 @@
     "caption": "opisOrac",
     "logo": "IMG-20180203-WA0005.jpg",
     "users": [],
-    "resources": []
+    "resources": [
+      "ORACLE-VM",
+       "F"
+    ]
   },
   {
     "name": "IOS",
@@ -28,7 +32,8 @@
       "k1"
     ],
     "resources": [
-      "JAVA-VM"
+      "JAVA-VM",
+      "C"
     ]
   },
   {
@@ -36,6 +41,8 @@
     "caption": "caption",
     "logo": "logo",
     "users": [
+      "novi",
+      "mile",
       "LEGO"
     ],
     "resources": []

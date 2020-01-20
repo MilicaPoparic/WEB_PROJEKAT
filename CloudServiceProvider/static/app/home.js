@@ -3,7 +3,15 @@ Vue.component("home-page", {
 		return{
 			virtMachines: null,
 			pretraga: "",
-			role: ""
+			role: "",
+			name:'',
+			fromm:'',
+			too:'',
+			fromm1:'',
+			too1:'',
+			fromm2:'',
+			too2:'',
+			error1:''
 		}
 	},
 	template: ` 
@@ -28,10 +36,34 @@ Vue.component("home-page", {
 		</tr>
 	</table>
 	<br>
-	<span>
-		<input type="text" style="width:60px" size="5" v-model="pretraga" name="search">
-		<button v-on:click="research()">Pretrazi</button>
-	</span>
+	Find a VM:
+	
+	<table border="1">
+		<tr>
+			<td> Name: </td>
+			<td><input type="text" v-model="name" name="name"></td>
+		</tr>
+		
+		<tr>
+			<td> Number of CPU: </td>
+			<td><input type="text" style="width:60px" size="5" v-model="fromm" name="fromm">
+			-
+			<input type="text" style="width:60px" size="5" v-model="too" name="too"></td>
+		</tr>
+		<tr>
+		   <td> Number of RAM: </td>
+			<td><input type="text" style="width:60px" size="5" v-model="fromm1" name="fromm1">
+			-
+			<input type="text" style="width:60px" size="5" v-model="too1" name="too1"></td>
+		</tr>
+		<tr>
+			<td> Number of GPU: </td>
+			<td><input type="text" style="width:60px" size="5" v-model="fromm2" name="fromm2">
+			-
+			<input type="text" style="width:60px" size="5" v-model="too2" name="too2"></td>
+		</tr>
+			
+	</table>
 	 <p>
 		<button v-on:click="filter()">Filter</button>
 	</p>
@@ -49,11 +81,45 @@ Vue.component("home-page", {
 `
 	, 
 	methods : {
-		research : function() {
-			alert("Treba da implementiramo pocetnu stranicu!");
-		},
 		filter : function() {
-			alert("Treba da implementiramo pocetnu stranicu!");
+			if(!this.name && !this.fromm && !this.too && !this.fromm1 && !this.too1  && !this.fromm2 && !this.too2){
+				alert("Unesite parametre pretrage");
+			}
+			else{
+				if(!this.name){
+					this.name="null";
+				}if(!this.fromm){
+					this.fromm=0;
+				}if(!this.too){
+					this.too=0;
+				}
+				if(!this.fromm1){
+					this.fromm1=0;
+				}if(!this.too1){
+					this.too1=0;
+				}
+				if(!this.fromm2){
+					this.fromm2=0;
+				}if(!this.too2){
+					this.too2=0;
+				}
+				let vm ={
+					"name":this.name, "fromm":this.fromm, "too":this.too,"fromm1":this.fromm1, "too1":this.too1,"fromm2":this.fromm2,
+					"too2":this.too2
+				}
+				axios
+			      .post('rest/filterVM', vm)
+			      .then((response) => {
+			    	  if(response.status == 200) {
+			    		  this.error1 ='';
+			    		  location.href = '#/searchV';
+			    	  }
+			      })
+			      .catch((response)=>{
+			    	  this.error1 ='No result of searching!';
+			      })
+			    
+			}
 		},
 		dodajVM : function() {
 			alert("Treba da implementiramo pocetnu stranicu!");

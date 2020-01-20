@@ -2,23 +2,23 @@
   {
     "name": "ORACLE-VM",
     "category": {
-      "name": "kateg4",
-      "coreNumber": 3,
-      "RAM": 4,
-      "GPUcores": 5
+      "name": "kategorija1",
+      "coreNumber": 40,
+      "RAM": 32,
+      "GPUcores": 4
     },
     "drives": [
-      "D"
+      "F"
     ],
     "activityLog": []
   },
   {
     "name": "WINDOWS10-VM",
     "category": {
-      "name": "kaguhurh434835834n",
-      "coreNumber": 40,
-      "RAM": 32,
-      "GPUcores": 4
+      "name": "kategorija2",
+      "coreNumber": 3,
+      "RAM": 4,
+      "GPUcores": 5
     },
     "drives": [],
     "activityLog": []
@@ -26,7 +26,7 @@
   {
     "name": "JAVA-VM",
     "category": {
-      "name": "sadjasjda",
+      "name": "kategorija3",
       "coreNumber": 4,
       "RAM": 3,
       "GPUcores": 4

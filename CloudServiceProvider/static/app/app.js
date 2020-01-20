@@ -16,6 +16,7 @@ const AddUser = {template: '<add-user></add-user>'}
 const ChangeUser = {template: '<change-user></change-user>'}
 const Profile = {template: '<profile-info></profile-info>'}
 const ChangeVm = { template: '<change-vm></change-vm>' }
+const searchVM= {template: '<search-vm></search-vm>'}
 
 const router = new VueRouter({
 	  mode: 'hash',
@@ -37,7 +38,8 @@ const router = new VueRouter({
 	    { path: '/addUser', component: AddUser},
 	    { path: '/changeUser', component: ChangeUser},
 	    { path: '/profile', component: Profile},
-	    { path: '/changeVM', component: ChangeVm}
+	    { path: '/changeVM', component: ChangeVm},
+	    { path: '/searchV', component: searchVM}
 	  ]
 });
 

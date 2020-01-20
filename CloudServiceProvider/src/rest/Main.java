@@ -30,6 +30,7 @@ import beans.cloudprovider.Reader;
 import beans.cloudprovider.SendVMO;
 import beans.cloudprovider.User;
 import beans.cloudprovider.UserToLog;
+import beans.cloudprovider.VMFilter;
 import beans.cloudprovider.VirtualMachine;
 import spark.Session;
 import ws.WsHandler;
@@ -45,7 +46,9 @@ public class Main {
 	private static User u = new User();
 	private static SendVMO  v = new SendVMO ();
 	private static ArrayList<Drive>  retDrive = new ArrayList<Drive>();
-
+	private static ArrayList<VirtualMachine> retVMs = new ArrayList<VirtualMachine>();
+	private static ArrayList<VirtualMachine> retVMHelper;
+	
 	private static void writeToFiles(ArrayList<Object> listForWrite, String string) throws IOException {
 		String json = gson.toJson(listForWrite);
 		FileWriter file = new FileWriter(string);
@@ -213,7 +216,26 @@ public class Main {
 			res.type("application/json");
 			return g.toJson(retDrive);
 		});
-	
+		
+		get("/rest/getSearchVMS", (req,res)-> {
+			res.type("application/json");
+			User user = req.session().attribute("user");
+			ArrayList<SendVMO> listOfVMO =null;
+			if (user!=null) {
+				if (user.getRole().toString().equals("user")) {
+					listOfVMO = loadVMOSUser(user);
+				}
+				else if  (user.getRole().toString().equals("superAdmin")){
+					listOfVMO = loadVMOS();
+					
+				}
+				else {
+					listOfVMO = loadVMOSUser(user);
+					
+				}
+			}
+			return g.toJson(listOfVMO);
+		});
 		
 		post("/rest/login", (req, res) -> {
 			res.type("application/json");
@@ -604,7 +626,372 @@ public class Main {
 			}
 			return ("OK");
 		});
+		post("/rest/filterVM", (req, res) -> {
+			res.type("application/json");
+			System.out.println(req.body());
+			VMFilter filter = gson.fromJson(req.body(), VMFilter.class);
+			retVMs = checkParamSearch(filter);	
+			if(!retVMs.isEmpty()) {
+				res.status(200);
+				
+			}else{
+				res.status(400);
+			}
+			return ("OK");
+		});
+		post("/rest/viewVirt", (req, res) -> {
+			res.type("application/json");
+			return ("OK");
+		});
+		post("/rest/viewDrives", (req, res) -> {
+			res.type("application/json");
+			return ("OK");
+		});
 		
+	}
+	private static ArrayList<SendVMO> loadVMOSUser(User user) {
+		ArrayList<SendVMO> data = new ArrayList<SendVMO>();
+		ArrayList<VirtualMachine> machines = new ArrayList<VirtualMachine>();
+		String organization = r.users.get(user.getEmail()).getOrganization();
+		for (String resource : r.organizations.get(organization).getResources()) {
+			for (VirtualMachine vm : retVMs) {
+				if (vm.getName().equals(resource)) {
+					machines.add(vm);
+				}
+			}
+		}
+		for (VirtualMachine vm : machines) {
+			SendVMO sendData = new SendVMO(vm.getName(),vm.getCategory().getCoreNumber(), vm.getCategory().getRAM(),vm.getCategory().getGPUcores(),organization);
+			data.add(sendData);
+		}
+		return data;
+	}
+
+	private static ArrayList<SendVMO> loadVMOS() {
+		ArrayList<SendVMO> listOfVMO = new ArrayList<SendVMO>();
+		for(VirtualMachine vm : retVMs) {
+			SendVMO sv = new SendVMO();
+			int i = 0;
+			sv.setCategoryCoreNumber(vm.getCategory().getCoreNumber());
+			sv.setCategoryGPU(vm.getCategory().getGPUcores());
+			sv.setCategoryRAM(vm.getCategory().getRAM());
+			sv.setNameVM(vm.getName());
+			
+			for(Organization os : r.organizations.values()) {
+				if (os.getResources()!=null) {
+					if(os.getResources().contains(vm.getName()))
+					{
+						i++;
+						sv.setNameORG(os.getName());
+						break;
+					}
+				}
+			}
+			if(i ==0) {
+				sv.setNameORG("Nema organizaciju");
+			}
+			listOfVMO.add(sv);		
+		}
+		return listOfVMO;
+	}
+
+	private static ArrayList<VirtualMachine> checkParamSearch(VMFilter filter) {
+		retVMHelper = new ArrayList<VirtualMachine>();
+		int ind = 0;
+		int ind1 = 0;
+		int ind2 = 0;
+		int ind3 = 0;
+		int ind4 =0;
+		int ind5 =0;
+		int ind6 =0;
+		boolean  validation = false;
+		if(!emptySearch(filter)) {
+			
+			if(!filter.name.equals("null")) {
+				ind = checkVMName(filter.name);
+			}
+
+			if(ind==0 && filter.fromm!=0) {
+				ind1 = checkVMFromEmpty(filter.fromm);
+			}
+			if(ind == 1 && filter.fromm!=0) {
+				System.out.println("dalje");
+				ind1 = checkVMFrom(filter.fromm);
+			}
+			validation = (ind==0 && ind1==1) || (ind==1 && ind1==0) ||(ind==1 && ind1==1);
+						
+			if(validation && filter.too!=0) {//vec nesto filtrirao
+				
+				ind2 = checkVMTo(filter.too);
+			}
+			validation = (ind==0 && ind1==0); 
+
+			if(validation && filter.too!=0) {//znaci ovo je prvi filter
+		
+				ind2 = checkVMToEmpty(filter.too);
+			}
+			
+			validation = ((ind==0 && ind1==1) || (ind==1 && ind1==0) ||(ind==1 && ind1==1)) || ind2==1;
+			
+			if(validation && filter.fromm1!=0) {
+				ind3 = checkVMFrom1(filter.fromm1);
+			}
+			validation = (ind==0 && ind1==0 && ind2==0);
+			
+			if(validation && filter.fromm1!=0) {
+				ind3 = checkVMFrom1Empty(filter.fromm1); 
+			}
+		
+			validation = ((ind==0 && ind1==1) || (ind==1 && ind1==0) ||(ind==1 && ind1==1)) || ind2==1 || ind3==1;
+			
+			if(validation && filter.too1!=0) {
+				ind4 = checkVMTo1(filter.too1);
+			}
+			validation = (ind==0 && ind1==0 && ind2==0 && ind3 ==0); 
+			
+			if(validation && filter.too1!=0) {
+				ind4 = checkVMTo1Empty(filter.too1); 
+			}
+			
+			validation = ((ind==0 && ind1==1) || (ind==1 && ind1==0) ||(ind==1 && ind1==1)) || ind2==1 || ind3==1 || ind4 ==1;
+			
+			if(validation && filter.fromm2!=0) {
+				ind5= checkVMFrom2(filter.fromm2);
+			}
+			validation = (ind==0 && ind1==0 && ind2==0 && ind3 ==0 && ind4 ==0); 
+			
+			if(validation && filter.fromm2!=0) {
+				ind5 = checkVMFrom2Empty(filter.fromm2); 
+			}
+						
+			validation = ((ind==0 && ind1==1) || (ind==1 && ind1==0) ||(ind==1 && ind1==1)) || ind2==1 
+					|| ind3==1 || ind4 ==1 || ind5==1;
+			
+			if(validation && filter.too2!=0) {
+				checkVMToo2(filter.too2);
+			}
+			validation = (ind==0 && ind1==0 && ind2==0 && ind3 ==0 && ind4 ==0 && ind5 ==0); 
+			
+			if(validation && filter.too2!=0) {
+				 checkVMToo2Empty(filter.too2); 
+			}
+		}
+		
+		return retVMHelper;
+	}
+
+	private static void checkVMToo2Empty(int too2) {
+		for(VirtualMachine vm : r.virtMachines.values()) 
+		{
+			if(vm.getCategory().getGPUcores() <= too2)
+			{
+				retVMHelper.add(vm);
+			}
+		}		
+	}
+
+	private static void checkVMToo2(int too2) {
+		ArrayList<VirtualMachine> satisfiedConditions= new ArrayList<VirtualMachine>();
+		for(VirtualMachine vm : new ArrayList<VirtualMachine>(retVMHelper)) 
+		{
+			if(vm.getCategory().getGPUcores()<= too2)
+			{
+				satisfiedConditions.add(vm);
+			}
+		}
+		retVMHelper.clear();  //svakako ocisti
+		if(!satisfiedConditions.isEmpty()) {
+			retVMHelper = satisfiedConditions;
+		}	
+	}
+
+	private static int checkVMFrom2Empty(int fromm2) {
+		boolean ind =false;
+		for(VirtualMachine vm : r.virtMachines.values()) 
+		{
+			if(vm.getCategory().getGPUcores() >= fromm2)
+			{
+				retVMHelper.add(vm);
+				ind = true;
+			}
+		}
+		if(ind) {
+			return 1;
+		}
+		return 2;           //usao i nije nasao
+	}
+
+	private static int checkVMFrom2(int fromm2) {
+		ArrayList<VirtualMachine> satisfiedConditions= new ArrayList<VirtualMachine>();
+		for(VirtualMachine vm : new ArrayList<VirtualMachine>(retVMHelper)) 
+		{
+			if(vm.getCategory().getGPUcores()>= fromm2)
+			{
+				satisfiedConditions.add(vm);
+			}
+		}
+		retVMHelper.clear();  //svakako ocisti
+		if(satisfiedConditions.isEmpty()) {
+			return 2;
+		}
+		retVMHelper = satisfiedConditions;
+		return 1;
+	}
+
+	private static int checkVMTo1Empty(int too1) {
+		boolean ind =false;
+		for(VirtualMachine vm : r.virtMachines.values()) 
+		{
+			if(vm.getCategory().getRAM() <= too1)
+			{
+				retVMHelper.add(vm);
+				ind =true;
+			}
+		}
+		if(ind) {
+			return 1;
+		}
+		return 2;           //usao i nije nasao
+	}
+
+	private static int checkVMTo1(int too1) {
+		ArrayList<VirtualMachine> satisfiedConditions= new ArrayList<VirtualMachine>();
+		for(VirtualMachine vm : new ArrayList<VirtualMachine>(retVMHelper)) 
+		{
+			if(vm.getCategory().getRAM()<= too1)
+			{
+				satisfiedConditions.add(vm);
+			}
+		}
+		retVMHelper.clear();  //svakako ocisti
+		if(satisfiedConditions.isEmpty()) {
+			return 2;
+		}
+		retVMHelper = satisfiedConditions;
+		return 1;
+	
+	}
+
+	private static int checkVMFrom1Empty(int fromm1) {
+		boolean ind =false;
+		for(VirtualMachine vm : r.virtMachines.values()) 
+		{
+			if(vm.getCategory().getRAM() >= fromm1)
+			{
+				retVMHelper.add(vm);
+				ind =true;
+			}
+		}
+		if(ind) {
+			return 1;
+		}
+		return 2;           //usao i nije nasao
+	}
+
+	private static int checkVMFrom1(int fromm1) {
+		ArrayList<VirtualMachine> satisfiedConditions= new ArrayList<VirtualMachine>();
+		for(VirtualMachine vm : new ArrayList<VirtualMachine>(retVMHelper)) 
+		{
+			if(vm.getCategory().getRAM()>= fromm1)
+			{
+				satisfiedConditions.add(vm);
+			}
+		}
+		retVMHelper.clear();  //svakako ocisti
+		if(satisfiedConditions.isEmpty()) {
+			return 2;
+		}
+		retVMHelper = satisfiedConditions;
+		return 1;
+	}
+
+	private static int checkVMToEmpty(int too) {
+		boolean ind =false;
+		for(VirtualMachine vm : r.virtMachines.values()) 
+		{
+			if(vm.getCategory().getCoreNumber() <= too)
+			{
+				retVMHelper.add(vm);
+				ind =true;
+			}
+		}
+		if(ind) {
+			return 1;
+		}
+		return 2;           //usao i nije nasao
+	}
+
+	private static int checkVMTo(int too) {
+		ArrayList<VirtualMachine> satisfiedConditions= new ArrayList<VirtualMachine>();
+		for(VirtualMachine vm :new ArrayList<VirtualMachine>(retVMHelper)) 
+		{
+			if(vm.getCategory().getCoreNumber()<= too)
+			{
+				satisfiedConditions.add(vm);
+			}
+		}
+		retVMHelper.clear();  //svakako ocisti
+		if(satisfiedConditions.isEmpty()) {
+			return 2;
+		}
+		retVMHelper = satisfiedConditions;
+		return 1;
+	}
+
+	private static int checkVMFrom(int fromm) {
+		boolean ind =false;
+		for(VirtualMachine vm : new ArrayList<VirtualMachine>(retVMHelper)) 
+		{
+			if(vm.getCategory().getCoreNumber()>=fromm)
+			{
+				ind =true;
+			}
+		}
+		if(ind) {
+			return 1;
+		}
+		retVMHelper.clear();  //zato sto je naziv vm jedinstven i ne moze naci vise od jedne
+		return 2;           //usao i nije nasao
+	}
+
+	private static int  checkVMFromEmpty(int fromm) {
+		boolean ind =false;
+		for(VirtualMachine vm : r.virtMachines.values()) 
+		{
+			if(vm.getCategory().getCoreNumber() >= fromm)
+			{
+				retVMHelper.add(vm);
+				ind =true;
+			}
+		}
+		if(ind) {
+			return 1;    //usao i nasao
+		}
+		return 2;           //usao i nije nasao
+	}
+
+	private static int checkVMName(String name) {
+		
+		for(VirtualMachine vm : r.virtMachines.values()) 
+		{
+			if(vm.getName().equalsIgnoreCase(name))
+			{
+				retVMHelper.add(vm);
+				return 1;    //usao i nasao
+			}
+		}
+		return 2;            //usao i nije nasao
+	}
+
+	private static boolean emptySearch(VMFilter filter) {
+		
+		boolean validation =filter.too == 0 && filter.fromm == 0;
+		boolean validation1 =filter.too1 == 0 && filter.fromm1 == 0 && validation;
+		boolean validation2 =filter.too2 == 0 && filter.fromm2 == 0 && validation1;
+		if(filter.name.equals(null)&&validation2) {
+			return true;
+		}
+		return false;
 	}
 	private static void refreshFiles() throws IOException {
 		writeToFiles((ArrayList<Object>)(Object) r.userList, "./data/users.json");

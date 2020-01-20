@@ -10,5 +10,11 @@
     "driveType": "HDD",
     "capacity": 512,
     "nameVM": "ORACLE-VM"
+  },
+  {
+    "name": "F",
+    "driveType": "HDD",
+    "capacity": 256,
+    "nameVM": "WINDOWS10-VM"
   }
 ]
