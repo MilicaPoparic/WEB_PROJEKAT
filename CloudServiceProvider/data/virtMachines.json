@@ -1,18 +1,5 @@
 [
   {
-    "name": "JAVA-VM",
-    "category": {
-      "name": "sadjasjda",
-      "coreNumber": 4,
-      "RAM": 3,
-      "GPUcores": 4
-    },
-    "drives": [
-      "C"
-    ],
-    "activityLog": []
-  },
-  {
     "name": "ORACLE-VM",
     "category": {
       "name": "kateg4",
@@ -34,6 +21,20 @@
       "GPUcores": 4
     },
     "drives": [],
+    "activityLog": []
+  },
+  {
+    "name": "JAVA-VM",
+    "category": {
+      "name": "sadjasjda",
+      "coreNumber": 4,
+      "RAM": 3,
+      "GPUcores": 4
+    },
+    "drives": [
+      "C",
+      "D"
+    ],
     "activityLog": []
   }
 ]

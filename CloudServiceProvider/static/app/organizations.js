@@ -16,7 +16,7 @@ Vue.component("organization", {
 	</tr>
 		
 	<tr v-for="o in organizations">
-		<td>><a href="#" v-on:click="showDetails(o)">{{o.name}}</a></td>
+		<td><a href="#" v-on:click="showDetails(o)">{{o.name}}</a></td>
 		<td>{{o.caption}}</td>
 		<td><img src="{{o.logo}}" alt="Logo" height=5 width=5></td>	
 	</tr>

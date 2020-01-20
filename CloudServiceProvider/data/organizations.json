@@ -8,8 +8,8 @@
       "nnn"
     ],
     "resources": [
-      "JAVA-VM",
-      "ORACLE-VM"
+      "ORACLE-VM",
+      "JAVA-VM"
     ]
   },
   {

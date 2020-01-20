@@ -1,0 +1,14 @@
+[
+  {
+    "name": "C",
+    "driveType": "SSD",
+    "capacity": 256,
+    "nameVM": "JAVA"
+  },
+  {
+    "name": "D",
+    "driveType": "HDD",
+    "capacity": 512,
+    "nameVM": "ORACLE-VM"
+  }
+]

@@ -43,6 +43,7 @@ public class Main {
 	private static Organization o = new Organization();
 	private static Drive d = new Drive();
 	private static User u = new User();
+	private static SendVMO  v = new SendVMO ();
 	private static ArrayList<Drive>  retDrive = new ArrayList<Drive>();
 
 	private static void writeToFiles(ArrayList<Object> listForWrite, String string) throws IOException {
@@ -185,6 +186,10 @@ public class Main {
 			res.type("application/json");
 			return g.toJson(d);	
 		});
+		get("rest/getVM", (req,res)-> {
+			res.type("application/json");
+			return g.toJson(v);	
+		});
 		
 		get("/rest/getDVM", (req,res)-> {
 			res.type("application/json");
@@ -241,6 +246,15 @@ public class Main {
 			return ("OK");
 		});
 		
+		post("/rest/captureVM", (req,res)-> {
+			res.type("application/json");
+			SendVMO checkMe = g.fromJson(req.body(), SendVMO.class);
+			if (checkMe !=null) {
+				v = checkMe;
+			}
+			return ("OK");
+		});
+		
 		post("/rest/captureUser", (req,res)-> {
 			res.type("application/json");
 			User catchMe = g.fromJson(req.body(), User.class);
@@ -283,6 +297,29 @@ public class Main {
 			return ("OK");
 		});
 		
+		post("/rest/changeVM", (req,res)-> {
+			res.type("application/json");
+			SendVMO vm = gson.fromJson(req.body(),SendVMO.class);
+			if (!v.getNameVM().equals(vm.getNameVM()) && r.virtMachines.get(vm.getNameVM())==null) {
+				VirtualMachine old = r.virtMachines.get(v.getNameVM());
+				VirtualMachine virtual = r.virtMachines.get(v.getNameVM());
+				virtual.setName(vm.getNameVM());
+				manageListsVM(old, true);
+				manageListsVM(virtual, false);
+				changeDrivesVM(v.getNameVM(), vm.getNameVM());
+				changeOrgVM(v, vm);
+				writeDependencies();
+				//v.setNameVM(vm.getNameVM()); 
+				//System.out.println(v.getNameVM());
+				res.status(200);
+				return ("OK");
+			}
+			if (!v.getNameVM().equals(vm.getNameVM()) && r.virtMachines.get(vm.getNameVM())!=null) {
+				res.status(400);
+				return ("OK");
+			}
+			return ("OK");
+		});
 		post("/rest/changeOrg", (req,res)-> {
 			res.type("application/json");
 			Organization org = g.fromJson(req.body(), Organization.class);
@@ -573,7 +610,41 @@ public class Main {
 		writeToFiles((ArrayList<Object>)(Object) r.userList, "./data/users.json");
 		writeToFiles((ArrayList<Object>)(Object) r.organizationList, "./data/organizations.json");
 	}
-
+	
+	public static void writeDependencies() throws IOException {
+		writeToFiles((ArrayList<Object>)(Object) r.virtMachineList, "./data/virtMachines.json");
+		writeToFiles((ArrayList<Object>)(Object) r.driveList, "./data/disc.json");
+		writeToFiles((ArrayList<Object>)(Object) r.organizationList, "./data/organizations.json");
+		
+	}
+	//cisti listu diskova u zavisnosti od prmene vm
+	private static void changeDrivesVM(String v, String vm) {
+		for (Drive d : r.drives.values()) {
+			if (d.getVirtualMachine().equals(v)) {
+				
+				d.setVirtualMachine(vm);
+			}
+		}
+		for (Drive d : r.driveList){
+			if (d.getVirtualMachine().equals(v)) {
+				d.setVirtualMachine(vm);
+			}
+		}
+	}
+	private static void changeOrgVM(SendVMO v,SendVMO vm) {
+		if (r.organizations.get(vm.getNameORG())!=null) {
+			if (r.organizations.get(vm.getNameORG()).getResources().contains(v.getNameVM())) {
+				r.organizations.get(vm.getNameORG()).getResources().remove(v.getNameVM());
+				r.organizations.get(vm.getNameORG()).getResources().add(vm.getNameVM());
+			}
+			for (Organization organ: r.organizationList) {
+				if (organ.getResources().contains(v.getNameVM())) {
+					organ.getResources().remove(v.getNameVM());
+					organ.getResources().add(vm.getNameVM());
+				}
+			}
+			}
+	}
 	private static ArrayList<Drive> checkParamSearch(DriveSearch retDrive) {
 		ArrayList<Drive>  ret = new ArrayList<Drive>();
 		boolean indikator = false;
@@ -668,6 +739,20 @@ public class Main {
 		r.organizationList.add(o);
 		r.organizations.put(o.getName(), o);
 		
+	}
+	
+
+	private static void manageListsVM(VirtualMachine v, Boolean remove)  {
+		if (remove) {
+			r.virtMachines.remove(v.getName(),v);
+			for (String k: r.virtMachines.keySet()) {
+				System.out.println(k);
+			}
+			r.virtMachineList.remove(v);
+			return;
+		}
+		r.virtMachines.put(v.getName(),v);
+		r.virtMachineList.add(v);
 	}
 	private static void troughtDiscType(ArrayList<Drive> ret, String check1) {
 		for (Drive drive : new ArrayList<Drive>(ret)) {
@@ -986,15 +1071,16 @@ public class Main {
 			sv.setCategoryGPU(vm.getCategory().getGPUcores());
 			sv.setCategoryRAM(vm.getCategory().getRAM());
 			sv.setNameVM(vm.getName());
+			sv.setActivityLog(vm.getActivityLog());
+			sv.setCategory(vm.getCategory().getName());
+			sv.setDrives(vm.getDrives());
 			
 			for(Organization os : r.organizations.values()) {
-				if (os.getResources()!=null) {
-					if(os.getResources().contains(vm.getName()))
-					{
-						i++;
-						sv.setNameORG(os.getName());
-						break;
-					}
+				if(os.getResources().contains(vm.getName()))
+				{
+					i++;
+					sv.setNameORG(os.getName());
+					break;
 				}
 			}
 			if(i ==0) {
@@ -1037,7 +1123,6 @@ public class Main {
 	}
 	private static ArrayList<SendVMO> loadVMOUser(User user) {
 		ArrayList<SendVMO> data = new ArrayList<SendVMO>();
-		//prvo mi treba organizacija kojoj pripada!
 		ArrayList<VirtualMachine> machines = new ArrayList<VirtualMachine>();
 		String organization = r.users.get(user.getEmail()).getOrganization();
 		for (String resource : r.organizations.get(organization).getResources()) {
@@ -1048,7 +1133,7 @@ public class Main {
 			}
 		}
 		for (VirtualMachine vm : machines) {
-			SendVMO sendData = new SendVMO(vm.getName(),vm.getCategory().getCoreNumber(), vm.getCategory().getRAM(),vm.getCategory().getGPUcores(),organization);
+			SendVMO sendData = new SendVMO(vm.getName(),vm.getCategory().getName(), vm.getCategory().getCoreNumber(), vm.getCategory().getRAM(),vm.getCategory().getGPUcores(),organization, vm.getActivityLog(), vm.getDrives());
 			data.add(sendData);
 		}
 		return data;

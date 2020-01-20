@@ -20,7 +20,7 @@ Vue.component("home-page", {
 		</tr>
 		
 		<tr v-for="m in virtMachines">
-			<td>{{m.nameVM }}</td>
+			<td><a href="#" v-on:click="showDetails(m)">{{m.nameVM}}</a></td>
 			<td>{{m.categoryCoreNumber}}</td>
 			<td>{{m.categoryRAM}}</td>
 			<td>{{m.categoryGPU}}</td>
@@ -63,7 +63,13 @@ Vue.component("home-page", {
 		      .post('rest/logout', "nesto")
 		      .then(response => location.href = '#/');
 
+		},
+		showDetails : function(m) {
+			axios
+		      .post('rest/captureVM', m)
+		      .then(response => location.href = '#/changeVM');
 		}
+		
 	},
 	mounted () {
         axios
