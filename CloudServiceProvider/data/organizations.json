@@ -1,5 +1,19 @@
 [
   {
+    "name": "ORG1",
+    "caption": "caption",
+    "logo": "logo",
+    "users": [
+      "novi",
+      "mile",
+      "LEGO"
+    ],
+    "resources": [
+      "pomocni",
+      "pomocni2"
+    ]
+  },
+  {
     "name": "Microsoft",
     "caption": "micCaption",
     "logo": "logoMic",
@@ -20,7 +34,7 @@
     "users": [],
     "resources": [
       "ORACLE-VM",
-       "F"
+      "F"
     ]
   },
   {
@@ -35,16 +49,5 @@
       "JAVA-VM",
       "C"
     ]
-  },
-  {
-    "name": "ORG1",
-    "caption": "caption",
-    "logo": "logo",
-    "users": [
-      "novi",
-      "mile",
-      "LEGO"
-    ],
-    "resources": []
   }
 ]

@@ -68,7 +68,7 @@ Vue.component("home-page", {
 		<button v-on:click="filter()">Filter</button>
 	</p>
 	 
-	<button v-on:click="dodajVM()">Add new vm</button>
+	<button v-on:click="dodajVM()" v-if="role!='user'">Add new vm</button>
 	<a href="#/profile">Profile</a>
 	<a href="#/drives" @click="drivess()">Drives</a>
 	<a href="#/o" v-if="role=='superAdmin' || role=='admin'">Organizations</a>
@@ -122,7 +122,9 @@ Vue.component("home-page", {
 			}
 		},
 		dodajVM : function() {
-			alert("Treba da implementiramo pocetnu stranicu!");
+			axios
+		      .post('rest/addVM', "")
+		      .then(response => location.href = '#/addVM');
 		},
 		logout : function() {
 			axios
@@ -154,7 +156,6 @@ Vue.component("home-page", {
         axios
         .get('rest/getRole')
         .then(response => (this.role = response.data));
-      
         
     },
 

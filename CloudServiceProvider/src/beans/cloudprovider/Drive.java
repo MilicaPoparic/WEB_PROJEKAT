@@ -9,7 +9,13 @@ public class Drive {
 	private String nameVM; //naziv VM
 	
 	public Drive() {}
-
+	public Drive(String name, DriveType driveType, int capacity) {
+		super();
+		this.name = name;
+		this.driveType = driveType;
+		this.capacity = capacity;
+		this.nameVM = null;
+	}
 	public Drive(String name, DriveType driveType, int capacity, String virtualMachines) {
 		super();
 		this.name = name;

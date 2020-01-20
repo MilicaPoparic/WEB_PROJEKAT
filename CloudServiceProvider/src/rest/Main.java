@@ -30,6 +30,7 @@ import beans.cloudprovider.Reader;
 import beans.cloudprovider.SendVMO;
 import beans.cloudprovider.User;
 import beans.cloudprovider.UserToLog;
+import beans.cloudprovider.VMAdd;
 import beans.cloudprovider.VMFilter;
 import beans.cloudprovider.VirtualMachine;
 import spark.Session;
@@ -156,7 +157,7 @@ public class Main {
 			res.type("application/json");
 			return g.toJson(c);
 		});
-		
+		//
 		get("/rest/getDrives", (req,res)-> {
 			res.type("application/json");
 			Session ss = req.session(true);
@@ -235,6 +236,31 @@ public class Main {
 				}
 			}
 			return g.toJson(listOfVMO);
+		});
+		
+		get("/rest/getOrganizationsForVM", (req,res)-> {
+			res.type("application/json");
+			User user = req.session().attribute("user");
+			ArrayList<Organization> arrOrg = new ArrayList<Organization>();
+			if(user!=null) {
+				if(user.getRole().toString().equals("superAdmin")) {
+					return  g.toJson(r.organizationList);
+				}
+				else if(user.getRole().toString().equals("admin")) {
+					return g.toJson(user.getOrganization());
+
+				}
+			}
+			return "OK";
+		});
+		get("/rest/getCategoriesForVM", (req,res)-> {
+			res.type("application/json");
+			return g.toJson(r.categoryList);
+		});
+		get("/rest/getDrivesForVM", (req,res)-> {
+			res.type("application/json");
+			HashMap<String,String> hashDrive = machOrgDrive();	
+			return g.toJson(hashDrive);
 		});
 		
 		post("/rest/login", (req, res) -> {
@@ -647,8 +673,106 @@ public class Main {
 			res.type("application/json");
 			return ("OK");
 		});
+		post("/rest/addVM", (req, res) -> {
+			res.type("application/json");
+			return ("OK");
+		});
+		post("/rest/addNewVM", (req, res) -> {
+			res.type("application/json");
+	        VMAdd newVM = g.fromJson(req.body(), VMAdd.class);
+	        VMAdd vm = checkReqFields(newVM);
+	        if(vm!=null) {
+	        	res.status(200);
+	        	asRefresh(vm);
+	        	return ("OK");
+	        }
+	        res.status(400);
+			return ("OK");
+		});
 		
 	}
+	private static void asRefresh(VMAdd vm) throws IOException {
+		
+		Category cat = r.categories.get(vm.nameC);
+		VirtualMachine v = null;
+		if(vm.nameD.isEmpty()) {
+			 v = new VirtualMachine(vm.name, cat);
+		}else
+		{
+            changeRefVM(vm.nameD,vm.name);
+			v = new VirtualMachine(vm.name, cat,vm.nameD);
+		}
+		addToOrg(vm.nameOrg,vm.name);
+		
+		r.virtMachines.put(vm.name, v);
+		r.virtMachineList.clear();
+		for(VirtualMachine virt: r.virtMachines.values()) {
+			r.virtMachineList.add(virt);
+		}
+		writeToFiles((ArrayList<Object>)(Object) r.virtMachineList, "./data/virtMachines.json");
+		
+	}
+
+	private static void addToOrg(String nameOrg, String name) throws IOException {
+		for(Organization dd: r.organizations.values()) {
+			if(dd.getName().equals(nameOrg)) {
+				dd.getResources().add(name);
+			}
+		}
+		r.organizationList.clear();
+		for(Organization dd: r.organizations.values()) {
+			r.organizationList.add(dd);
+		}
+		writeToFiles((ArrayList<Object>)(Object) r.organizationList, "./data/organizations.json");
+	}
+
+	private static void changeRefVM(ArrayList<String> nameD, String name) throws IOException {
+		for(Drive dd: r.drives.values()) {
+			for(String i : nameD) {
+				if(dd.getName().equals(i)) {
+					dd.setVirtualMachine(name);
+				}
+			}
+		}
+		r.driveList.clear();
+		for(Drive dd: r.drives.values()) {
+			r.driveList.add(dd);
+		}
+		writeToFiles((ArrayList<Object>)(Object) r.driveList, "./data/disc.json");
+	}
+
+	private static VMAdd checkReqFields(VMAdd newVM) {
+		for(String vms : r.virtMachines.keySet()) {
+			if(vms.equalsIgnoreCase(newVM.name))//ukoliko postoji ne moze
+				{
+				   return null;
+				}
+		}
+		for(Drive dd: r.drives.values()) {
+			if(dd.getName().equalsIgnoreCase(newVM.name)) {  //ovo ne bi smelo, zato sto su diskovi i vm, resursi
+				return null;
+			}
+			
+		}
+		if(!newVM.name.equals("null") && !newVM.nameC.equals("null")) {
+			return newVM;
+		}
+		return null;
+	}
+
+	private static HashMap<String,String> machOrgDrive() {
+		HashMap<String,String> helpSD = new HashMap<String,String>();
+		for(Organization or: r.organizations.values()){
+			for(Drive driv: r.drives.values()) {
+				if(driv.getVirtualMachine().equals("null") && 
+						or.getResources().contains(driv.getName())) {
+					helpSD.put(driv.getName(),or.getName());
+				}
+			}
+		}
+		return helpSD;
+	}
+
 	private static ArrayList<SendVMO> loadVMOSUser(User user) {
 		ArrayList<SendVMO> data = new ArrayList<SendVMO>();
 		ArrayList<VirtualMachine> machines = new ArrayList<VirtualMachine>();

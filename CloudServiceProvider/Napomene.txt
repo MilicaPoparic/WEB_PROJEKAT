@@ -1,3 +1,216 @@
-1.Istestirati detaljno izmenu kategorije
-2.Disk: filter: kapacitet
-		pretraga za sva 3
+ <option selected=“selected” disabled>No Models Available</option>
+[
+  {
+    "name": "kategorija1",
+    "coreNumber": 40,
+    "RAM": 32,
+    "GPUcores": 4
+  },
+  {
+    "name": "kategorija2",
+    "coreNumber": 3,
+    "RAM": 4,
+    "GPUcores": 5
+  },
+  {
+    "name": "kategorija3",
+    "coreNumber": 4,
+    "RAM": 3,
+    "GPUcores": 4
+  },
+  {
+    "name": "kategorija4",
+    "coreNumber": 3,
+    "RAM": 3,
+    "GPUcores": 3
+  },
+  {
+    "name": "kategorija5",
+    "coreNumber": 4,
+    "RAM": 3,
+    "GPUcores": 2
+  }
+]
+
+[
+  {
+    "name": "C",
+    "driveType": "SSD",
+    "capacity": 256,
+    "nameVM": "JAVA-VM"
+  },
+  {
+    "name": "D",
+    "driveType": "HDD",
+    "capacity": 512,
+    "nameVM": "ORACLE-VM"
+  },
+  {
+    "name": "F",
+    "driveType": "HDD",
+    "capacity": 256,
+    "nameVM": "WINDOWS10-VM"
+  }
+[
+  {
+    "name": "Microsoft",
+    "caption": "micCaption",
+    "logo": "logoMic",
+    "users": [
+      "poparic@gmail.com",
+      "korisnik@gmail.com",
+      "nnn"
+    ],
+    "resources": [
+      "D",
+      "WINDOWS10-VM"
+    ]
+  },
+  {
+    "name": "Oracle",
+    "caption": "opisOrac",
+    "logo": "IMG-20180203-WA0005.jpg",
+    "users": [],
+    "resources": [
+      "ORACLE-VM",
+       "F"
+    ]
+  },
+  {
+    "name": "IOS",
+    "caption": "opisIOS",
+    "logo": "logoIOS",
+    "users": [
+      "trajkovic@gmail.com",
+      "k1"
+    ],
+    "resources": [
+      "JAVA-VM",
+      "C"
+    ]
+  },
+  {
+    "name": "ORG1",
+    "caption": "caption",
+    "logo": "logo",
+    "users": [
+      "novi",
+      "mile",
+      "LEGO"
+    ],
+    "resources": []
+  }
+]
+[
+  {
+    "email": "trajkovic@gmail.com",
+    "name": "andjela",
+    "surname": "trajkovic",
+    "nameORG": "IOS",
+    "role": "user",
+    "password": "sifra1"
+  },
+  {
+    "email": "korisnik@gmail.com",
+    "name": "milica",
+    "surname": "poparic",
+    "nameORG": "Microsoft",
+    "role": "admin",
+    "password": "a"
+  },
+  {
+    "email": "poparic@gmail.com",
+    "name": "milica",
+    "surname": "poparic",
+    "nameORG": "Microsoft",
+    "role": "admin",
+    "password": "a"
+  },
+  {
+    "email": "k1",
+    "name": "SENIDA",
+    "surname": "k1",
+    "nameORG": "IOS",
+    "role": "user",
+    "password": "k1"
+  },
+  {
+    "email": "novi",
+    "name": "n",
+    "surname": "n",
+    "nameORG": "ORG1",
+    "role": "user",
+    "password": "n"
+  },
+  {
+    "email": "nnn",
+    "name": "n",
+    "surname": "n",
+    "nameORG": "Microsoft",
+    "role": "user",
+    "password": "n"
+  },
+  {
+    "email": "mile",
+    "name": "cile",
+    "surname": "j",
+    "nameORG": "ORG1",
+    "role": "admin",
+    "password": "j"
+  },
+  {
+    "email": "admin",
+    "name": "BORKO",
+    "surname": "MACAN",
+    "role": "superAdmin",
+    "password": "admin"
+  },
+  {
+    "email": "LEGO",
+    "name": "GEGO",
+    "surname": "THCF",
+    "nameORG": "ORG1",
+    "role": "user",
+    "password": "AGJAWR"
+  }
+]
+[
+  {
+    "name": "ORACLE-VM",
+    "category": {
+      "name": "kategorija1",
+      "coreNumber": 40,
+      "RAM": 32,
+      "GPUcores": 4
+    },
+    "drives": [
+      "F"
+    ],
+    "activityLog": []
+  },
+  {
+    "name": "WINDOWS10-VM",
+    "category": {
+      "name": "kategorija2",
+      "coreNumber": 3,
+      "RAM": 4,
+      "GPUcores": 5
+    },
+    "drives": [],
+    "activityLog": []
+  },
+  {
+    "name": "JAVA-VM",
+    "category": {
+      "name": "kategorija3",
+      "coreNumber": 4,
+      "RAM": 3,
+      "GPUcores": 4
+    },
+    "drives": [
+      "C",
+      "D"
+    ],
+    "activityLog": []
+  }
+]

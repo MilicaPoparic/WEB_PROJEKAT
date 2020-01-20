@@ -16,5 +16,16 @@
     "driveType": "HDD",
     "capacity": 256,
     "nameVM": "WINDOWS10-VM"
+  },
+  {
+    "name": "pomocni2",
+    "driveType": "HDD",
+    "capacity": 256,
+    "nameVM": "null"
+  },
+  {
+    "name": "pomocni",
+    "capacity": 128,
+    "nameVM": "null"
   }
 ]
