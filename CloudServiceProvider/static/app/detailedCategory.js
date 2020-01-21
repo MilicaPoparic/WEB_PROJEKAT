@@ -75,6 +75,7 @@ Vue.component("detailCateg",{
 		
 		<button v-on:click="change()">Izmeni kategoriju</button> {{error1}}	
 		<br>
+		<br>
 		<button v-on:click="removeCategory()">Obrisi kategoriju</button>{{error2}}
 </div>
 			`
@@ -104,7 +105,6 @@ Vue.component("detailCateg",{
 			      })
 			} 
 			if(!this.numGPU && !this.nameID && !this.numCPU && !this.numRAM ){
-				//false znaci da je prazno
 					axios
 				      .post('rest/category', "")
 				      .then(response => location.href = '#/c');
@@ -112,7 +112,7 @@ Vue.component("detailCateg",{
 		},
 		removeCategory: function(){
 			axios
-		      .post('rest/removeCategory', {"category":this.category})
+		      .post('rest/removeCategory', this.category)
 		      .then((response) => {
 		    	  if(response.status == 200) {
 		    		  this.error2 = '';

@@ -17,9 +17,9 @@
     "name": "ORACLE-VM",
     "category": {
       "name": "kategorija1",
-      "coreNumber": 40,
+      "coreNumber": 23,
       "RAM": 32,
-      "GPUcores": 4
+      "GPUcores": 23
     },
     "drives": [
       "F"

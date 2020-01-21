@@ -11,6 +11,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.jws.soap.SOAPBinding.Use;
 
@@ -446,14 +448,14 @@ public class Main {
 
 		post("/rest/addNewCategory", (req, res) -> {
 			res.type("application/json");
-			String reqData = req.body();
-			CategoryToAdd cat = g.fromJson(reqData, CategoryToAdd.class);
-			Category cc = checkCategory(cat);
-			if(c != null) {
+			Category cat = checkSendDataCateg(req.body());
+			Category cc = null;
+			if(cat !=null) {
+				cc = checkCategory(cat);
+			}
+			if(c != null && cc!=null) {
 				res.status(200);
-				r.categories.put(cc.getName(),cc);
-				r.categoryList.add(cc);
-				writeToFiles((ArrayList<Object>)(Object) r.categoryList, "./data/categories.json"); //automatski refresh
+				refreshCategory(cc);
 			}
 			else {
 				res.status(400);
@@ -462,70 +464,53 @@ public class Main {
 		});
 
 		post("/rest/categoryDetail", (req,res)-> {
+			
 			res.type("application/json");
-			String reqData = req.body();
-			JsonObject jsonObject = new JsonParser().parse(reqData).getAsJsonObject();
-			JsonElement object = (JsonElement) jsonObject.get("category"); 
-			JsonElement nameID = (JsonElement) ((JsonObject) object).get("name"); 
-			JsonElement CPU = (JsonElement) ((JsonObject) object).get("coreNumber"); 
-			JsonElement RAM = (JsonElement) ((JsonObject) object).get("RAM"); 
-			JsonElement GPU = (JsonElement) ((JsonObject) object).get("GPUcores"); 
-			
-			c = new Category(nameID.getAsString(),CPU.getAsInt(),RAM.getAsInt(),GPU.getAsInt());
-			
+			c = g.fromJson(req.body(),Category.class);
+	
 			return "OK";
 		});
 		
 		post("/rest/forChange", (req,res)-> {
 			res.type("application/json");
-			String reqData = req.body();
-			System.out.println(reqData);
-			CategoryToAdd cat = g.fromJson(reqData, CategoryToAdd.class);
-			if(cat.nameID == null) {
-				cat.nameID =c.getName();
+
+			Category cat =  checkSendDataCateg(req.body());
+			
+			if(cat.getName() == "null") {
+				cat.setName(c.getName());
 			}
-			if(cat.numCPU == 0) {
-				cat.numCPU=c.getCoreNumber();
+			if(cat.getCoreNumber() == 0) {
+				cat.setCoreNumber(c.getCoreNumber());
 			}
-			if(cat.numRAM ==0) {
-				cat.numRAM =c.getRAM();
+			if(cat.getRAM() == 0) {
+				cat.setRAM(c.getRAM());
 			}
-			if(cat.numGPU ==0) {
-				cat.numGPU =c.getGPUcores();
+			if(cat.getGPUcores() == 0) {
+				cat.setGPUcores(c.getGPUcores());
 			}
-			Category category = checkCategoryChange(cat);
+			Category category = checkCategory(cat);
 			
 			if(category == null) {
 				res.status(400);
 			}
 			else {
 				res.status(200);
-				checkCategoryChangeVM(category);
-				categoryChange(category);		
-				
-				writeToFiles((ArrayList<Object>)(Object) r.categoryList, "./data/categories.json"); //automatski refresh
-				writeToFiles((ArrayList<Object>)(Object) r.virtMachineList, "./data/virtMachines.json"); //automatski refresh
-				
-				c =null;
+				refreshReferencedCategory(category);
+				c = null;
 			}
 			return "OK";
 		});
 		
 		post("/rest/removeCategory", (req,res)-> {
 			res.type("application/json");
-			String reqData = req.body();
-			JsonObject jsonObject = new JsonParser().parse(reqData).getAsJsonObject();
-			JsonElement object = (JsonElement) jsonObject.get("category"); 
-			JsonElement nameID = (JsonElement) ((JsonObject) object).get("name"); 
-            String key = nameID.getAsString();
-    		int i = checkCategoryExistVM(key);
+			Category cat= g.fromJson(req.body(), Category.class);
+    		int i = checkCategoryExistVM(cat.getName());
 			if(i == 1) {
 				res.status(400);
 			}
 			else {
 				res.status(200);
-				removeCategory(key);
-				writeToFiles((ArrayList<Object>)(Object) r.categoryList, "./data/categories.json"); //automatski refresh
+				refreshRemovedCategory(cat.getName());
     		}
 			return "OK";
 		});
@@ -691,6 +676,68 @@ public class Main {
 		});
 		
 	}
+	private static void refreshRemovedCategory(String name)throws IOException {
+		removeCategory(name);
+		writeToFiles((ArrayList<Object>)(Object) r.categoryList, "./data/categories.json"); 
+		
+	}
+
+	private static void refreshReferencedCategory(Category category)throws IOException {
+		checkCategoryChangeVM(category);
+		categoryChange(category);		
+		writeToFiles((ArrayList<Object>)(Object) r.categoryList, "./data/categories.json");
+		writeToFiles((ArrayList<Object>)(Object) r.virtMachineList, "./data/virtMachines.json"); 
+		
+	}
+
+	private static void refreshCategory(Category cc) throws IOException {
+		r.categories.put(cc.getName(),cc);
+		r.categoryList.add(cc);
+		writeToFiles((ArrayList<Object>)(Object) r.categoryList, "./data/categories.json"); 
+		
+	}
+
+	private static Category checkSendDataCateg(String reqData) throws Exception{
+        
+		int coreNumber =0;
+	    int RAM=0;
+	    int	GPUcores=0;
+		JsonObject jsonObject = new JsonParser().parse(reqData).getAsJsonObject();
+		
+		String nameCK = ((JsonElement) ((JsonObject) jsonObject).get("nameID")).toString();
+        String name = null;
+        if (!nameCK.toString().isEmpty()) {
+            name = nameCK.replace("\"", "");
+        }
+        JsonElement core =((JsonObject) jsonObject).get("numCPU");
+       
+        if (checkIt(core)) {
+       		coreNumber = core.getAsInt();
+        } 
+        JsonElement ramm =((JsonObject) jsonObject).get("numRAM");
+        if (checkIt(ramm)) {
+        	RAM = ramm.getAsInt();
+        } 
+        JsonElement gpu =((JsonObject) jsonObject).get("numGPU");
+        if (checkIt(gpu)) {
+        	GPUcores = gpu.getAsInt();
+        } 
+        System.out.println(RAM+" "+coreNumber+" "+GPUcores);
+		Category category = new Category(name, coreNumber, RAM,GPUcores);
+	
+		return category;
+	}
+
+	private static boolean checkIt(JsonElement ramm){
+		    try {
+		        ramm.getAsInt();
+		        return true;
+		    }
+		    catch( Exception e ) {
+		        return false;
+		    }
+	}
+
 	private static void asRefresh(VMAdd vm) throws IOException {
 		
 		Category cat = r.categories.get(vm.nameC);
@@ -1482,36 +1529,24 @@ public class Main {
 	}
 	
 			
-	private static Category checkCategory(CategoryToAdd cat) {
-		
-		if(r.categories.containsKey(cat.nameID) || cat.nameID.isEmpty()) {
+	private static Category checkCategory(Category cat) {
+		for(Category check : r.categories.values()) {
+			if(check.getName().equalsIgnoreCase(cat.getName())) {
+				return null;
+			}
+		}
+		if(cat.getCoreNumber() <= 0) {
 			return null;
 		}
-		if(cat.numCPU <= 0) {
+		if(cat.getRAM() <=0) {
 			return null;
 		}
-		if(cat.numRAM <=0) {
+		if(cat.getGPUcores()<0) {
 			return null;
 		}
-		Category categ = new Category(cat.nameID,cat.numCPU,cat.numRAM,cat.numGPU);
-		
-		return categ;
+		return cat;
 	}
-	private static Category checkCategoryChange(CategoryToAdd cat) {
-		
-		if(r.categories.containsKey(cat.nameID) && !cat.nameID.equalsIgnoreCase(c.getName())) {
-			return null;
-		}
-		if(cat.numCPU <= 0) {
-			return null;
-		}
-		if(cat.numRAM <=0) {
-			return null;
-		}
-		Category categ = new Category(cat.nameID,cat.numCPU,cat.numRAM,cat.numGPU);
-		
-		return categ;
-	}
+
 	private static User testLogin(UserToLog u) {
 		if (r.users.isEmpty()) {
 			return null; 
@@ -1617,7 +1652,7 @@ public class Main {
 		return userL; 
 	}
 	
-	//DA SMO IMALI CELE OBJEKTE NE BI NAM TREBALE OVE TAKE FJE
+	//DA SMO IMALI CELE OBJEKTE NE BI NAM TREBALE OVE TAKE FJE 
 	private static ArrayList<Organization> takeOrganizations(User user) {
 		ArrayList<Organization> organizationL = new ArrayList<Organization>();
 		if (user!=null) {

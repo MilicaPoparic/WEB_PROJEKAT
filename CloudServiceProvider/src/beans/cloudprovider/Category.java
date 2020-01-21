@@ -16,6 +16,13 @@ public class Category {
 		this.GPUcores = GPUcores;
 	}
 
+	public Category(Category cat) {
+		this.name = cat.getName();
+		this.coreNumber = cat.getCoreNumber();
+		this.RAM = cat.getRAM();
+		this.GPUcores = cat.getGPUcores();
+	}
+
 	public String getName() {
 		return name;
 	}

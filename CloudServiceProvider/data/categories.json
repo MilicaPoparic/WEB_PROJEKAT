@@ -1,8 +1,14 @@
 [
   {
-    "name": "kategorija1",
-    "coreNumber": 40,
-    "RAM": 32,
+    "name": "kategorija4",
+    "coreNumber": 4,
+    "RAM": 3,
+    "GPUcores": 4
+  },
+  {
+    "name": "kategorija3",
+    "coreNumber": 4,
+    "RAM": 3,
     "GPUcores": 4
   },
   {
@@ -12,21 +18,15 @@
     "GPUcores": 5
   },
   {
-    "name": "kategorija3",
-    "coreNumber": 4,
-    "RAM": 3,
-    "GPUcores": 4
+    "name": "kategorija1",
+    "coreNumber": 23,
+    "RAM": 32,
+    "GPUcores": 23
   },
   {
-    "name": "kategorija4",
-    "coreNumber": 3,
-    "RAM": 3,
-    "GPUcores": 3
-  },
-  {
-    "name": "kategorija5",
+    "name": "kategorija6",
     "coreNumber": 4,
-    "RAM": 3,
+    "RAM": 23,
     "GPUcores": 2
   }
 ]

@@ -2,9 +2,9 @@ Vue.component("addCateg",{
 	data: function(){
 		return{
 			nameID:'',
-			numCPU:0,
-			numRAM:0,
-			numGPU:0,
+			numCPU:'',
+			numRAM:'',
+			numGPU:'',
 			error1:'',
 			error2:'',
 			error3:'',
@@ -16,36 +16,32 @@ Vue.component("addCateg",{
 	<div>
 		
 	Dodaj kategoriju:
-	<table border="1">
+	<table>
 	<tr>
 		<td>
 	    	Naziv kategorije 
 	    </td>
 	    <td>
-	    	<input type="text" style="width:60px" size="5" v-model="nameID" name="nameID">
+	    	<input type="text" style="width:60px" size="5" v-model="nameID" name="nameID">{{error1}}
 	    </td>
-	    
-	    {{error1}}
-	   
 	</tr>
 	<tr>
 		<td>
 	    	Broj jezgara 
 	    </td>
 	    <td>
-	    	<input type="text" style="width:60px" size="5" v-model="numCPU" name="numCPU">
+	    	<input type="text" style="width:60px" size="5" v-model="numCPU" name="numCPU">{{error2}}
 	    </td>
-	    {{error2}} 	
 	</tr>
 	<tr>
 		<td>
 	    	RAM 
 	    </td>
 	    <td>
-	    	<input type="text" style="width:60px" size="5" v-model="numRAM" name="numRAM">
+	    	<input type="text" style="width:60px" size="5" v-model="numRAM" name="numRAM"> {{error3}}
 	    </td>
-	    {{error3}}
 	</tr>
+	 
 	<tr>
 		<td>
 	    	GPU 
