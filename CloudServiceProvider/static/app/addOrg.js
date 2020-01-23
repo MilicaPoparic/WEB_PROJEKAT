@@ -42,7 +42,27 @@ Vue.component("add-org", {
 			}
 		}
 	},
-	//trebace za proveru sesije, tj da li je korisnik ulogovan
-	
+	mounted () {	
+	     axios
+	        .get('rest/testLogin')
+	        .then((response) => {
+				    	  if(response.status == 200) {
+				    		  //location.href = '#/c';
+				    		  axios
+				  	        .get('rest/checkSuperAdminAdmin')
+				  	        .then((response) => {
+				  	        	if(response.status == 200) {
+				  	        		location.href = '#/addOrg';
+				  				    }
+				  				   })
+				  				   .catch((response)=>{
+				  				    	location.href = '#/forbidden';
+				  				      })
+				    	  }
+				      })
+				      .catch((response)=>{
+				    	  location.href = '#/';
+				      })
+	},
 
 });

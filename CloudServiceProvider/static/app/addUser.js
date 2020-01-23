@@ -54,11 +54,21 @@ Vue.component("add-user", {
 
 	},
 	mounted () {
-        axios
-          .get('rest/testLogin')
-          .then((response) => {
+		axios
+        .get('rest/testLogin')
+        .then((response) => {
 			    	  if(response.status == 200) {
-			    		  location.href = '#/addUser';
+			    		  //location.href = '#/c';
+			    		  axios
+			  	        .get('rest/checkSuperAdminAdmin')
+			  	        .then((response) => {
+			  	        	if(response.status == 200) {
+			  	        		location.href = '#/addUser';
+			  				    }
+			  				   })
+			  				   .catch((response)=>{
+			  				    	location.href = '#/forbidden';
+			  				      })
 			    	  }
 			      })
 			      .catch((response)=>{

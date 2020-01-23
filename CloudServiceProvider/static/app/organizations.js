@@ -38,22 +38,32 @@ Vue.component("organization", {
 	}
 	,
 	mounted () {
-		axios
-        .get('rest/testLogin')
-        .then((response) => {
-			    	  if(response.status == 200) {
-			    		  location.href = '#/o';
-			    	  }
-			      })
-			      .catch((response)=>{
-			    	  location.href = '#/';
-			      })
+	     axios
+	        .get('rest/testLogin')
+	        .then((response) => {
+				    	  if(response.status == 200) {
+				    		  //location.href = '#/c';
+				    		  axios
+				  	        .get('rest/checkSuperAdminAdmin')
+				  	        .then((response) => {
+				  	        	if(response.status == 200) {
+				  	        		location.href = '#/o';
+				  				    }
+				  				   })
+				  				   .catch((response)=>{
+				  				    	location.href = '#/forbidden';
+				  				      })
+				    	  }
+				      })
+				      .catch((response)=>{
+				    	  location.href = '#/';
+				      })
         axios
           .get('rest/getOrganizations')
           .then(response => (this.organizations = response.data))
         axios
           .get('rest/getRole')
           .then(response => (this.role = response.data));
-
+		
     },
 });

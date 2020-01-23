@@ -85,4 +85,28 @@ Vue.component("addCateg",{
 			}	
 		}
 	},
+mounted () {
+	
+        
+		axios
+        .get('rest/testLogin')
+        .then((response) => {
+			    	  if(response.status == 200) {
+			    		  //location.href = '#/c';
+			    		  axios
+			  	        .get('rest/checkSuperAdmin')
+			  	        .then((response) => {
+			  	        	if(response.status == 200) {
+			  	        		location.href = '#/ac';
+			  				    }
+			  				   })
+			  				   .catch((response)=>{
+			  				    	location.href = '#/forbidden';
+			  				      })
+			    	  }
+			      })
+			      .catch((response)=>{
+			    	  location.href = '#/';
+			      })
+    },
 });

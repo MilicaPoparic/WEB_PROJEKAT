@@ -47,7 +47,28 @@ Vue.component("categ",{
 		 axios
          	.get('rest/getCategories')
          	.then(response => (this.categories = response.data));
-			      
+
+	     axios
+	        .get('rest/testLogin')
+	        .then((response) => {
+				    	  if(response.status == 200) {
+				    		  //location.href = '#/c';
+				    		  axios
+				  	        .get('rest/checkSuperAdmin')
+				  	        .then((response) => {
+				  	        	if(response.status == 200) {
+				  	        		location.href = '#/c';
+				  				    }
+				  				   })
+				  				   .catch((response)=>{
+				  				    	location.href = '#/forbidden';
+				  				      })
+				    	  }
+				      })
+				      .catch((response)=>{
+				    	  location.href = '#/';
+				      })
+	     
 	}
 
 });

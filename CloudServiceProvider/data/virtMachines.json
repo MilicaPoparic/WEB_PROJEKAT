@@ -2,15 +2,12 @@
   {
     "name": "JAVA-VM",
     "category": {
-      "name": "kategorija3",
-      "coreNumber": 4,
-      "RAM": 3,
-      "GPUcores": 4
+      "name": "kategorija1",
+      "coreNumber": 23,
+      "RAM": 32,
+      "GPUcores": 23
     },
-    "drives": [
-      "C",
-      "D"
-    ],
+    "drives": [],
     "activityLog": []
   },
   {
@@ -35,6 +32,11 @@
       "GPUcores": 5
     },
     "drives": [],
-    "activityLog": []
+    "activityLog": [
+      {
+        "start": "Jul 25, 0017 12:00:00 AM",
+        "end": "Aug 11, 0020 12:00:00 AM"
+      }
+    ]
   }
 ]

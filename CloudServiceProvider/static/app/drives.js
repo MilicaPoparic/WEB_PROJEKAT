@@ -122,6 +122,16 @@ Vue.component("drive",{
 	    }
 	},
 	mounted(){
+		axios
+        .get('rest/testLogin')
+        .then((response) => {
+			    	  if(response.status == 200) {
+			    		  location.href = '#/drives';
+			    	  }
+			      })
+			      .catch((response)=>{
+			    	  location.href = '#/';
+			      })
 		 axios
       	.get('rest/getDrives')
       	.then(response => (this.drivess = response.data));

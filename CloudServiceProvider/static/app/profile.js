@@ -65,6 +65,16 @@ Vue.component("profile-info",{
 		}
 	},
 	mounted () {	
+		axios
+        .get('rest/testLogin')
+        .then((response) => {
+			    	  if(response.status == 200) {
+			    		  location.href = '#/profile';
+			    	  }
+			      })
+			      .catch((response)=>{
+			    	  location.href = '#/';
+			      })
         axios
           .get('rest/getLoggedInUser')
           .then(response => (this.user = response.data))

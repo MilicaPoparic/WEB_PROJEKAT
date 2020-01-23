@@ -94,15 +94,25 @@ Vue.component("addDr",{
 		}
 	},
 	mounted () {
-         axios
-      	.get('rest/checkRole')
-      	.then((response) => {
-			    	  if(response.status == 403) {
-			    		  location.href = '#/forbidden';
+		axios
+        .get('rest/testLogin')
+        .then((response) => {
+			    	  if(response.status == 200) {
+			    		  //location.href = '#/c';
+			    		  axios
+			  	        .get('rest/checkSuperAdminAdmin')
+			  	        .then((response) => {
+			  	        	if(response.status == 200) {
+			  	        		location.href = '#/ad';
+			  				    }
+			  				   })
+			  				   .catch((response)=>{
+			  				    	location.href = '#/forbidden';
+			  				      })
 			    	  }
 			      })
-		.catch((response)=>{
-			location.href = '#/forbidden';
-					  })
+			      .catch((response)=>{
+			    	  location.href = '#/';
+			      })
     },
 });

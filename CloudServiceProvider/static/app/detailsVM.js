@@ -15,7 +15,8 @@ Vue.component("change-vm",{
 		<table>
 		<tr>
 				<td> Name: </td>
-				<td><input type="text" style="width:60px" size="3" v-model="vm.nameVM" name="name" ></td> {{nameErr}}
+				<td v-if="role=='superAdmin' || role=='admin'" ><input type="text" style="width:60px" size="3" v-model="vm.nameVM" name="name" ></td> {{nameErr}}
+				<td v-if="role=='user'"> {{vm.nameVM}} </td> 
 		</tr>
 			
 		<tr >	
@@ -28,15 +29,15 @@ Vue.component("change-vm",{
 		</tr>
 		<tr >	
 				<td> RAM: </td>
-				<td>{{vm.categoryRAM}}></td> {{captionErr}}
+				<td>{{vm.categoryRAM}}</td> {{captionErr}}
 		</tr>
 		<tr >	
 				<td> GPU: </td>
-				<td> {{vm.categoryGPU}} ></td> {{captionErr}}
+				<td> {{vm.categoryGPU}} </td> {{captionErr}}
 		</tr>
 		<tr >	
 				<td> Organization: </td>
-				<td>{{vm.nameORG}}></td> {{captionErr}}
+				<td>{{vm.nameORG}}</td> {{captionErr}}
 		</tr>
 		</table>
 		<table border="1">
@@ -45,10 +46,33 @@ Vue.component("change-vm",{
 			<td>{{d}}</td>
 			</tr>
 		</table>
-		<a href="#" v-on:click="ActivityLog(m)">Activity log</a>
+		<p>ACTIVITY LOG</p>
+		<table>
+			<th>Start date</th><th>End date</th>
+			<tr v-for="al in vm.activityLog">
+			<td> {{al.start}}</td><td> {{al.end}}</td>
+			</tr>
+		</table>
+		
+
+		
+		<p v-if="role=='superAdmin'">CHANGE ACTIVITY LOG </p>
+		<table>
+		<template v-if="role=='superAdmin'">
+			<th>Start date</th><th>End date</th>
+			<tr v-for="aa in vm.activityLog">
+				<td><input type="date" v-model="aa.start" name="name"></td> 
+				<td><input type="date" v-model="aa.end" name="noname"></td> 
+			</tr>
+		</template>
+		</table>
+		
+		
 		<br>
-		<button v-on:click="change()">Change data</button> 
-		<button v-on:click="deleteOrg()">Delete</button>
+		<table>
+		<td><button v-on:click="change()">Change data</button></td> 
+		<td><button v-on:click="deleteVm()">Delete</button></td>
+		</table>
 </div>	`
 ,
 	methods : {
@@ -64,17 +88,24 @@ Vue.component("change-vm",{
 				.catch(response=>this.nameErr = 'Name must me unique!')
 			}
 		},
-		//ovo cemo izmeniti kad budemo trebale!!!
-		/*deleteOrg : function() {
+		
+		deleteVm : function() {
 		axios
-		.post('rest/deleteOrg', this.org)
-		.then(response => location.href = '#/o');	
-		},
-		onUpload(event) {
-			this.org.logo = (event.target.files)[0].name;
-		}*/
+		.post('rest/deleteVM', this.vm)
+		.then(response => location.href = '#/h');	
+		}
 	},
 	mounted () {	
+		axios
+        .get('rest/testLogin')
+        .then((response) => {
+			    	  if(response.status == 200) {
+			    		  location.href = '#/changeVM';
+			    	  }
+			      })
+			      .catch((response)=>{
+			    	  location.href = '#/';
+			      })
         axios
           .get('rest/getVM')
           .then(response => (this.vm = response.data))

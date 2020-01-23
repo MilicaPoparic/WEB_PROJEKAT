@@ -43,7 +43,17 @@ Vue.component("users", {
         .get('rest/testLogin')
         .then((response) => {
 			    	  if(response.status == 200) {
-			    		  location.href = '#/users';
+			    		  //location.href = '#/c';
+			    		  axios
+			  	        .get('rest/checkSuperAdminAdmin')
+			  	        .then((response) => {
+			  	        	if(response.status == 200) {
+			  	        		location.href = '#/users';
+			  				    }
+			  				   })
+			  				   .catch((response)=>{
+			  				    	location.href = '#/forbidden';
+			  				      })
 			    	  }
 			      })
 			      .catch((response)=>{

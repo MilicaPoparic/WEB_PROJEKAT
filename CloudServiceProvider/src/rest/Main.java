@@ -1,5 +1,4 @@
 package rest;
-import beans.cloudprovider.SendVMO;
 import static spark.Spark.get;
 import static spark.Spark.port;
 import static spark.Spark.post;
@@ -9,12 +8,11 @@ import static spark.Spark.webSocket;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.jws.soap.SOAPBinding.Use;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -22,8 +20,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import beans.cloudprovider.Activity;
 import beans.cloudprovider.Category;
-import beans.cloudprovider.CategoryToAdd;
 import beans.cloudprovider.Drive;
 import beans.cloudprovider.DriveSearch;
 import beans.cloudprovider.DriveType;
@@ -39,7 +37,7 @@ import spark.Session;
 import ws.WsHandler;
 
 public class Main {
-    
+    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	private static Gson g = new Gson();
 	private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 	private static Reader r = new Reader(); 
@@ -52,6 +50,7 @@ public class Main {
 	private static ArrayList<VirtualMachine> retVMs = new ArrayList<VirtualMachine>();
 	private static ArrayList<VirtualMachine> retVMHelper;
 	
+	
 	private static void writeToFiles(ArrayList<Object> listForWrite, String string) throws IOException {
 		String json = gson.toJson(listForWrite);
 		FileWriter file = new FileWriter(string);
@@ -59,12 +58,11 @@ public class Main {
 		file.close();
 	}
 	
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, ParseException {
 		port(8080);
 		webSocket("/ws", WsHandler.class);		
 		staticFiles.externalLocation(new File("./static").getCanonicalPath()); 
 
-	
 		get("/test", (req, res) -> {
 			return "Works";
 		});
@@ -78,7 +76,7 @@ public class Main {
 			return ("OK");
 			});
 		
-		get("/rest/checkRole", (req, res) -> {
+		get("/rest/checkSuperAdmin", (req, res) -> {
 			res.type("application/json");
 			User user = req.session(true).attribute("user");
 			if (user != null) {
@@ -86,10 +84,34 @@ public class Main {
 					res.status(403);
 					return gson.toJson(user);
 				}}
-			res.status(403);
+			res.status(200);
 			return ("OK");
 			});
 		
+		get("/rest/checkSuperAdminAdmin", (req, res) -> {
+			res.type("application/json");
+			User user = req.session(true).attribute("user");
+			if (user != null) {
+				if (user.getRole().toString().equals("user")) {
+					res.status(403);
+					return gson.toJson(user);
+				}}
+			res.status(200);
+			return ("OK");
+			});
+		
+		get("/rest/checkAdmin", (req, res) -> {
+			res.type("application/json");
+			User user = req.session(true).attribute("user");
+			if (user != null) {
+				if (!user.getRole().toString().equals("admin")) {
+					res.status(403);
+					return gson.toJson(user);
+				}}
+			res.status(200);
+			return ("OK");
+			});
+
 		get("/rest/virtualne", (req, res) -> {		
 			res.type("application/json");
 			User user = req.session().attribute("user");
@@ -139,6 +161,7 @@ public class Main {
 			return g.toJson(o);
 		});
 		
+		
 		get("/rest/testLogin", (req, res) -> {
 			res.type("application/json");
 			User user = req.session().attribute("user");
@@ -146,7 +169,9 @@ public class Main {
 				res.status(400);
 				return ("OK");
 			} 
-			res.status(200);
+			
+				res.status(200);
+			
 			return ("OK");
 		});
 		
@@ -350,6 +375,7 @@ public class Main {
 		post("/rest/changeVM", (req,res)-> {
 			res.type("application/json");
 			SendVMO vm = gson.fromJson(req.body(),SendVMO.class);
+			System.out.println(vm.getActivityLog().get(0).getStart());
 			if (!v.getNameVM().equals(vm.getNameVM()) && r.virtMachines.get(vm.getNameVM())==null) {
 				VirtualMachine old = r.virtMachines.get(v.getNameVM());
 				VirtualMachine virtual = r.virtMachines.get(v.getNameVM());
@@ -430,6 +456,14 @@ public class Main {
 			Organization org = g.fromJson(req.body(), Organization.class);
 			deleteOrgData();
 			refreshFiles();
+			return ("OK");
+		});
+		
+		post("/rest/deleteVM", (req,res)-> {
+			res.type("application/json");
+			SendVMO vm = g.fromJson(req.body(), SendVMO.class);
+			removeFromLists(vm);
+			writeDependencies();
 			return ("OK");
 		});
 		
@@ -662,6 +696,7 @@ public class Main {
 			res.type("application/json");
 			return ("OK");
 		});
+		
 		post("/rest/addNewVM", (req, res) -> {
 			res.type("application/json");
 	        VMAdd newVM = g.fromJson(req.body(), VMAdd.class);
@@ -680,6 +715,12 @@ public class Main {
 		removeCategory(name);
 		writeToFiles((ArrayList<Object>)(Object) r.categoryList, "./data/categories.json"); 
 		
+	}
+	private static void removeFromLists(SendVMO vm) {
+		VirtualMachine v = r.virtMachines.get(vm.getNameVM());
+		manageListsVM(v, true);
+		changeDrivesVM(vm.getNameVM(), null);
+		changeOrgVM(vm, null);
 	}
 
 	private static void refreshReferencedCategory(Category category)throws IOException {
@@ -1175,30 +1216,31 @@ public class Main {
 		writeToFiles((ArrayList<Object>)(Object) r.organizationList, "./data/organizations.json");
 		
 	}
-	//cisti listu diskova u zavisnosti od prmene vm
+
 	private static void changeDrivesVM(String v, String vm) {
 		for (Drive d : r.drives.values()) {
 			if (d.getVirtualMachine().equals(v)) {
-				
-				d.setVirtualMachine(vm);
+				d.setVirtualMachine("");
 			}
 		}
 		for (Drive d : r.driveList){
 			if (d.getVirtualMachine().equals(v)) {
-				d.setVirtualMachine(vm);
+					d.setVirtualMachine(vm);
 			}
 		}
 	}
 	private static void changeOrgVM(SendVMO v,SendVMO vm) {
-		if (r.organizations.get(vm.getNameORG())!=null) {
-			if (r.organizations.get(vm.getNameORG()).getResources().contains(v.getNameVM())) {
-				r.organizations.get(vm.getNameORG()).getResources().remove(v.getNameVM());
-				r.organizations.get(vm.getNameORG()).getResources().add(vm.getNameVM());
+		if (r.organizations.get(v.getNameORG())!=null) {
+			if (r.organizations.get(v.getNameORG()).getResources().contains(v.getNameVM())) {
+				r.organizations.get(v.getNameORG()).getResources().remove(v.getNameVM());
+				if (vm!=null) {
+				r.organizations.get(v.getNameORG()).getResources().add(vm.getNameVM());}
 			}
 			for (Organization organ: r.organizationList) {
 				if (organ.getResources().contains(v.getNameVM())) {
 					organ.getResources().remove(v.getNameVM());
-					organ.getResources().add(vm.getNameVM());
+					if (vm!=null) {
+					organ.getResources().add(vm.getNameVM());}
 				}
 			}
 			}
@@ -1304,7 +1346,6 @@ public class Main {
 		if (remove) {
 			r.virtMachines.remove(v.getName(),v);
 			for (String k: r.virtMachines.keySet()) {
-				System.out.println(k);
 			}
 			r.virtMachineList.remove(v);
 			return;

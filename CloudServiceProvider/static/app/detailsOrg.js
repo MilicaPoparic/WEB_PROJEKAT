@@ -67,6 +67,26 @@ Vue.component("change-org",{
 		}
 	},
 	mounted () {	
+	     axios
+	        .get('rest/testLogin')
+	        .then((response) => {
+				    	  if(response.status == 200) {
+				    		  //location.href = '#/c';
+				    		  axios
+				  	        .get('rest/checkSuperAdminAdmin')
+				  	        .then((response) => {
+				  	        	if(response.status == 200) {
+				  	        		location.href = '#/changeOrg';
+				  				    }
+				  				   })
+				  				   .catch((response)=>{
+				  				    	location.href = '#/forbidden';
+				  				      })
+				    	  }
+				      })
+				      .catch((response)=>{
+				    	  location.href = '#/';
+				      })
         axios
           .get('rest/getOrganization')
           .then(response => (this.org = response.data))

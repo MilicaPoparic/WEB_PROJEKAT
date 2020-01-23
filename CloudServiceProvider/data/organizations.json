@@ -34,7 +34,8 @@
     "users": [],
     "resources": [
       "ORACLE-VM",
-      "F"
+      "F",
+      "JAVA-VM"
     ]
   },
   {
@@ -46,7 +47,6 @@
       "k1"
     ],
     "resources": [
-      "JAVA-VM",
       "C"
     ]
   }

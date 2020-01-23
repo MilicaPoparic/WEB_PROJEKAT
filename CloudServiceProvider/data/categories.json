@@ -28,5 +28,11 @@
     "coreNumber": 4,
     "RAM": 23,
     "GPUcores": 2
+  },
+  {
+    "name": "kata",
+    "coreNumber": 5,
+    "RAM": 1,
+    "GPUcores": 2
   }
 ]

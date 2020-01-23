@@ -133,7 +133,16 @@ Vue.component("detailDr",{
 	}
 	,
 	mounted () {
-	
+		axios
+        .get('rest/testLogin')
+        .then((response) => {
+			    	  if(response.status == 200) {
+			    		  location.href = '#/detailDrive';
+			    	  }
+			      })
+			      .catch((response)=>{
+			    	  location.href = '#/';
+			      })
         axios
           .get('rest/getDrive')
           .then(response => (this.drive = response.data));

@@ -127,8 +127,29 @@ Vue.component("detailCateg",{
 	,
 	mounted () {
 	
-        axios
-          .get('rest/getCategory')
-          .then(response => (this.category = response.data))
+        
+		axios
+        .get('rest/testLogin')
+        .then((response) => {
+			    	  if(response.status == 200) {
+			    		  //location.href = '#/c';
+			    		  axios
+			  	        .get('rest/checkSuperAdmin')
+			  	        .then((response) => {
+			  	        	if(response.status == 200) {
+			  	        		location.href = '#/d';
+			  				    }
+			  				   })
+			  				   .catch((response)=>{
+			  				    	location.href = '#/forbidden';
+			  				      })
+			    	  }
+			      })
+			      .catch((response)=>{
+			    	  location.href = '#/';
+			      })
+		axios
+		.get('rest/getCategory')
+		.then(response => (this.category = response.data))
     },
 });

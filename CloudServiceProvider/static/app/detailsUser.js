@@ -75,7 +75,27 @@ Vue.component("change-user",{
 		.catch(response=>this.err = 'ERROR 400!')
 		}
 	},
-	mounted () {	
+	mounted () {
+		axios
+        .get('rest/testLogin')
+        .then((response) => {
+			    	  if(response.status == 200) {
+			    		  //location.href = '#/c';
+			    		  axios
+			  	        .get('rest/checkSuperAdminAdmin')
+			  	        .then((response) => {
+			  	        	if(response.status == 200) {
+			  	        		location.href = '#/changeUser';
+			  				    }
+			  				   })
+			  				   .catch((response)=>{
+			  				    	location.href = '#/forbidden';
+			  				      })
+			    	  }
+			      })
+			      .catch((response)=>{
+			    	  location.href = '#/';
+			      })
         axios
           .get('rest/getUser')
           .then(response => (this.user = response.data))
