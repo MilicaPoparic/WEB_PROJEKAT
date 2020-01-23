@@ -40,14 +40,6 @@
     "password": "n"
   },
   {
-    "email": "nnn",
-    "name": "n",
-    "surname": "n",
-    "nameORG": "Microsoft",
-    "role": "user",
-    "password": "n"
-  },
-  {
     "email": "mile",
     "name": "cile",
     "surname": "j",
@@ -69,5 +61,37 @@
     "nameORG": "ORG1",
     "role": "user",
     "password": "AGJAWR"
+  },
+  {
+    "email": "milica",
+    "name": "a",
+    "surname": "a",
+    "nameORG": "Microsoft",
+    "role": "admin",
+    "password": "a"
+  },
+  {
+    "email": "covekimastan@gmail.com",
+    "name": "a",
+    "surname": "a",
+    "nameORG": "Oracle",
+    "role": "user",
+    "password": "a"
+  },
+  {
+    "email": "ma neka kazu da sam poludela",
+    "name": "a",
+    "surname": "a",
+    "nameORG": "ORG1",
+    "role": "admin",
+    "password": "a"
+  },
+  {
+    "email": "nnn",
+    "name": "n",
+    "surname": "n",
+    "nameORG": "Microsoft",
+    "role": "user",
+    "password": "n"
   }
 ]

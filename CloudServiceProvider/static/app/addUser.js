@@ -36,8 +36,12 @@ Vue.component("add-user", {
 	, 
 	methods : {
 		add : function() {
-		
-			if (this.email && this.name && this.surname && this.password) {
+			if (this.organizations.length==1){
+				
+				this.organization = this.organizations[0].name; 
+				console.log(this.organization);
+			}
+			if (this.email && this.name && this.surname && this.password && this.organization) {
 				axios
 				.post('rest/addUser', {"email":this.email, "name":this.name, "surname":this.surname, "nameORG":this.organization, "role": this.newRole, "password":this.password})
 				.then((response) => {

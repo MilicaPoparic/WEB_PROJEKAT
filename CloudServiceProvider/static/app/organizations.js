@@ -18,7 +18,8 @@ Vue.component("organization", {
 	<tr v-for="o in organizations">
 		<td><a href="#" v-on:click="showDetails(o)">{{o.name}}</a></td>
 		<td>{{o.caption}}</td>
-		<td><img src="{{o.logo}}" alt="Logo" height=5 width=5></td>	
+		<td><img v-bind:src="o.logo" alt="Logo" height=35 width=60 ></td>	
+		
 	</tr>
 </table>
 		<p><button v-if="role=='superAdmin'" v-on:click="addOrg">Add</button></p>

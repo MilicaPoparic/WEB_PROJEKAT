@@ -1,3 +1,4 @@
+
 const Home = { template: '<home-page></home-page>' }
 const Login = { template: '<log-in></log-in>' }
 const Org = { template: '<organization></organization>' }
@@ -20,7 +21,7 @@ const SearchVM= {template: '<search-vm></search-vm>'}
 const AddVM= {template: '<add-vm></add-vm>'}
 
 const router = new VueRouter({
-	  mode: 'hash',
+	mode: 'hash',
 	  routes: [
 	    { path: '/', component: Login},
 	    { path: '/h', component: Home},

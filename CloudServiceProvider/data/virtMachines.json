@@ -38,5 +38,16 @@
         "end": "Aug 11, 0020 12:00:00 AM"
       }
     ]
+  },
+  {
+    "name": "NOVA",
+    "category": {
+      "name": "kategorija6",
+      "coreNumber": 4,
+      "RAM": 23,
+      "GPUcores": 2
+    },
+    "drives": [],
+    "activityLog": []
   }
 ]

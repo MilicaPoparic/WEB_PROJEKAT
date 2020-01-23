@@ -18,14 +18,14 @@ Vue.component("change-vm",{
 				<td v-if="role=='superAdmin' || role=='admin'" ><input type="text" style="width:60px" size="3" v-model="vm.nameVM" name="name" ></td> {{nameErr}}
 				<td v-if="role=='user'"> {{vm.nameVM}} </td> 
 		</tr>
-			
-		<tr >	
-				<td> Core Number: </td>
-				<td>{{vm.categoryCoreNumber}}</td> {{captionErr}}
-		</tr>
 		<tr >	
 				<td> Category name: </td>
 				<td>{{vm.category}}</td> {{captionErr}}
+				<td v-if="role=='superAdmin'" ><a href="#/d" >Change category</a></td>
+		</tr>
+		<tr >	
+				<td> Core Number: </td>
+				<td>{{vm.categoryCoreNumber}}</td> {{captionErr}}
 		</tr>
 		<tr >	
 				<td> RAM: </td>

@@ -2,11 +2,12 @@
   {
     "name": "ORG1",
     "caption": "caption",
-    "logo": "logo",
+    "logo": "https://dkt6rvnu67rqj.cloudfront.net/cdn/ff/6FlNM-g1OIr90_hQaYRwcY6YrTJHsRadfPx3nOKEF-E/1579139837/public/styles/600x400/public/media/int_files/1018199.jpg?itok\u003dToKCLt0X",
     "users": [
       "novi",
       "mile",
-      "LEGO"
+      "LEGO",
+      "ma neka kazu da sam poludela"
     ],
     "resources": [
       "pomocni",
@@ -16,11 +17,12 @@
   {
     "name": "Microsoft",
     "caption": "micCaption",
-    "logo": "logoMic",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Microsoft_logo.svg/439px-Microsoft_logo.svg.png",
     "users": [
       "poparic@gmail.com",
       "korisnik@gmail.com",
-      "nnn"
+      "nnn",
+      "milica"
     ],
     "resources": [
       "D",
@@ -30,18 +32,21 @@
   {
     "name": "Oracle",
     "caption": "opisOrac",
-    "logo": "IMG-20180203-WA0005.jpg",
-    "users": [],
+    "logo": "http://www.nirapress.com/wp-content/uploads/2017/10/oracle-logo.jpg",
+    "users": [
+      "covekimastan@gmail.com"
+    ],
     "resources": [
       "ORACLE-VM",
       "F",
-      "JAVA-VM"
+      "JAVA-VM",
+      "NOVA"
     ]
   },
   {
     "name": "IOS",
     "caption": "opisIOS",
-    "logo": "logoIOS",
+    "logo": "https://cdn1.iconfinder.com/data/icons/logos-brands-1/24/logo_brand_brands_logos_apple_ios-512.png",
     "users": [
       "trajkovic@gmail.com",
       "k1"
