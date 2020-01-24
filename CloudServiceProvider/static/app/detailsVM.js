@@ -1,7 +1,7 @@
 Vue.component("change-vm",{
 	data: function(){
 		return{
-			vm: null,
+			vm: {},
 			nameErr: '',
 		    captionErr: '',
 		    logoErr: '',

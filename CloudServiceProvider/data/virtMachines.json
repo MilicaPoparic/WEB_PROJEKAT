@@ -24,6 +24,17 @@
     "activityLog": []
   },
   {
+    "name": "VMVM",
+    "category": {
+      "name": "kategorija2",
+      "coreNumber": 3,
+      "RAM": 4,
+      "GPUcores": 5
+    },
+    "drives": [],
+    "activityLog": []
+  },
+  {
     "name": "WINDOWS10-VM",
     "category": {
       "name": "kategorija2",
@@ -43,9 +54,9 @@
     "name": "NOVA",
     "category": {
       "name": "kategorija6",
-      "coreNumber": 4,
-      "RAM": 23,
-      "GPUcores": 2
+      "coreNumber": 5,
+      "RAM": 20,
+      "GPUcores": 1
     },
     "drives": [],
     "activityLog": []

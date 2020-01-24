@@ -1,7 +1,7 @@
 Vue.component("detailDr",{
 	data: function(){
 		return{
-			drive:null,
+			drive:{},
 			error1:'',
 			error2:'',
 			error3:'',

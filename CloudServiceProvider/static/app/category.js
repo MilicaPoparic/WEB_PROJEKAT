@@ -1,7 +1,7 @@
 Vue.component("categ",{
 	data: function(){
 		return{
-			categories:null,
+			categories:{},
 			category:''
 		}
 	},
@@ -9,11 +9,11 @@ Vue.component("categ",{
 	`
 	<div>
 		
-	Pregled kategorija:
+	Categories:
 	<table border="1">
 	<tr bgcolor="blue">
-			<th> Naziv kategorije </th>
-			<th> Broj jezgara </th>
+			<th> Name </th>
+			<th> CORE </th>
 			<th> RAM </th>
 			<th> GPU </th>
 	</tr>
@@ -28,7 +28,7 @@ Vue.component("categ",{
 	</table>
 	<br>
 	<p>
-	<button v-on:click="addCategory()">Dodaj kategoriju</button>
+	<button v-on:click="addCategory()">Add category</button>
 	</p>
 </div>	
 	`

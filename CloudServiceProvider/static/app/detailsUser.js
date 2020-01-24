@@ -1,7 +1,7 @@
 Vue.component("change-user",{
 	data: function(){
 		return{
-			user: null,
+			user: {},
 			err: '',
 		    logoErr: ''
 		}
@@ -33,7 +33,7 @@ Vue.component("change-user",{
 		</tr>
 		<tr >
 			<td>Role: </td>
-			<td><select v-model="newRole">
+			<td><select v-model="user.role">
 				<option >admin</option>
 				<option >user</option>
 			</select></td>

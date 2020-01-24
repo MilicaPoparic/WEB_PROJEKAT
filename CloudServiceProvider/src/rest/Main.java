@@ -426,21 +426,25 @@ public class Main {
 			User loggedIn = req.session().attribute("user");
 			change.setOrganization(loggedIn.getOrganization());
 			if (!change.getEmail().equals(loggedIn.getEmail())) {	//ako menja email
-				manageListsUser(loggedIn, true);
+				manageListsUser(loggedIn, true); //brise starog
 				if (r.users.get(change.getEmail())==null) { //ako email nije zauzet vec
 					res.status(200);
-					manageListsUser(change, false);
+					System.out.println(change.getOrganization());  
+					manageListsUser(change, false); //dodaje novog
 					removeOrgUser(loggedIn); 
 					r.organizations.get(change.getOrganization()).getUsers().add(change.getEmail());
-					for (Organization o:r.organizationList) {
-						if (o.getName().equals(change.getOrganization())) {
-							o.getUsers().add(change.getEmail());
+					for (Organization org:r.organizationList) {
+						if (org.getName().equals(change.getOrganization())) {
+							org.getUsers().add(change.getEmail());
+							break;
 						}
+						break;
 					}
+					req.session().attribute("user",change); //NAPOMENA,
 				}
-				//else {
-					//res.status(400);
-				//}
+				else {
+					res.status(400); //ako je email zauzet
+				}
 			}
 			//ako nije menjan email
 			else {
@@ -1324,6 +1328,9 @@ public class Main {
 		if (remove) {
 			r.userList.remove(loggedIn);
 			r.users.remove(loggedIn.getEmail(), loggedIn);
+			for (User u: r.userList) {
+				System.out.println(u);
+			}
 			return;
 		}
 		r.userList.add(loggedIn);
@@ -1625,9 +1632,9 @@ public class Main {
 		for (User user : r.userList) {
 			if (user.getOrganization()!=null) {
 				if (user.getOrganization().equals(o.getName())) { //ako user ima tu org moramo da je obrisemo
-					user.setOrganization(null);
-				}
-				if (r.users.get(user.getEmail()).getOrganization().equals(o.getName())) {
+					if (r.users.get(user.getEmail()).getOrganization().equals(o.getName())) {
+						user.setOrganization(null);
+					}
 					user.setOrganization(null);
 				}
 			}

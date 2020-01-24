@@ -9,6 +9,7 @@ Vue.component("log-in", {
 		    }
 	},
 	template: ` 
+	
 		<div>
 			<h3>Login</h3>
 			<table>
@@ -25,16 +26,16 @@ Vue.component("log-in", {
 				{{error3}}
 		</table>
 		
-		</div>		  
+		</div>	     
 		`,
 		methods: {
 			attemptLog: function () {
 			  if(!this.email){
 				  this.error1 = 'Email is required!'
-			  }
+			  }else {this.error1=''}
 			  if(!this.password){
 				  this.error2 = 'Password is required!'
-			  }
+			  }else {this.error2=''}
 			  if(this.email && this.password)
 			  {
 				  axios
@@ -47,6 +48,8 @@ Vue.component("log-in", {
 			      })
 			      .catch((response)=>{
 			    	  this.error3 = 'Wrong email or password!';
+			    	  this.error1='';
+			    	  this.error2='';
 			      })
 			   }
 			  

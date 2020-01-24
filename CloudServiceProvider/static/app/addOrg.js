@@ -14,7 +14,7 @@ Vue.component("add-org", {
 	<p>ADDING ORGANIZATION</p>
 	<table>
 		<tr><td>Name:</td><td><input type="text" style="width:60px" size="5" v-model="name" name="name"> {{nameErr}}</td></tr>
-		<tr><td>Caption:</td><td><input type="text" style="width:60px" size="5" v-model="caption" name="caption"></td> {{captionErr}}</tr>
+		<tr><td>Caption:</td><td><input type="text" style="width:60px" size="5" v-model="caption" name="caption"> {{captionErr}}</td> </tr>
 		<tr >
 				<td> Upload logo: </td>
 				<td><input type="file" @change = "onUpload" ></td> 
@@ -36,7 +36,7 @@ Vue.component("add-org", {
 		if(!this.caption){
 			this.captionErr = 'Caption is required!'
 		}
-		//sad kao ako nema url da mu ja dam neki default al to cu kad budem imala ucitavanje slike 
+		
 		if(this.name && this.caption && this.logo) {
 			axios
 			.post('rest/addOrganization', {"name":this.name, "caption":this.caption, "logo":this.logo})

@@ -1,4 +1,3 @@
-
 const Home = { template: '<home-page></home-page>' }
 const Login = { template: '<log-in></log-in>' }
 const Org = { template: '<organization></organization>' }

@@ -1,7 +1,7 @@
 Vue.component("change-org",{
 	data: function(){
 		return{
-			org: null,
+			org: {},
 			nameErr: '',
 		    captionErr: '',
 		    logoErr: '',
@@ -15,12 +15,12 @@ Vue.component("change-org",{
 		<table>
 		<tr>
 				<td> Name: </td>
-				<td><input type="text" style="width:60px" size="3" v-model="org.name" name="name" ></td> {{nameErr}}
+				<td><input type="text" style="width:60px" size="3" v-model="org.name" name="name">{{nameErr}}</td> 
 		</tr>
 			
 		<tr >	
 				<td> Caption: </td>
-				<td><input type="text" style="width:60px" size="3" v-model="org.caption" name="caption"></td> {{captionErr}}
+				<td><input type="text" style="width:60px" size="3" v-model="org.caption" name="caption">{{captionErr}}</td> 
 		</tr>
 		
 		<tr >

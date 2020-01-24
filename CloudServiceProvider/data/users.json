@@ -8,26 +8,9 @@
     "password": "sifra1"
   },
   {
-    "email": "korisnik@gmail.com",
-    "name": "milica",
-    "surname": "poparic",
-    "nameORG": "Microsoft",
-    "role": "admin",
-    "password": "a"
-  },
-  {
-    "email": "poparic@gmail.com",
-    "name": "milica",
-    "surname": "poparic",
-    "nameORG": "Microsoft",
-    "role": "admin",
-    "password": "a"
-  },
-  {
     "email": "k1",
     "name": "SENIDA",
     "surname": "k1",
-    "nameORG": "IOS",
     "role": "user",
     "password": "k1"
   },
@@ -48,35 +31,12 @@
     "password": "j"
   },
   {
-    "email": "admin",
-    "name": "BORKO",
-    "surname": "MACAN",
-    "role": "superAdmin",
-    "password": "admin"
-  },
-  {
     "email": "LEGO",
     "name": "GEGO",
     "surname": "THCF",
     "nameORG": "ORG1",
     "role": "user",
     "password": "AGJAWR"
-  },
-  {
-    "email": "milica",
-    "name": "a",
-    "surname": "a",
-    "nameORG": "Microsoft",
-    "role": "admin",
-    "password": "a"
-  },
-  {
-    "email": "covekimastan@gmail.com",
-    "name": "a",
-    "surname": "a",
-    "nameORG": "Oracle",
-    "role": "user",
-    "password": "a"
   },
   {
     "email": "ma neka kazu da sam poludela",
@@ -93,5 +53,36 @@
     "nameORG": "Microsoft",
     "role": "user",
     "password": "n"
+  },
+  {
+    "email": "admin",
+    "name": "BORKO",
+    "surname": "MACAN",
+    "role": "superAdmin",
+    "password": "admin"
+  },
+  {
+    "email": "poparic@gmail.com",
+    "name": "a",
+    "surname": "a",
+    "nameORG": "Microsoft",
+    "role": "admin",
+    "password": "a"
+  },
+  {
+    "email": "covekimastan@gmail.com",
+    "name": "a",
+    "surname": "a",
+    "nameORG": "Microsoft",
+    "role": "user",
+    "password": "a"
+  },
+  {
+    "email": "co",
+    "name": "a",
+    "surname": "a",
+    "nameORG": "Microsoft",
+    "role": "user",
+    "password": "a"
   }
 ]

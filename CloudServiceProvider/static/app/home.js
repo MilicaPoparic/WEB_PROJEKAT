@@ -36,8 +36,9 @@ Vue.component("home-page", {
 		</tr>
 	</table>
 	<br>
+	<button v-on:click="dodajVM()" v-if="role!='user'">Add new vm</button>
+	<br> <br>
 	Find a VM:
-	
 	<table border="1">
 		<tr>
 			<td> Name: </td>
@@ -68,13 +69,12 @@ Vue.component("home-page", {
 		<button v-on:click="filter()">Filter</button>
 	</p>
 	 
-	<button v-on:click="dodajVM()" v-if="role!='user'">Add new vm</button>
-	<a href="#/profile">Profile</a>
-	<a href="#/drives" @click="drivess()">Drives</a>
-	<a href="#/o" v-if="role=='superAdmin' || role=='admin'">Organizations</a>
-	<a href="#/users" v-if="role=='superAdmin' || role=='admin'">Users</a>
-	<a href="#/c" v-if="role=='superAdmin'">Categories</a>
-	<button v-on:click="logout">Logout</button>
+	<a href="#/profile">Profile</a> <br>
+	<a href="#/drives" @click="drivess()">Drives</a> <br>
+	<a href="#/o" v-if="role=='superAdmin' || role=='admin'">Organizations</a> <br>
+	<a href="#/users" v-if="role=='superAdmin' || role=='admin'">Users</a> <br>
+	<a href="#/c" v-if="role=='superAdmin'">Categories</a> <br>
+	<button v-on:click="logout">Logout</button> <br>
 	
 	
 </div>		  

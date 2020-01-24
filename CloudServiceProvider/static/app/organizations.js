@@ -22,6 +22,7 @@ Vue.component("organization", {
 		
 	</tr>
 </table>
+		<br>
 		<p><button v-if="role=='superAdmin'" v-on:click="addOrg">Add</button></p>
 	
 </div>		  

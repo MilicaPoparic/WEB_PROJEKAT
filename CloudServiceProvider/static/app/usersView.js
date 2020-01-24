@@ -1,7 +1,7 @@
 Vue.component("users", {
 	data: function () {
 		    return {
-		      users: null,
+		      users: {},
 		      role: ''
 		    }
 	},

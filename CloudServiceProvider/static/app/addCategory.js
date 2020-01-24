@@ -15,19 +15,16 @@ Vue.component("addCateg",{
 	`
 	<div>
 		
-	Dodaj kategoriju:
+	Add category:
+	<br>
 	<table>
 	<tr>
-		<td>
-	    	Naziv kategorije 
-	    </td>
-	    <td>
-	    	<input type="text" style="width:60px" size="5" v-model="nameID" name="nameID">{{error1}}
-	    </td>
+		<td>Name</td>
+	    <td><input type="text" style="width:60px" size="5" v-model="nameID" name="nameID">{{error1}}</td>
 	</tr>
 	<tr>
 		<td>
-	    	Broj jezgara 
+	    	CORE
 	    </td>
 	    <td>
 	    	<input type="text" style="width:60px" size="5" v-model="numCPU" name="numCPU">{{error2}}
@@ -53,7 +50,7 @@ Vue.component("addCateg",{
 	</table>
 	<br>
 	
-	<button v-on:click="addC">Dodaj kategoriju</button>
+	<button v-on:click="addC">Add</button>
 	 {{error4}}
 </div>	
 	`
@@ -62,15 +59,16 @@ Vue.component("addCateg",{
 		addC:function(){
 			if(!this.nameID){
 				this.error1='Name of categoria is required!';
-			}
+			}else {this.error1='';}
 			if(!this.numCPU){
 				this.error2='Number of cores is required!';
-			}
+			}else {this.error2='';}
 			if(!this.numRAM){
 				this.error3='Number of ram is required!';
-			}
+			}else {this.error3='';}
 			if(this.nameID && this.numCPU && this.numRAM)
 			{
+				this.error4='';
 				axios
 			      .post("rest/addNewCategory", {"nameID":this.nameID, "numCPU":this.numCPU, "numRAM":this.numRAM, "numGPU":this.numGPU })
 			      .then((response) => {
@@ -80,6 +78,9 @@ Vue.component("addCateg",{
 			    	  }
 			      })
 			      .catch((response)=>{
+			    	  this.error1='';
+			    	  this.error2='';
+			    	  this.error3='';
 			    	  this.error4 = 'Wrong ID, number of cores or number of ram!';
 			      })
 			}	

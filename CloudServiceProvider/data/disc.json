@@ -27,5 +27,11 @@
     "name": "pomocni",
     "capacity": 128,
     "nameVM": "null"
+  },
+  {
+    "name": "E",
+    "driveType": "HDD",
+    "capacity": 5,
+    "nameVM": "jjjj"
   }
 ]

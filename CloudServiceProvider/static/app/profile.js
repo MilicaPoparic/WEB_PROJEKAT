@@ -1,7 +1,7 @@
 Vue.component("profile-info",{
 	data: function(){
 		return{
-			user: null,
+			user: {},
 			confirmation: '',
 			passErr: '',
 			err: ''

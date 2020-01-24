@@ -15,35 +15,6 @@
     ]
   },
   {
-    "name": "Microsoft",
-    "caption": "micCaption",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Microsoft_logo.svg/439px-Microsoft_logo.svg.png",
-    "users": [
-      "poparic@gmail.com",
-      "korisnik@gmail.com",
-      "nnn",
-      "milica"
-    ],
-    "resources": [
-      "D",
-      "WINDOWS10-VM"
-    ]
-  },
-  {
-    "name": "Oracle",
-    "caption": "opisOrac",
-    "logo": "http://www.nirapress.com/wp-content/uploads/2017/10/oracle-logo.jpg",
-    "users": [
-      "covekimastan@gmail.com"
-    ],
-    "resources": [
-      "ORACLE-VM",
-      "F",
-      "JAVA-VM",
-      "NOVA"
-    ]
-  },
-  {
     "name": "IOS",
     "caption": "opisIOS",
     "logo": "https://cdn1.iconfinder.com/data/icons/logos-brands-1/24/logo_brand_brands_logos_apple_ios-512.png",
@@ -53,6 +24,34 @@
     ],
     "resources": [
       "C"
+    ]
+  },
+  {
+    "name": "Oracle",
+    "caption": "opisOrac",
+    "logo": "http://www.nirapress.com/wp-content/uploads/2017/10/oracle-logo.jpg",
+    "users": [],
+    "resources": [
+      "ORACLE-VM",
+      "F",
+      "JAVA-VM",
+      "NOVA"
+    ]
+  },
+  {
+    "name": "Microsoft",
+    "caption": "micCaption",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Microsoft_logo.svg/439px-Microsoft_logo.svg.png",
+    "users": [
+      "nnn",
+      "poparic@gmail.com",
+      "covekimastan@gmail.com",
+      "co"
+    ],
+    "resources": [
+      "D",
+      "WINDOWS10-VM",
+      "VMVM"
     ]
   }
 ]

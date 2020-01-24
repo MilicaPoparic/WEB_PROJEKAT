@@ -1,7 +1,7 @@
 Vue.component("detailCateg",{
 	data: function(){
 		return{
-			category:null,
+			category:{},
 			nameID:'',
 			numCPU:'',
 			numRAM:'',
@@ -13,15 +13,15 @@ Vue.component("detailCateg",{
 	template:
 		`
 <div>
-		Kategorija:
+		Category:
 		<table>
 		<tr>
-				<td> Naziv kategorije: </td>
+				<td> Name: </td>
 				<td>{{category.name}}</td>
 		</tr>
 			
 		<tr >	
-				<td> Broj jezgara: </td>
+				<td> CORE: </td>
 				<td>{{category.coreNumber}}</td>
 		</tr>
 			
@@ -36,11 +36,12 @@ Vue.component("detailCateg",{
 				<td>{{category.GPUcores}}</td>
 		</tr>
         </table>
+		<br>
 		<table border="1">
-		Izmeni:
+		Change:
 		<tr>
 			<td>
-		    	Naziv kategorije 
+		    	Name 
 		    </td>
 		    <td>
 		    	<input type="text" style="width:60px" size="5"   v-model="nameID" name="nameID">
@@ -48,7 +49,7 @@ Vue.component("detailCateg",{
 		</tr>
 		<tr>
 			<td>
-		    	Broj jezgara 
+		    	CORE 
 		    </td>
 		    <td>
 		    	<input type="text" style="width:60px" size="5" v-model="numCPU" name="numCPU" >
@@ -70,13 +71,14 @@ Vue.component("detailCateg",{
 		    	<input type="text" style="width:60px" size="5" v-model="numGPU" name="numGPU" > 
 		    </td>	
 		</tr>	
+		<tr><button v-on:click="change()">Change</button> {{error1}}</tr>	
 		</table>
 		<br>
 		
-		<button v-on:click="change()">Izmeni kategoriju</button> {{error1}}	
+		
 		<br>
 		<br>
-		<button v-on:click="removeCategory()">Obrisi kategoriju</button>{{error2}}
+		<button v-on:click="removeCategory()">Delete</button>{{error2}}
 </div>
 			`
 ,
@@ -104,10 +106,9 @@ Vue.component("detailCateg",{
 			    	  this.error1 = 'The data is invalid!';
 			      })
 			} 
+
 			if(!this.numGPU && !this.nameID && !this.numCPU && !this.numRAM ){
-					axios
-				      .post('rest/category', "")
-				      .then(response => location.href = '#/c');
+				location.href = '#/c';
 			}
 		},
 		removeCategory: function(){
