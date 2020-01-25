@@ -197,7 +197,8 @@ Vue.component("add-vm",{
           .get('rest/getOrganizationsForVM')   
           .then(response => (this.organizations = response.data));
         axios
-          .get('rest/getCategoriesForVM')   
+        //bilo ono getCategoriesForVM
+          .get('rest/getCategories')   
           .then(response => (this.categories = response.data));
         axios
           .get('rest/getDrivesForVM')   

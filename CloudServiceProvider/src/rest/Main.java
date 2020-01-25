@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -51,8 +52,8 @@ public class Main {
 	private static ArrayList<VirtualMachine> retVMHelper;
 	
 	
-	private static void writeToFiles(ArrayList<Object> listForWrite, String string) throws IOException {
-		String json = gson.toJson(listForWrite);
+	private static void writeToFiles1(HashMap<String,Object> listForWrite, String string) throws IOException {
+		String json = gson.toJson(listForWrite.values());
 		FileWriter file = new FileWriter(string);
 		file.write(json);
 		file.close();
@@ -100,6 +101,7 @@ public class Main {
 			return ("OK");
 			});
 		
+		//trebace za mesecni izvestaj!
 		get("/rest/checkAdmin", (req, res) -> {
 			res.type("application/json");
 			User user = req.session(true).attribute("user");
@@ -135,6 +137,8 @@ public class Main {
 		get("/rest/getUsers", (req, res) -> {
 			res.type("application/json");
 			User user = req.session().attribute("user");
+			
+			System.out.println(takeUsers(user).size());
 			return gson.toJson(takeUsers(user));
 		});
 
@@ -168,16 +172,18 @@ public class Main {
 			if (user == null) {
 				res.status(400);
 				return ("OK");
-			} 
-			
+			}
 				res.status(200);
-			
-			return ("OK");
+				return ("OK");
 		});
 		
 		get("/rest/getCategories", (req,res)-> {
 			res.type("application/json");
-			return g.toJson(r.categoryList);
+			ArrayList<Category> categoryList = new ArrayList<Category>();
+			for (Category cat : r.categories.values()) {
+				categoryList.add(cat);
+			}
+			return g.toJson(categoryList);
 		});
 		
 		get("/rest/getCategory", (req,res)-> {
@@ -189,14 +195,15 @@ public class Main {
 			res.type("application/json");
 			Session ss = req.session(true);
 			User user = ss.attribute("user");
+			ArrayList<Drive> discsList = new ArrayList<Drive>();
 			if (user!=null) {
 				if  (user.getRole().toString().equals("superAdmin")){
-					return g.toJson(r.driveList);
+					for (Drive d : r.drives.values()) {
+						discsList.add(d);
+					}
 				}
 				else {
 					String org = user.getOrganization();//ovim dobijam koja je org
-					
-					ArrayList<Drive> discsList = new ArrayList<Drive>();
 					if (r.organizations.get(org)!=null) {
 						for(String fromO: r.organizations.get(org).getResources()) {
 							if(r.drives.get(fromO)!=null) {
@@ -205,12 +212,9 @@ public class Main {
 						}
 						
 					}
-					return g.toJson(discsList);
 				}
 			}
-			else {
-				return ("OK");
-			}
+			return g.toJson(discsList);
 		});
 		
 		get("/rest/getDrive", (req,res)-> {
@@ -225,8 +229,12 @@ public class Main {
 		get("/rest/getDVM", (req,res)-> {
 			res.type("application/json");
 			HashMap<String, Integer> dvm = new HashMap<String, Integer>();
-			for(VirtualMachine vmm: r.virtMachineList) {
-				dvm.put(vmm.getName(), r.virtMachineList.indexOf(vmm));
+			ArrayList<VirtualMachine> virtMachineList = new ArrayList<VirtualMachine>();
+			for (VirtualMachine masina : r.virtMachines.values()) {
+				virtMachineList.add(masina);
+			}
+			for(VirtualMachine vmm: virtMachineList) {
+				dvm.put(vmm.getName(), virtMachineList.indexOf(vmm));
 			}
 			return g.toJson(dvm);	
 		});
@@ -271,7 +279,10 @@ public class Main {
 			ArrayList<Organization> arrOrg = new ArrayList<Organization>();
 			if(user!=null) {
 				if(user.getRole().toString().equals("superAdmin")) {
-					return  g.toJson(r.organizationList);
+					for (Organization org: r.organizations.values()) {
+						arrOrg.add(org);
+					}
+					return  g.toJson(arrOrg);
 				}
 				else if(user.getRole().toString().equals("admin")) {
 					return g.toJson(user.getOrganization());
@@ -280,10 +291,12 @@ public class Main {
 			}
 			return "OK";
 		});
-		get("/rest/getCategoriesForVM", (req,res)-> {
+		//ovo vec imamo samo se drugacije zove tako da moze to da pozove
+		/*get("/rest/getCategoriesForVM", (req,res)-> {
 			res.type("application/json");
 			return g.toJson(r.categoryList);
-		});
+		});*/
+		
 		get("/rest/getDrivesForVM", (req,res)-> {
 			res.type("application/json");
 			HashMap<String,String> hashDrive = machOrgDrive();	
@@ -347,7 +360,8 @@ public class Main {
 				org.setResources(new ArrayList<String>());
 				manageListsOrg(org, false);
 				res.status(200);
-				writeToFiles((ArrayList<Object>)(Object) r.organizationList, "./data/organizations.json"); 
+				//writeToFiles((ArrayList<Object>)(Object) r.organizationList, "./data/organizations.json"); 
+				writeToFiles1((HashMap<String,Object>)(Object) r.organizations, "./data/organizations.json"); 
 				return ("OK");
 			}
 			res.status(400);
@@ -361,7 +375,7 @@ public class Main {
 			if (newUser!=null && r.users.get(newUser.getEmail())==null) {
 				ArrayList<String> users = new ArrayList<String>();
 				if (loggedIn.getRole().toString().equals("admin")) 
-					newUser.setOrganization(loggedIn.getOrganization());
+				newUser.setOrganization(loggedIn.getOrganization());
 				r.organizations.get(newUser.getOrganization()).getUsers().add(newUser.getEmail());
 				manageListsUser(newUser, false);
 				res.status(200);
@@ -375,22 +389,22 @@ public class Main {
 		post("/rest/changeVM", (req,res)-> {
 			res.type("application/json");
 			SendVMO vm = gson.fromJson(req.body(),SendVMO.class);
-			System.out.println(vm.getActivityLog().get(0).getStart());
 			if (!v.getNameVM().equals(vm.getNameVM()) && r.virtMachines.get(vm.getNameVM())==null) {
+				System.out.println("ime prosla "+v.getNameVM());
+				//da podesi i aktiviti log za slucaj da je menjan!!!
 				VirtualMachine old = r.virtMachines.get(v.getNameVM());
 				VirtualMachine virtual = r.virtMachines.get(v.getNameVM());
-				virtual.setName(vm.getNameVM());
 				manageListsVM(old, true);
+				virtual.setName(vm.getNameVM());
 				manageListsVM(virtual, false);
 				changeDrivesVM(v.getNameVM(), vm.getNameVM());
 				changeOrgVM(v, vm);
 				writeDependencies();
-				//v.setNameVM(vm.getNameVM()); 
-				//System.out.println(v.getNameVM());
 				res.status(200);
 				return ("OK");
 			}
 			if (!v.getNameVM().equals(vm.getNameVM()) && r.virtMachines.get(vm.getNameVM())!=null) {
+				System.out.println("JBG");
 				res.status(400);
 				return ("OK");
 			}
@@ -415,7 +429,7 @@ public class Main {
 			User change= g.fromJson(req.body(), User.class);
 			res.status(200);
 			changeUser(change);
-			writeToFiles((ArrayList<Object>)(Object) r.userList, "./data/users.json"); 
+			writeToFiles1((HashMap<String,Object>)(Object) r.users, "./data/users.json"); 
 			return ("OK");
 		
 		});
@@ -432,21 +446,14 @@ public class Main {
 					System.out.println(change.getOrganization());  
 					manageListsUser(change, false); //dodaje novog
 					removeOrgUser(loggedIn); 
-					r.organizations.get(change.getOrganization()).getUsers().add(change.getEmail());
-					for (Organization org:r.organizationList) {
-						if (org.getName().equals(change.getOrganization())) {
-							org.getUsers().add(change.getEmail());
-							break;
-						}
-						break;
-					}
-					req.session().attribute("user",change); //NAPOMENA,
+					if (!loggedIn.getRole().toString().equals("superAdmin")) {
+						r.organizations.get(change.getOrganization()).getUsers().add(change.getEmail());
+					}req.session().attribute("user",change); //NAPOMENA,
 				}
 				else {
-					res.status(400); //ako je email zauzet
+					res.status(400); 
 				}
 			}
-			//ako nije menjan email
 			else {
 				changeUser(change);
 			}
@@ -617,10 +624,9 @@ public class Main {
 				refreshDiscORG(drive);
 				refreshDisc(drive);		
 				
-				
-				writeToFiles((ArrayList<Object>)(Object) r.virtMachineList, "./data/virtMachines.json"); //automatski refresh
-				writeToFiles((ArrayList<Object>)(Object) r.organizationList, "./data/organizations.json"); //automatski refresh
-				writeToFiles((ArrayList<Object>)(Object) r.driveList, "./data/disc.json"); //automatski refresh
+				writeToFiles1((HashMap<String,Object>)(Object) r.virtMachines, "./data/virtMachines.json"); //automatski refresh
+				writeToFiles1((HashMap<String,Object>)(Object) r.organizations, "./data/organizations.json"); //automatski refresh
+				writeToFiles1((HashMap<String,Object>)(Object) r.drives, "./data/disc.json"); //automatski refresh
 				
 				d =null;
 			}
@@ -634,8 +640,7 @@ public class Main {
 			if(dCheck != null) {
 				res.status(200);
 				r.drives.put(drive.getName(),drive);
-				r.driveList.add(drive);
-				writeToFiles((ArrayList<Object>)(Object) r.driveList, "./data/disc.json"); //automatski refresh
+				writeToFiles1((HashMap<String,Object>)(Object) r.drives, "./data/disc.json"); 
 			}
 			else {
 				res.status(400);
@@ -656,7 +661,8 @@ public class Main {
 			else {
 				res.status(200);
 				removeDrive(drive);
-				writeToFiles((ArrayList<Object>)(Object) r.driveList, "./data/disc.json"); //automatski refresh
+				//writeToFiles((ArrayList<Object>)(Object) r.driveList, "./data/disc.json"); //automatski refresh
+				writeToFiles1((HashMap<String,Object>)(Object)r.drives, "./data/disc.json"); 
 			}
 			return ("OK");
 		});
@@ -717,7 +723,7 @@ public class Main {
 	}
 	private static void refreshRemovedCategory(String name)throws IOException {
 		removeCategory(name);
-		writeToFiles((ArrayList<Object>)(Object) r.categoryList, "./data/categories.json"); 
+		writeToFiles1((HashMap<String,Object>)(Object) r.categories, "./data/categories.json"); 
 		
 	}
 	private static void removeFromLists(SendVMO vm) {
@@ -729,17 +735,14 @@ public class Main {
 
 	private static void refreshReferencedCategory(Category category)throws IOException {
 		checkCategoryChangeVM(category);
-		categoryChange(category);		
-		writeToFiles((ArrayList<Object>)(Object) r.categoryList, "./data/categories.json");
-		writeToFiles((ArrayList<Object>)(Object) r.virtMachineList, "./data/virtMachines.json"); 
-		
+		categoryChange(category);
+		writeToFiles1((HashMap<String,Object>)(Object) r.categories, "./data/categories.json");
+		writeToFiles1((HashMap<String,Object>)(Object) r.virtMachines, "./data/virtMachines.json"); 
 	}
 
 	private static void refreshCategory(Category cc) throws IOException {
 		r.categories.put(cc.getName(),cc);
-		r.categoryList.add(cc);
-		writeToFiles((ArrayList<Object>)(Object) r.categoryList, "./data/categories.json"); 
-		
+		writeToFiles1((HashMap<String,Object>)(Object) r.categories, "./data/categories.json");
 	}
 
 	private static Category checkSendDataCateg(String reqData) throws Exception{
@@ -797,11 +800,7 @@ public class Main {
 		addToOrg(vm.nameOrg,vm.name);
 		
 		r.virtMachines.put(vm.name, v);
-		r.virtMachineList.clear();
-		for(VirtualMachine virt: r.virtMachines.values()) {
-			r.virtMachineList.add(virt);
-		}
-		writeToFiles((ArrayList<Object>)(Object) r.virtMachineList, "./data/virtMachines.json");
+		writeToFiles1((HashMap<String,Object>)(Object) r.virtMachines, "./data/virtMachines.json");
 		
 	}
 
@@ -811,11 +810,7 @@ public class Main {
 				dd.getResources().add(name);
 			}
 		}
-		r.organizationList.clear();
-		for(Organization dd: r.organizations.values()) {
-			r.organizationList.add(dd);
-		}
-		writeToFiles((ArrayList<Object>)(Object) r.organizationList, "./data/organizations.json");
+		writeToFiles1((HashMap<String,Object>)(Object) r.organizations, "./data/organizations.json");
 	}
 
 	private static void changeRefVM(ArrayList<String> nameD, String name) throws IOException {
@@ -826,12 +821,8 @@ public class Main {
 				}
 			}
 		}
-		r.driveList.clear();
-		for(Drive dd: r.drives.values()) {
-			r.driveList.add(dd);
+		writeToFiles1((HashMap<String,Object>)(Object) r.drives, "./data/disc.json");
 		}
-		writeToFiles((ArrayList<Object>)(Object) r.driveList, "./data/disc.json");
-	}
 
 	private static VMAdd checkReqFields(VMAdd newVM) {
 		for(String vms : r.virtMachines.keySet()) {
@@ -1210,26 +1201,20 @@ public class Main {
 		return false;
 	}
 	private static void refreshFiles() throws IOException {
-		writeToFiles((ArrayList<Object>)(Object) r.userList, "./data/users.json");
-		writeToFiles((ArrayList<Object>)(Object) r.organizationList, "./data/organizations.json");
+		writeToFiles1((HashMap<String,Object>)(Object) r.users, "./data/users.json");
+		writeToFiles1((HashMap<String,Object>)(Object) r.organizations, "./data/organizations.json");
 	}
 	
 	public static void writeDependencies() throws IOException {
-		writeToFiles((ArrayList<Object>)(Object) r.virtMachineList, "./data/virtMachines.json");
-		writeToFiles((ArrayList<Object>)(Object) r.driveList, "./data/disc.json");
-		writeToFiles((ArrayList<Object>)(Object) r.organizationList, "./data/organizations.json");
-		
+		writeToFiles1((HashMap<String,Object>)(Object) r.virtMachines, "./data/virtMachines.json");
+		writeToFiles1((HashMap<String,Object>)(Object) r.drives, "./data/disc.json");
+		writeToFiles1((HashMap<String,Object>)(Object) r.organizations, "./data/organizations.json");
 	}
 
 	private static void changeDrivesVM(String v, String vm) {
 		for (Drive d : r.drives.values()) {
 			if (d.getVirtualMachine().equals(v)) {
 				d.setVirtualMachine("");
-			}
-		}
-		for (Drive d : r.driveList){
-			if (d.getVirtualMachine().equals(v)) {
-					d.setVirtualMachine(vm);
 			}
 		}
 	}
@@ -1239,13 +1224,6 @@ public class Main {
 				r.organizations.get(v.getNameORG()).getResources().remove(v.getNameVM());
 				if (vm!=null) {
 				r.organizations.get(v.getNameORG()).getResources().add(vm.getNameVM());}
-			}
-			for (Organization organ: r.organizationList) {
-				if (organ.getResources().contains(v.getNameVM())) {
-					organ.getResources().remove(v.getNameVM());
-					if (vm!=null) {
-					organ.getResources().add(vm.getNameVM());}
-				}
 			}
 			}
 	}
@@ -1326,24 +1304,21 @@ public class Main {
 	}
 	private static void manageListsUser(User loggedIn, Boolean remove) {
 		if (remove) {
-			r.userList.remove(loggedIn);
+			//r.userList.remove(loggedIn);
 			r.users.remove(loggedIn.getEmail(), loggedIn);
-			for (User u: r.userList) {
-				System.out.println(u);
-			}
 			return;
 		}
-		r.userList.add(loggedIn);
+		//r.userList.add(loggedIn);
 		r.users.put(loggedIn.getEmail(), loggedIn);
 		
 	}
 	private static void manageListsOrg(Organization o, Boolean remove) {
 		if (remove) {
-			r.organizationList.remove(o);
+			//r.organizationList.remove(o);
 			r.organizations.remove(o.getName(), o);
 			return;
 		}
-		r.organizationList.add(o);
+		//r.organizationList.add(o);
 		r.organizations.put(o.getName(), o);
 		
 	}
@@ -1352,13 +1327,9 @@ public class Main {
 	private static void manageListsVM(VirtualMachine v, Boolean remove)  {
 		if (remove) {
 			r.virtMachines.remove(v.getName(),v);
-			for (String k: r.virtMachines.keySet()) {
-			}
-			r.virtMachineList.remove(v);
 			return;
 		}
 		r.virtMachines.put(v.getName(),v);
-		r.virtMachineList.add(v);
 	}
 	private static void troughtDiscType(ArrayList<Drive> ret, String check1) {
 		for (Drive drive : new ArrayList<Drive>(ret)) {
@@ -1404,10 +1375,6 @@ public class Main {
 			
 		}
 		mapDrive.clear();
-		r.driveList.clear();
-		for(Drive v: r.drives.values()) {
-			r.driveList.add(v);
-		}
 	}
 
 	private static boolean checkDriveInVM(String name) {
@@ -1423,8 +1390,6 @@ public class Main {
 	}
 	private static void changeUser(User change) {
 		User oldOne = r.users.get(change.getEmail());
-		r.userList.remove(oldOne);
-		r.userList.add(change);
 		r.users.remove(oldOne.getEmail(), oldOne);
 		r.users.put(change.getEmail(), change);
 	}
@@ -1470,11 +1435,6 @@ public class Main {
 				driv.setVirtualMachine(drive.getVirtualMachine());
 			}
 		}
-		r.driveList.clear();
-		for(Drive v: r.drives.values()) {
-			r.driveList.add(v);
-			
-		}
 		
 	}
 
@@ -1485,12 +1445,7 @@ public class Main {
 			{
 				int index =org.getResources().indexOf(d.getName());
 				org.getResources().set(index, drive.getName());//setujem samo naziv 
-			}
-			
-		}
-		r.organizationList.clear();
-		for(Organization v: r.organizations.values()) {
-			r.organizationList.add(v);
+			}	
 		}
 		
 	}
@@ -1504,10 +1459,6 @@ public class Main {
 				vm.getDrives().set(index, drive.getName());//setujem samo naziv 
 			}
 			
-		}
-		r.virtMachineList.clear();
-		for(VirtualMachine v: r.virtMachines.values()) {
-			r.virtMachineList.add(v);
 		}
 		
 	}
@@ -1532,12 +1483,7 @@ public class Main {
 				vm.getCategory().setGPUcores(category.getGPUcores());
 				vm.getCategory().setCoreNumber(category.getCoreNumber());
 				vm.getCategory().setRAM(category.getRAM());
-			}
-			
-		}
-		r.virtMachineList.clear();
-		for(VirtualMachine v: r.virtMachines.values()) {
-			r.virtMachineList.add(v);
+			}	
 		}
 	}
 	private static void categoryChange(Category category) {
@@ -1548,11 +1494,6 @@ public class Main {
 				categ.setRAM(category.getRAM());
 				categ.setCoreNumber(category.getCoreNumber());
 			}
-		}
-		r.categoryList.clear();
-		for(Category v: r.categories.values()) {
-			r.categoryList.add(v);
-			
 		}
 	}
 	private static void removeCategory(String key) {
@@ -1565,15 +1506,8 @@ public class Main {
 		r.categories.clear();
 		for(Category v: mapCategory.values()) {
 			r.categories.put(v.getName(),v);
-			
 		}
 		mapCategory.clear();
-		r.categoryList.clear();
-		for(Category v: r.categories.values()) {
-			r.categoryList.add(v);
-			
-		}
-		
 	}
 	
 			
@@ -1606,11 +1540,6 @@ public class Main {
 		return null;
 	}
 	private static void removeOrgUser(User user) {
-		for (Organization org : r.organizationList) {
-			if (org.getUsers().contains(user.getEmail())) {
-				org.getUsers().remove(user.getEmail());
-			}
-		}
 		for (Organization or : r.organizations.values()) {
 			if (or.getUsers().contains(user.getEmail())) {
 				or.getUsers().remove(user.getEmail());
@@ -1619,22 +1548,16 @@ public class Main {
 	}
 	private static void deleteUserData() throws IOException {
 		r.organizations.get(u.getOrganization()).getUsers().remove(u.getEmail());
-		//ArrayList<String> newUsers = new ArrayList<String>();
 		removeOrgUser(u);
 		r.users.remove(u.getEmail(),u);
-		r.userList.remove(u);
 		refreshFiles();
-		
 	}
 	
 	private static void deleteOrgData() throws IOException {
 		manageListsOrg(o, true);
-		for (User user : r.userList) {
+		for (User user : r.users.values()) {
 			if (user.getOrganization()!=null) {
 				if (user.getOrganization().equals(o.getName())) { //ako user ima tu org moramo da je obrisemo
-					if (r.users.get(user.getEmail()).getOrganization().equals(o.getName())) {
-						user.setOrganization(null);
-					}
 					user.setOrganization(null);
 				}
 			}
@@ -1644,13 +1567,10 @@ public class Main {
 	private static void refreshOrgData(Organization org) throws IOException {
 		manageListsOrg(o, true);
 		manageListsOrg(org, false);
-		for (User user : r.userList) {
+		for (User user : r.users.values()) {
 			if  (user.getOrganization() != null) {
 				if (user.getOrganization().equals(o.getName())) {
 					user.setOrganization(org.getName());
-				}
-				if (r.users.get(user.getEmail()).getOrganization().equals(o.getName())) {
-					r.users.get(user.getEmail()).setOrganization(org.getName());
 				}
 			}
 		}
@@ -1658,7 +1578,7 @@ public class Main {
 	
 	private static ArrayList<SendVMO> loadVMO() {
 		ArrayList<SendVMO> listOfVMO = new ArrayList<SendVMO>();
-		for(VirtualMachine vm : r.virtMachineList) {
+		for(VirtualMachine vm : r.virtMachines.values()) {
 			SendVMO sv = new SendVMO();
 			int i = 0;
 			sv.setCategoryCoreNumber(vm.getCategory().getCoreNumber());
@@ -1688,7 +1608,10 @@ public class Main {
 		ArrayList<User> userL = new ArrayList<User>();
 		if (user!=null) {
 			if  (user.getRole().toString().equals("superAdmin")){
-				return r.userList;
+				for (User u: r.users.values()) {
+					userL.add(u); 
+				}
+				return userL;
 			}
 			else { 
 				String org = user.getOrganization();
@@ -1705,7 +1628,10 @@ public class Main {
 		ArrayList<Organization> organizationL = new ArrayList<Organization>();
 		if (user!=null) {
 		if  (user.getRole().toString().equals("superAdmin")){
-			return r.organizationList;
+			for (Organization o: r.organizations.values()) {
+				organizationL.add(o);
+			}
+			return organizationL;
 		}
 		else {
 			String org = user.getOrganization();
@@ -1715,12 +1641,13 @@ public class Main {
 		}
 		return organizationL;
 	}
+	
 	private static ArrayList<SendVMO> loadVMOUser(User user) {
 		ArrayList<SendVMO> data = new ArrayList<SendVMO>();
 		ArrayList<VirtualMachine> machines = new ArrayList<VirtualMachine>();
 		String organization = r.users.get(user.getEmail()).getOrganization();
 		for (String resource : r.organizations.get(organization).getResources()) {
-			for (VirtualMachine vm : r.virtMachineList) {
+			for (VirtualMachine vm : r.virtMachines.values()) {
 				if (vm.getName().equals(resource)) {
 					machines.add(vm);
 				}

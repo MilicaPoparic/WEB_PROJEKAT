@@ -127,8 +127,6 @@ Vue.component("detailCateg",{
 	}
 	,
 	mounted () {
-	
-        
 		axios
         .get('rest/testLogin')
         .then((response) => {

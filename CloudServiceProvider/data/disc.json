@@ -12,6 +12,12 @@
     "nameVM": "ORACLE-VM"
   },
   {
+    "name": "E",
+    "driveType": "HDD",
+    "capacity": 5,
+    "nameVM": "jjjj"
+  },
+  {
     "name": "F",
     "driveType": "HDD",
     "capacity": 256,
@@ -27,11 +33,5 @@
     "name": "pomocni",
     "capacity": 128,
     "nameVM": "null"
-  },
-  {
-    "name": "E",
-    "driveType": "HDD",
-    "capacity": 5,
-    "nameVM": "jjjj"
   }
 ]

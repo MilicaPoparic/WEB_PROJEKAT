@@ -8,19 +8,19 @@
     "password": "sifra1"
   },
   {
+    "email": "LEGO",
+    "name": "GEGO",
+    "surname": "THCF",
+    "nameORG": "ORG1",
+    "role": "user",
+    "password": "AGJAWR"
+  },
+  {
     "email": "k1",
     "name": "SENIDA",
     "surname": "k1",
     "role": "user",
     "password": "k1"
-  },
-  {
-    "email": "novi",
-    "name": "n",
-    "surname": "n",
-    "nameORG": "ORG1",
-    "role": "user",
-    "password": "n"
   },
   {
     "email": "mile",
@@ -31,12 +31,43 @@
     "password": "j"
   },
   {
-    "email": "LEGO",
-    "name": "GEGO",
-    "surname": "THCF",
+    "email": "covekimastan@gmail.com",
+    "name": "a",
+    "surname": "a",
+    "nameORG": "Microsoft",
+    "role": "user",
+    "password": "a"
+  },
+  {
+    "email": "novi",
+    "name": "n",
+    "surname": "n",
     "nameORG": "ORG1",
     "role": "user",
-    "password": "AGJAWR"
+    "password": "n"
+  },
+  {
+    "email": "poparic@gmail.com",
+    "name": "a",
+    "surname": "a",
+    "nameORG": "Microsoft",
+    "role": "admin",
+    "password": "a"
+  },
+  {
+    "email": "admin",
+    "name": "BORKO",
+    "surname": "MACAN",
+    "role": "superAdmin",
+    "password": "admin"
+  },
+  {
+    "email": "co",
+    "name": "a",
+    "surname": "a",
+    "nameORG": "Microsoft",
+    "role": "user",
+    "password": "a"
   },
   {
     "email": "ma neka kazu da sam poludela",
@@ -53,36 +84,5 @@
     "nameORG": "Microsoft",
     "role": "user",
     "password": "n"
-  },
-  {
-    "email": "admin",
-    "name": "BORKO",
-    "surname": "MACAN",
-    "role": "superAdmin",
-    "password": "admin"
-  },
-  {
-    "email": "poparic@gmail.com",
-    "name": "a",
-    "surname": "a",
-    "nameORG": "Microsoft",
-    "role": "admin",
-    "password": "a"
-  },
-  {
-    "email": "covekimastan@gmail.com",
-    "name": "a",
-    "surname": "a",
-    "nameORG": "Microsoft",
-    "role": "user",
-    "password": "a"
-  },
-  {
-    "email": "co",
-    "name": "a",
-    "surname": "a",
-    "nameORG": "Microsoft",
-    "role": "user",
-    "password": "a"
   }
 ]

@@ -2,10 +2,10 @@
   {
     "name": "JAVA-VM",
     "category": {
-      "name": "kategorija1",
-      "coreNumber": 23,
-      "RAM": 32,
-      "GPUcores": 23
+      "name": "kategorija2",
+      "coreNumber": 3,
+      "RAM": 4,
+      "GPUcores": 5
     },
     "drives": [],
     "activityLog": []
@@ -21,17 +21,6 @@
     "drives": [
       "F"
     ],
-    "activityLog": []
-  },
-  {
-    "name": "VMVM",
-    "category": {
-      "name": "kategorija2",
-      "coreNumber": 3,
-      "RAM": 4,
-      "GPUcores": 5
-    },
-    "drives": [],
     "activityLog": []
   },
   {
@@ -57,6 +46,17 @@
       "coreNumber": 5,
       "RAM": 20,
       "GPUcores": 1
+    },
+    "drives": [],
+    "activityLog": []
+  },
+  {
+    "name": "ORG2",
+    "category": {
+      "name": "kategorija4",
+      "coreNumber": 4,
+      "RAM": 3,
+      "GPUcores": 4
     },
     "drives": [],
     "activityLog": []
