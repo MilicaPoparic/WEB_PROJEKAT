@@ -6,12 +6,12 @@
     "users": [
       "novi",
       "mile",
-      "LEGO",
-      "ma neka kazu da sam poludela"
+      "LEGO"
     ],
     "resources": [
-      "pomocni",
-      "pomocni2"
+      "noviDisk",
+      "VM2",
+      "HaloDisk"
     ]
   },
   {
@@ -26,8 +26,9 @@
     ],
     "resources": [
       "D",
-      "WINDOWS10-VM",
-      "ORG2"
+      "F",
+      "rnrnr",
+      "WINDOWS10-VM"
     ]
   },
   {
@@ -39,17 +40,18 @@
       "k1"
     ],
     "resources": [
-      "C"
+      "C",
+      "JAVA-VM",
+      "E"
     ]
   },
   {
-    "name": "OraCLE",
+    "name": "Oracle",
     "caption": "opisOrac",
     "logo": "http://www.nirapress.com/wp-content/uploads/2017/10/oracle-logo.jpg",
     "users": [],
     "resources": [
       "ORACLE-VM",
-      "F",
       "NOVA"
     ]
   }

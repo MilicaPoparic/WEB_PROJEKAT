@@ -47,21 +47,21 @@ Vue.component("home-page", {
 		
 		<tr>
 			<td> Number of CPU: </td>
-			<td><input type="text" style="width:60px" size="5" v-model="fromm" name="fromm">
+			<td><input type="number" style="width:60px" size="5" v-model="fromm" name="fromm">
 			-
-			<input type="text" style="width:60px" size="5" v-model="too" name="too"></td>
+			<input type="number" style="width:60px" size="5" v-model="too" name="too"></td>
 		</tr>
 		<tr>
 		   <td> Number of RAM: </td>
-			<td><input type="text" style="width:60px" size="5" v-model="fromm1" name="fromm1">
+			<td><input type="number" style="width:60px" size="5" v-model="fromm1" name="fromm1">
 			-
-			<input type="text" style="width:60px" size="5" v-model="too1" name="too1"></td>
+			<input type="number" style="width:60px" size="5" v-model="too1" name="too1"></td>
 		</tr>
 		<tr>
 			<td> Number of GPU: </td>
-			<td><input type="text" style="width:60px" size="5" v-model="fromm2" name="fromm2">
+			<td><input type="number" style="width:60px" size="5" v-model="fromm2" name="fromm2">
 			-
-			<input type="text" style="width:60px" size="5" v-model="too2" name="too2"></td>
+			<input type="number" style="width:60px" size="5" v-model="too2" name="too2"></td>
 		</tr>
 			
 	</table>
@@ -70,7 +70,7 @@ Vue.component("home-page", {
 	</p>
 	 
 	<a href="#/profile">Profile</a> <br>
-	<a href="#/drives" @click="drivess()">Drives</a> <br>
+	<a href="#/drives">Drives</a> <br>
 	<a href="#/o" v-if="role=='superAdmin' || role=='admin'">Organizations</a> <br>
 	<a href="#/users" v-if="role=='superAdmin' || role=='admin'">Users</a> <br>
 	<a href="#/c" v-if="role=='superAdmin'">Categories</a> <br>

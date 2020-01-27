@@ -7,6 +7,7 @@
       "RAM": 4,
       "GPUcores": 5
     },
+    "nameOrg": "IOS",
     "drives": [],
     "activityLog": []
   },
@@ -18,9 +19,8 @@
       "RAM": 32,
       "GPUcores": 23
     },
-    "drives": [
-      "F"
-    ],
+    "nameOrg": "Oracle",
+    "drives": [],
     "activityLog": []
   },
   {
@@ -31,7 +31,12 @@
       "RAM": 4,
       "GPUcores": 5
     },
-    "drives": [],
+    "nameOrg": "Microsoft",
+    "drives": [
+      "D",
+      "rnrnr",
+      "F"
+    ],
     "activityLog": [
       {
         "start": "Jul 25, 0017 12:00:00 AM",
@@ -47,18 +52,22 @@
       "RAM": 20,
       "GPUcores": 1
     },
+    "nameOrg": "Oracle",
     "drives": [],
     "activityLog": []
   },
   {
-    "name": "ORG2",
+    "name": "VM2",
     "category": {
       "name": "kategorija4",
       "coreNumber": 4,
       "RAM": 3,
       "GPUcores": 4
     },
-    "drives": [],
+    "nameOrg": "ORG1",
+    "drives": [
+      "HaloDisk"
+    ],
     "activityLog": []
   }
 ]

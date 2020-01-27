@@ -1,9 +1,8 @@
- <option selected=“selected” disabled>No Models Available</option>
-[
+ [
   {
-    "name": "kategorija1",
-    "coreNumber": 40,
-    "RAM": 32,
+    "name": "kategorija4",
+    "coreNumber": 4,
+    "RAM": 3,
     "GPUcores": 4
   },
   {
@@ -13,94 +12,127 @@
     "GPUcores": 5
   },
   {
-    "name": "kategorija3",
-    "coreNumber": 4,
-    "RAM": 3,
-    "GPUcores": 4
+    "name": "kategorija1",
+    "coreNumber": 23,
+    "RAM": 32,
+    "GPUcores": 23
   },
   {
-    "name": "kategorija4",
-    "coreNumber": 3,
-    "RAM": 3,
-    "GPUcores": 3
-  },
-  {
-    "name": "kategorija5",
-    "coreNumber": 4,
-    "RAM": 3,
-    "GPUcores": 2
+    "name": "kategorija6",
+    "coreNumber": 5,
+    "RAM": 20,
+    "GPUcores": 1
   }
 ]
 
 [
   {
+    "name": "rnrnr",
+    "driveType": "HDD",
+    "nameOrg": "Microsoft",
+    "capacity": 342,
+    "nameVM": "WINDOWS10-VM"
+  },
+  {
+    "name": "HaloDisk",
+    "driveType": "SSD",
+    "nameOrg": "ORG1",
+    "capacity": 21,
+    "nameVM": "VM2"
+  },
+  {
     "name": "C",
     "driveType": "SSD",
-    "capacity": 256,
-    "nameVM": "JAVA-VM"
+    "nameOrg": "IOS",
+    "capacity": 256
   },
   {
     "name": "D",
     "driveType": "HDD",
+    "nameOrg": "Microsoft",
     "capacity": 512,
-    "nameVM": "ORACLE-VM"
+    "nameVM": "WINDOWS10-VM"
+  },
+  {
+    "name": "E",
+    "driveType": "SSD",
+    "nameOrg": "IOS",
+    "capacity": 4
   },
   {
     "name": "F",
     "driveType": "HDD",
+    "nameOrg": "Microsoft",
     "capacity": 256,
     "nameVM": "WINDOWS10-VM"
+  },
+  {
+    "name": "pomocni",
+    "driveType": "SSD",
+    "nameOrg": "ORG1",
+    "capacity": 256
   }
+]
 [
-  {
-    "name": "Microsoft",
-    "caption": "micCaption",
-    "logo": "logoMic",
-    "users": [
-      "poparic@gmail.com",
-      "korisnik@gmail.com",
-      "nnn"
-    ],
-    "resources": [
-      "D",
-      "WINDOWS10-VM"
-    ]
-  },
-  {
-    "name": "Oracle",
-    "caption": "opisOrac",
-    "logo": "IMG-20180203-WA0005.jpg",
-    "users": [],
-    "resources": [
-      "ORACLE-VM",
-       "F"
-    ]
-  },
-  {
-    "name": "IOS",
-    "caption": "opisIOS",
-    "logo": "logoIOS",
-    "users": [
-      "trajkovic@gmail.com",
-      "k1"
-    ],
-    "resources": [
-      "JAVA-VM",
-      "C"
-    ]
-  },
   {
     "name": "ORG1",
     "caption": "caption",
-    "logo": "logo",
+    "logo": "https://dkt6rvnu67rqj.cloudfront.net/cdn/ff/6FlNM-g1OIr90_hQaYRwcY6YrTJHsRadfPx3nOKEF-E/1579139837/public/styles/600x400/public/media/int_files/1018199.jpg?itok\u003dToKCLt0X",
     "users": [
       "novi",
       "mile",
       "LEGO"
     ],
-    "resources": []
+    "resources": [
+      "pomocni",
+      "KojiTiJe",
+      "VM2",
+      "HaloDisk"
+    ]
+  },
+  {
+    "name": "Microsoft",
+    "caption": "micCaption",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Microsoft_logo.svg/439px-Microsoft_logo.svg.png",
+    "users": [
+      "nnn",
+      "covekimastan@gmail.com",
+      "co",
+      "poparic@gmail.com"
+    ],
+    "resources": [
+      "D",
+      "F",
+      "rnrnr",
+      "WINDOWS10-VM"
+    ]
+  },
+  {
+    "name": "IOS",
+    "caption": "opisIOS",
+    "logo": "https://cdn1.iconfinder.com/data/icons/logos-brands-1/24/logo_brand_brands_logos_apple_ios-512.png",
+    "users": [
+      "trajkovic@gmail.com",
+      "k1"
+    ],
+    "resources": [
+      "C",
+      "JAVA-VM",
+      "E"
+    ]
+  },
+  {
+    "name": "Oracle",
+    "caption": "opisOrac",
+    "logo": "http://www.nirapress.com/wp-content/uploads/2017/10/oracle-logo.jpg",
+    "users": [],
+    "resources": [
+      "ORACLE-VM",
+      "NOVA"
+    ]
   }
 ]
+
 [
   {
     "email": "trajkovic@gmail.com",
@@ -111,44 +143,19 @@
     "password": "sifra1"
   },
   {
-    "email": "korisnik@gmail.com",
-    "name": "milica",
-    "surname": "poparic",
-    "nameORG": "Microsoft",
-    "role": "admin",
-    "password": "a"
-  },
-  {
-    "email": "poparic@gmail.com",
-    "name": "milica",
-    "surname": "poparic",
-    "nameORG": "Microsoft",
-    "role": "admin",
-    "password": "a"
+    "email": "LEGO",
+    "name": "GEGO",
+    "surname": "THCF",
+    "nameORG": "ORG1",
+    "role": "user",
+    "password": "AGJAWR"
   },
   {
     "email": "k1",
     "name": "SENIDA",
     "surname": "k1",
-    "nameORG": "IOS",
     "role": "user",
     "password": "k1"
-  },
-  {
-    "email": "novi",
-    "name": "n",
-    "surname": "n",
-    "nameORG": "ORG1",
-    "role": "user",
-    "password": "n"
-  },
-  {
-    "email": "nnn",
-    "name": "n",
-    "surname": "n",
-    "nameORG": "Microsoft",
-    "role": "user",
-    "password": "n"
   },
   {
     "email": "mile",
@@ -159,6 +166,30 @@
     "password": "j"
   },
   {
+    "email": "covekimastan@gmail.com",
+    "name": "a",
+    "surname": "a",
+    "nameORG": "Microsoft",
+    "role": "user",
+    "password": "a"
+  },
+  {
+    "email": "novi",
+    "name": "n",
+    "surname": "n",
+    "nameORG": "ORG1",
+    "role": "user",
+    "password": "n"
+  },
+  {
+    "email": "poparic@gmail.com",
+    "name": "a",
+    "surname": "a",
+    "nameORG": "Microsoft",
+    "role": "admin",
+    "password": "a"
+  },
+  {
     "email": "admin",
     "name": "BORKO",
     "surname": "MACAN",
@@ -166,26 +197,45 @@
     "password": "admin"
   },
   {
-    "email": "LEGO",
-    "name": "GEGO",
-    "surname": "THCF",
-    "nameORG": "ORG1",
+    "email": "co",
+    "name": "a",
+    "surname": "a",
+    "nameORG": "Microsoft",
     "role": "user",
-    "password": "AGJAWR"
+    "password": "a"
+  },
+  {
+    "email": "nnn",
+    "name": "n",
+    "surname": "n",
+    "nameORG": "Microsoft",
+    "role": "user",
+    "password": "n"
   }
 ]
 [
   {
+    "name": "JAVA-VM",
+    "category": {
+      "name": "kategorija2",
+      "coreNumber": 3,
+      "RAM": 4,
+      "GPUcores": 5
+    },
+    "nameOrg": "IOS",
+    "drives": [],
+    "activityLog": []
+  },
+  {
     "name": "ORACLE-VM",
     "category": {
       "name": "kategorija1",
-      "coreNumber": 40,
+      "coreNumber": 23,
       "RAM": 32,
-      "GPUcores": 4
+      "GPUcores": 23
     },
-    "drives": [
-      "F"
-    ],
+    "nameOrg": "Oracle",
+    "drives": [],
     "activityLog": []
   },
   {
@@ -196,20 +246,42 @@
       "RAM": 4,
       "GPUcores": 5
     },
+    "nameOrg": "Microsoft",
+    "drives": [
+      "D",
+      "rnrnr",
+      "F"
+    ],
+    "activityLog": [
+      {
+        "start": "Jul 25, 0017 12:00:00 AM",
+        "end": "Aug 11, 0020 12:00:00 AM"
+      }
+    ]
+  },
+  {
+    "name": "NOVA",
+    "category": {
+      "name": "kategorija6",
+      "coreNumber": 5,
+      "RAM": 20,
+      "GPUcores": 1
+    },
+    "nameOrg": "Oracle",
     "drives": [],
     "activityLog": []
   },
   {
-    "name": "JAVA-VM",
+    "name": "VM2",
     "category": {
-      "name": "kategorija3",
+      "name": "kategorija4",
       "coreNumber": 4,
       "RAM": 3,
       "GPUcores": 4
     },
+    "nameOrg": "ORG1",
     "drives": [
-      "C",
-      "D"
+      "HaloDisk"
     ],
     "activityLog": []
   }

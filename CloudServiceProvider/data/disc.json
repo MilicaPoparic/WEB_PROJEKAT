@@ -1,37 +1,48 @@
 [
   {
+    "name": "rnrnr",
+    "driveType": "HDD",
+    "nameOrg": "Microsoft",
+    "capacity": 342,
+    "nameVM": "WINDOWS10-VM"
+  },
+  {
+    "name": "HaloDisk",
+    "driveType": "SSD",
+    "nameOrg": "ORG1",
+    "capacity": 21,
+    "nameVM": "VM2"
+  },
+  {
     "name": "C",
     "driveType": "SSD",
-    "capacity": 256,
-    "nameVM": ""
+    "nameOrg": "IOS",
+    "capacity": 256
   },
   {
     "name": "D",
     "driveType": "HDD",
+    "nameOrg": "Microsoft",
     "capacity": 512,
-    "nameVM": "ORACLE-VM"
+    "nameVM": "WINDOWS10-VM"
   },
   {
     "name": "E",
-    "driveType": "HDD",
-    "capacity": 5,
-    "nameVM": "jjjj"
+    "driveType": "SSD",
+    "nameOrg": "IOS",
+    "capacity": 4
   },
   {
     "name": "F",
     "driveType": "HDD",
+    "nameOrg": "Microsoft",
     "capacity": 256,
     "nameVM": "WINDOWS10-VM"
   },
   {
-    "name": "pomocni2",
-    "driveType": "HDD",
-    "capacity": 256,
-    "nameVM": "null"
-  },
-  {
-    "name": "pomocni",
-    "capacity": 128,
-    "nameVM": "null"
+    "name": "noviDisk",
+    "driveType": "SSD",
+    "nameOrg": "ORG1",
+    "capacity": 345
   }
 ]

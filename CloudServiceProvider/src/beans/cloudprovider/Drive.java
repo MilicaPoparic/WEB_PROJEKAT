@@ -5,21 +5,24 @@ import java.util.ArrayList;
 public class Drive {
 	private String name;
 	private DriveType driveType;
+	private String nameOrg; //naziv org-dodao u poslednjem trenutku WTF
 	private int capacity;
 	private String nameVM; //naziv VM
 	
 	public Drive() {}
-	public Drive(String name, DriveType driveType, int capacity) {
+	public Drive(String name, DriveType driveType,String nn, int capacity) {
 		super();
 		this.name = name;
 		this.driveType = driveType;
+		this.nameOrg = nn;
 		this.capacity = capacity;
 		this.nameVM = null;
 	}
-	public Drive(String name, DriveType driveType, int capacity, String virtualMachines) {
+	public Drive(String name, DriveType driveType,String nn, int capacity, String virtualMachines) {
 		super();
 		this.name = name;
 		this.driveType = driveType;
+		this.nameOrg = nn;
 		this.capacity = capacity;
 		this.nameVM = virtualMachines;
 	}
@@ -54,6 +57,12 @@ public class Drive {
 
 	public void setVirtualMachine(String virtualMachines) {
 		this.nameVM = virtualMachines;
+	}
+	public String getNameOrg() {
+		return nameOrg;
+	}
+	public void setNameOrg(String nameOrg) {
+		this.nameOrg = nameOrg;
 	}
 	
 }

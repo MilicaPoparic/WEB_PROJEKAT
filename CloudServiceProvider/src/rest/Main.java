@@ -28,6 +28,7 @@ import beans.cloudprovider.DriveSearch;
 import beans.cloudprovider.DriveType;
 import beans.cloudprovider.Organization;
 import beans.cloudprovider.Reader;
+import beans.cloudprovider.Role;
 import beans.cloudprovider.SendVMO;
 import beans.cloudprovider.User;
 import beans.cloudprovider.UserToLog;
@@ -131,7 +132,7 @@ public class Main {
 				return g.toJson(listOfVMO);
 			}
 		}
-		return g.toJson(new ArrayList<SendVMO>());
+		return "OK";
 		});
 		
 		get("/rest/getUsers", (req, res) -> {
@@ -141,13 +142,26 @@ public class Main {
 			System.out.println(takeUsers(user).size());
 			return gson.toJson(takeUsers(user));
 		});
-
+		
 		get("/rest/getOrganizations", (req, res) -> {
 			res.type("application/json");
 			User user = req.session().attribute("user");
 			return gson.toJson(takeOrganizations(user));
 		});
-
+		//ne brisi, iste su al razlicite objekte saljemo, ne moze kastovanje
+		get("/rest/getOrganizationss", (req, res) -> {
+			res.type("application/json");
+			User user = req.session().attribute("user");
+			if (user!=null) {
+				if (user.getRole().toString().equals("admin")) {
+					return g.toJson(user.getOrganization());
+				}
+				else if  (user.getRole().toString().equals("superAdmin")){
+					return g.toJson(r.organizations);
+				}
+		    }
+			return "OK";
+		});
 		get("/rest/getUser", (req, res) -> {
 			res.type("application/json");
 			return g.toJson(u);
@@ -190,7 +204,6 @@ public class Main {
 			res.type("application/json");
 			return g.toJson(c);
 		});
-		//
 		get("/rest/getDrives", (req,res)-> {
 			res.type("application/json");
 			Session ss = req.session(true);
@@ -198,21 +211,22 @@ public class Main {
 			ArrayList<Drive> discsList = new ArrayList<Drive>();
 			if (user!=null) {
 				if  (user.getRole().toString().equals("superAdmin")){
+					
 					for (Drive d : r.drives.values()) {
 						discsList.add(d);
 					}
 				}
 				else {
-					String org = user.getOrganization();//ovim dobijam koja je org
-					if (r.organizations.get(org)!=null) {
-						for(String fromO: r.organizations.get(org).getResources()) {
-							if(r.drives.get(fromO)!=null) {
-								discsList.add(r.drives.get(fromO));
-							}
-						}
-						
+					String org = user.getOrganization();
+					for (Drive d : r.drives.values()) {
+						if(d.getNameOrg().equals(org))
+							discsList.add(d);
 					}
 				}
+			}
+			else {
+				discsList.clear();
+				res.status(400);
 			}
 			return g.toJson(discsList);
 		});
@@ -302,7 +316,6 @@ public class Main {
 			HashMap<String,String> hashDrive = machOrgDrive();	
 			return g.toJson(hashDrive);
 		});
-		
 		post("/rest/login", (req, res) -> {
 			res.type("application/json");
 			UserToLog u = g.fromJson(req.body(), UserToLog.class);
@@ -360,7 +373,6 @@ public class Main {
 				org.setResources(new ArrayList<String>());
 				manageListsOrg(org, false);
 				res.status(200);
-				//writeToFiles((ArrayList<Object>)(Object) r.organizationList, "./data/organizations.json"); 
 				writeToFiles1((HashMap<String,Object>)(Object) r.organizations, "./data/organizations.json"); 
 				return ("OK");
 			}
@@ -571,63 +583,27 @@ public class Main {
 	
 		post("/rest/forChangeDrive", (req,res)-> {
 			res.type("application/json");
-			String reqData = req.body();
-			JsonObject jsonObject = new JsonParser().parse(reqData).getAsJsonObject();
-			JsonElement name = (JsonElement) ((JsonObject) jsonObject).get("name");
-			JsonElement driveType = (JsonElement) ((JsonObject) jsonObject).get("driveType");
-			JsonElement capacity = (JsonElement) ((JsonObject) jsonObject).get("capacity");
-			JsonElement nameVM = (JsonElement) ((JsonObject) jsonObject).get("nameVM");
-			int indikator =0;
-			DriveType set = null;
-			String setVM = null;
-			for (DriveType dt : DriveType.values()) {
-		        if (dt.name().equals(driveType.getAsString()) && driveType.getAsString()!=null) {
-		            indikator=1;
-		            set =DriveType.valueOf(driveType.getAsString());
-		        }
-		    }
-			if(indikator == 0) {
+			Drive fromClientDrive = g.fromJson(req.body(), Drive.class);
+	
+			if(fromClientDrive.getName()==null) {
+				fromClientDrive.setName(d.getName());
+			}
+			if(fromClientDrive.getDriveType() == null) {
+				fromClientDrive.setDriveType(d.getDriveType());
+			}
+			if(fromClientDrive.getCapacity() == 0) {
+				fromClientDrive.setCapacity(d.getCapacity());
+			}
+			if(fromClientDrive.getVirtualMachine()==null) {
+				fromClientDrive.setVirtualMachine(d.getVirtualMachine());
+			}
+			Drive checkD = checkForChangeDrive(fromClientDrive);
+			if(checkD ==null) {
 				res.status(400);
-			}
-			int ind2 =0;
-			for (VirtualMachine v :r.virtMachines.values()) {
-		        if (v.getName().equals(nameVM.getAsString()) && nameVM.getAsString()!=null) {
-		        	ind2=1;
-		        	setVM =v.getName();
-		        }
-		    }
-			if(ind2 == 0) {
-				res.status(400);
-			}
-			if(capacity.getAsInt()<=0) {
-				res.status(400);
-			}
-			Drive drive = new Drive(name.getAsString(),set, capacity.getAsInt(), setVM);
-			if(drive.getName() == null) {
-				drive.setName(d.getName());
-			}
-			if(drive.getDriveType()==null) {
-				drive.setDriveType(d.getDriveType());
-			}
-			if(drive.getCapacity()==0) {
-				drive.setCapacity(d.getCapacity());
-			}
-			if(drive.getVirtualMachine()==null) {
-				drive.setVirtualMachine(d.getVirtualMachine());
-			}
-			if(r.drives.containsKey(drive.getName()) && drive.getName()!= d.getName()) {
-				res.status(400);//ne mozes mi menjati ime u ime koje je vec bilo, sori bato
 			}
 			else {
 				res.status(200);
-				refreshDiscVM(drive);
-				refreshDiscORG(drive);
-				refreshDisc(drive);		
-				
-				writeToFiles1((HashMap<String,Object>)(Object) r.virtMachines, "./data/virtMachines.json"); //automatski refresh
-				writeToFiles1((HashMap<String,Object>)(Object) r.organizations, "./data/organizations.json"); //automatski refresh
-				writeToFiles1((HashMap<String,Object>)(Object) r.drives, "./data/disc.json"); //automatski refresh
-				
+				refreshChangedDrive(fromClientDrive);				
 				d =null;
 			}
 			return "OK";
@@ -635,12 +611,13 @@ public class Main {
 		
 		post("/rest/addNewDrive", (req, res) -> {
 			res.type("application/json");
+			System.out.println(req.body());
 			Drive drive = g.fromJson(req.body(), Drive.class);
 			Drive dCheck = checkDrive(drive);
+			
 			if(dCheck != null) {
 				res.status(200);
-				r.drives.put(drive.getName(),drive);
-				writeToFiles1((HashMap<String,Object>)(Object) r.drives, "./data/disc.json"); 
+				refreshNewDiscVM(drive);	
 			}
 			else {
 				res.status(400);
@@ -650,19 +627,16 @@ public class Main {
 		post("/rest/removeDrive", (req, res) -> {
 			res.type("application/json");
 			Drive drive = g.fromJson(req.body(), Drive.class);
-			boolean valid = false;
-			boolean valid1 = false;
-			valid = checkDriveInOrg(drive.getName());
-			valid1 =checkDriveInVM(drive.getName()); 
-			if(valid==true ||valid1 ==true ) 
+			Drive ddr = removeDrive(drive);
+			if(ddr==null) 
 			{
 				res.status(400);
 			}
 			else {
 				res.status(200);
-				removeDrive(drive);
-				//writeToFiles((ArrayList<Object>)(Object) r.driveList, "./data/disc.json"); //automatski refresh
 				writeToFiles1((HashMap<String,Object>)(Object)r.drives, "./data/disc.json"); 
+				writeToFiles1((HashMap<String,Object>)(Object)r.organizations, "./data/organizations.json"); 
+				writeToFiles1((HashMap<String,Object>)(Object)r.virtMachines, "./data/virtMachines.json"); 
 			}
 			return ("OK");
 		});
@@ -670,10 +644,10 @@ public class Main {
 			res.type("application/json");
 			String reqData =req.body();
 			DriveSearch drivS = g.fromJson(reqData, DriveSearch.class);
-			retDrive = checkParamSearch(drivS);
+			User us =  req.session().attribute("user");
+			retDrive = checkParamSearch(drivS, us.getOrganization());
 
-			
-			if(!retDrive.isEmpty()) {
+			if(retDrive !=null) {
 				res.status(200);
 				
 			}else{
@@ -721,6 +695,86 @@ public class Main {
 		});
 		
 	}
+	private static Drive removeDrive(Drive drive) {
+		int indikat =0;
+		for(Drive dremove: r.drives.values()) {
+			if(dremove.getName().equals(drive.getName())) {
+				indikat = 1;
+				r.drives.remove(drive.getName());
+				break;
+			}
+		}
+		for(VirtualMachine vm : r.virtMachines.values()) 
+		{
+			if(vm.getDrives().contains(drive.getName()) && vm.getNameOrg().equalsIgnoreCase(drive.getNameOrg()))
+			{
+				vm.getDrives().remove(drive.getName()); 
+				break;
+			}
+		}
+		for(Organization ogg : r.organizations.values()) 
+		{
+			if(ogg.getName().equalsIgnoreCase(drive.getNameOrg())&& ogg.getResources().contains(drive.getName()))
+			{
+				indikat = 2;
+				ogg.getResources().remove(drive.getName());
+				break;
+			}
+		}
+		
+		if(indikat ==2)
+		{
+			return drive;
+		}
+		return null;
+	}
+
+	private static Drive checkForChangeDrive(Drive fromClientDrive) {
+		for(Drive driv: r.drives.values()) {
+			if(driv.getName().equalsIgnoreCase(fromClientDrive.getName()) && 
+					!fromClientDrive.getName().equalsIgnoreCase(d.getName())) {//sme da promeni u prethodno ime
+				return null;	
+			}
+		}
+		if(fromClientDrive.getCapacity()<0) {
+			return null;
+		}
+			
+		return fromClientDrive;
+	}
+
+	private static void refreshChangedDrive(Drive fromClientDrive) throws IOException {
+		refreshDiscVM(fromClientDrive);
+		refreshDiscORG(fromClientDrive);
+		refreshDisc(fromClientDrive);		
+		
+		writeToFiles1((HashMap<String,Object>)(Object) r.virtMachines, "./data/virtMachines.json"); 
+		writeToFiles1((HashMap<String,Object>)(Object) r.organizations, "./data/organizations.json"); 
+		writeToFiles1((HashMap<String,Object>)(Object) r.drives, "./data/disc.json");
+		
+	}
+
+	private static void refreshNewDiscVM(Drive drive) throws IOException {
+		r.drives.put(drive.getName(),drive);
+		writeToFiles1((HashMap<String,Object>)(Object) r.drives, "./data/disc.json"); 
+		if(drive.getVirtualMachine()!=null) {
+			
+			for(VirtualMachine vm: r.virtMachines.values()) {
+				if(vm.getName().equalsIgnoreCase(drive.getVirtualMachine())) {
+					vm.getDrives().add(drive.getName());
+					writeToFiles1((HashMap<String,Object>)(Object) r.virtMachines, "./data/virtMachines.json");
+				}
+			}
+			
+		}
+		for(Organization o: r.organizations.values()) {
+			if(o.getName().equalsIgnoreCase(drive.getNameOrg())) {
+				o.getResources().add(drive.getName());
+				writeToFiles1((HashMap<String,Object>)(Object) r.organizations, "./data/organizations.json");
+			}
+		}
+	}
+
 	private static void refreshRemovedCategory(String name)throws IOException {
 		removeCategory(name);
 		writeToFiles1((HashMap<String,Object>)(Object) r.categories, "./data/categories.json"); 
@@ -791,11 +845,11 @@ public class Main {
 		Category cat = r.categories.get(vm.nameC);
 		VirtualMachine v = null;
 		if(vm.nameD.isEmpty()) {
-			 v = new VirtualMachine(vm.name, cat);
+			 v = new VirtualMachine(vm.name, cat,vm.nameOrg);//proveri mzd ne valja
 		}else
 		{
             changeRefVM(vm.nameD,vm.name);
-			v = new VirtualMachine(vm.name, cat,vm.nameD);
+			v = new VirtualMachine(vm.name, cat,vm.nameOrg,vm.nameD);//proveri 
 		}
 		addToOrg(vm.nameOrg,vm.name);
 		
@@ -847,7 +901,7 @@ public class Main {
 		HashMap<String,String> helpSD = new HashMap<String,String>();
 		for(Organization or: r.organizations.values()){
 			for(Drive driv: r.drives.values()) {
-				if(driv.getVirtualMachine().equals("null") && 
+				if(driv.getVirtualMachine().equals("null") &&    //ovde puca
 						or.getResources().contains(driv.getName())) {
 					helpSD.put(driv.getName(),or.getName());
 				}
@@ -883,20 +937,7 @@ public class Main {
 			sv.setCategoryGPU(vm.getCategory().getGPUcores());
 			sv.setCategoryRAM(vm.getCategory().getRAM());
 			sv.setNameVM(vm.getName());
-			
-			for(Organization os : r.organizations.values()) {
-				if (os.getResources()!=null) {
-					if(os.getResources().contains(vm.getName()))
-					{
-						i++;
-						sv.setNameORG(os.getName());
-						break;
-					}
-				}
-			}
-			if(i ==0) {
-				sv.setNameORG("Nema organizaciju");
-			}
+			sv.setNameORG(vm.getNameOrg());
 			listOfVMO.add(sv);		
 		}
 		return listOfVMO;
@@ -1227,81 +1268,313 @@ public class Main {
 			}
 			}
 	}
-	private static ArrayList<Drive> checkParamSearch(DriveSearch retDrive) {
+	private static ArrayList<Drive> checkParamSearch(DriveSearch retDr, String organizat) {
+		retDrive = new ArrayList<Drive>();
 		ArrayList<Drive>  ret = new ArrayList<Drive>();
-		boolean indikator = false;
-		boolean indikator2 = false;
-		boolean indikator3 = false;
-		boolean indikator4 = false;
-		int forBreak = 0;
-		if(!retDrive.name.equals("null")) {
-			forBreak= 5;
-			for(Drive dC: r.drives.values()) {
-				if(dC.getName().equalsIgnoreCase(retDrive.name)) {
-					forBreak = 2;
-					indikator =true;
-					ret.add(r.drives.get(dC.getName()));
+		int indikator1 = 0;
+		int indikator2 = 0;
+		int indikator3 = 0;
+		int indikator4 = 0;
+		int indikator5 = 0;
+		boolean help=false;
+		if(retDr.name!=null)
+			indikator1 = CheckNameDrive(retDr.name, organizat);
+		if(indikator1==2) {
+			return null;
+		}
+		if(indikator1 ==0 && retDr.fromm!=0) {//ne filtrira po imenu, pocinje sa kategorijom
+			indikator2 = CheckFromDrive(retDr.fromm,organizat);
+		}
+		if(indikator1 ==1 && retDr.fromm!=0) {//filtrira po imenu i od iz kateg
+			indikator2 = CheckNameFromDrive(retDr.fromm,organizat);
+		}
+		if(indikator2==2) {
+			return null;
+		}
+		help = (indikator1==0) && (indikator2== 0);
+		if(help && retDr.too!=0) {   //nisu uneta prethodna 2 filtera
+			indikator3 = CheckTooDrive(retDr.too,organizat);
+		}
+		help = (indikator1==0 && indikator2==1) || (indikator1==1 && indikator2==0) ||(indikator1==1 && indikator2==1);
+		if(help && retDr.too!=0) {  //filtrirali po nekom od prethodna 2
+			indikator3 = CheckNotEmptyTooDrive(retDr.too,organizat);
+		}
+		if(indikator3==2) {
+			return null;
+		}
+		help = (indikator1==0) && (indikator2== 0) && (indikator3== 0);
+		if(help && retDr.checked1!=null) {  
+			indikator4 = CheckCheckTypeDrive(retDr.checked1,organizat);
+		}
+		if(!help && retDr.checked1!=null) { 
+			indikator4 = CheckCheckTypeNotEmptyDrive(retDr.checked1,organizat);
+		
+		}
+		if(indikator4==2) {
+			return null;
+		}
+		help = (indikator1==0) && (indikator2== 0) && (indikator3== 0) &&  (indikator4== 0);
+		if(help && retDr.checked2!=null) {  
+			indikator5= CheckCheckVMDrive(retDr.checked2,organizat);
+		}
+		if(!help && retDr.checked2!=null) { 
+			indikator5 = CheckCheckVMNotEmptyDrive(retDr.checked2,organizat);
+		
+		}
+		if(indikator5==2) {
+			return null;
+		}
+		return retDrive;
+	}
+		
+	private static int CheckCheckVMNotEmptyDrive(String checked2, String organizat) {
+		if(organizat!=null) {
+			for(Drive dC: new ArrayList<Drive>(retDrive)) {
+				if(checked2 !=null && dC.getVirtualMachine() == null) {
+					
+					retDrive.remove(dC);
 				}
+				else if(!dC.getVirtualMachine().equals(checked2) && dC.getNameOrg().equals(organizat)) {
+					retDrive.remove(dC);
+				}
+			}		
+			if(retDrive.isEmpty())
+			     return 2;  //nema odgovarajucih
+			else {
+				return 1;
 			}
 		}
-		if(forBreak==5) {
-			ret = new ArrayList<Drive>();
-			return ret;
-		}else {
-			if(retDrive.too-retDrive.fromm <0) {
-				//ne sme ovo da dozvoli
-			}
-			if(retDrive.fromm != 0) {
-				for(Drive dC: r.drives.values()) {
-					if(dC.getCapacity()>=retDrive.fromm && !ret.contains(dC) && !indikator) {//ne znaci nista 
-						ret.add(r.drives.get(dC.getName()));
-						indikator2 = true;
-					}else if(dC.getCapacity()>=retDrive.fromm  && ret.contains(dC) && indikator) {//definissan je 
-	                    troughtDiscLower(ret, retDrive.fromm);
-					}
+		else {
+			for(Drive dC: new ArrayList<Drive>(retDrive)) {
+				if(checked2 !=null && dC.getVirtualMachine() == null) {
 					
+					retDrive.remove(dC);
 				}
-			}
-			if(retDrive.too !=0) {
-				for(Drive dC: r.drives.values()) {
-					if(dC.getCapacity()<=retDrive.too && !ret.contains(dC) && !indikator && !indikator2) {//nije definisan jos 
-						ret.add(r.drives.get(dC.getName()));
-						indikator3 = true;
-					}else if(dC.getCapacity()<=retDrive.too && ret.contains(dC) && (indikator || indikator2)) {//definissan je 
-						troughtDiscUpper(ret, retDrive.too);
-					}
-					
+				else if(!dC.getVirtualMachine().equals(checked2)) {
+					retDrive.remove(dC);
 				}
+			}		
+			if(retDrive.isEmpty())
+			     return 2;  //nema odgovarajucih
+			else {
+				return 1;
 			}
-			if(!retDrive.checked1.equals("null")) {
-				for(Drive dC: r.drives.values()) {		
-					if(dC.getDriveType().equals(DriveType.valueOf(retDrive.checked1)) && !ret.contains(dC)&& !indikator && !indikator2 && !indikator3) {//nije definisan jos 
-						ret.add(r.drives.get(dC.getName()));
-						indikator4 = true;
-						
-					}else if(dC.getDriveType().equals(DriveType.valueOf(retDrive.checked1)) || (indikator || indikator2 || indikator3)) {//definissan je 
-						troughtDiscType(ret, retDrive.checked1);
-						
-					}
-					
+		}
+	}
+
+	private static int CheckCheckVMDrive(String checked2, String organizat) {
+		if(organizat!=null) {
+			for(Drive dC: r.drives.values()) {
+				if(dC.getVirtualMachine()!=null && dC.getVirtualMachine().equals(checked2) && 
+						dC.getNameOrg().equals(organizat)) {
+					retDrive.add(dC);
 				}
+			}		
+			if(retDrive.isEmpty())
+			     return 2;  //nema odgovarajucih
+			else {
+				return 1;
 			}
-			if(!retDrive.checked2.equals("null")) {
-				for(Drive dC: r.drives.values()) {
-					if(dC.getVirtualMachine().equals(retDrive.checked2) && !ret.contains(dC)&& !indikator && !indikator2 && !indikator3  && !indikator4) {//nije definisan jos 
-						ret.add(r.drives.get(dC.getName()));
-						
-					}else if(dC.getVirtualMachine().equals(retDrive.checked2) || (indikator || indikator2 ||indikator3 ||indikator4)) {//definissan je 
-						troughtDiscVM(ret, retDrive.checked2);
-						
-					}
+		}
+		else {
+			for(Drive dC: r.drives.values()) {
+				if(dC.getVirtualMachine()!=null && dC.getVirtualMachine().equals(checked2)) {
+					retDrive.add(dC);
 				}
+			}		
+			if(retDrive.isEmpty())
+			     return 2;  //nema odgovarajucih
+			else {
+				return 1;
 			}
-			return ret;
+		}
+	}
+
+	private static int CheckCheckTypeNotEmptyDrive(String checked1, String organizat) {
+		if(organizat!=null) {
+			for(Drive dC: new ArrayList<Drive>(retDrive)) {
+				if(!dC.getDriveType().toString().equals(checked1) && dC.getNameOrg().equals(organizat)) {
+					retDrive.remove(dC);
+				}
+			}		
+			if(retDrive.isEmpty())
+			     return 2;  //nema odgovarajucih
+			else {
+				return 1;
+			}
+		}
+		else {
+			for(Drive dC: new ArrayList<Drive>(retDrive)) {
+				if(!dC.getDriveType().toString().equals(checked1)) {
+					retDrive.remove(dC);
+				}
+			}		
+			if(retDrive.isEmpty())
+			     return 2;  //nema odgovarajucih
+			else {
+				return 1;
+			}
+		}
+	}
+
+	private static int CheckCheckTypeDrive(String checked1, String organizat) {
+		if(organizat!=null) {
+			for(Drive dC: r.drives.values()) {
+				if(dC.getDriveType().toString().equals(checked1) && dC.getNameOrg().equals(organizat)) {
+					retDrive.add(dC);
+				}
+			}		
+			if(retDrive.isEmpty())
+			     return 2;  //nema odgovarajucih
+			else {
+				return 1;
+			}
+		}
+		else {
+			for(Drive dC: r.drives.values()) {
+				if(dC.getDriveType().toString().equals(checked1)) {
+					retDrive.add(dC);
+				}
+			}		
+			if(retDrive.isEmpty())
+			     return 2;  //nema odgovarajucih
+			else {
+				return 1;
+			}
+		}
+	}
+
+	private static int CheckNotEmptyTooDrive(int too, String organizat) {
+		if(organizat!=null) {
+			for(Drive dC: new ArrayList<Drive>(retDrive)) {
+				if(dC.getCapacity()>=too && dC.getNameOrg().equals(organizat)) {
+					retDrive.remove(dC);
+				}
+			}		
+			if(retDrive.isEmpty())
+			     return 2;  //nema odgovarajucih
+			else {
+				return 1;
+			}
+		}
+		else {
+			for(Drive dC: new ArrayList<Drive>(retDrive)) {
+				if(dC.getCapacity()>=too) {
+					retDrive.remove(dC);
+				}
+			}		
+			if(retDrive.isEmpty())
+			     return 2;  //nema odgovarajucih
+			else {
+				return 1;
+			}
+		}
+	}
+
+	private static int CheckTooDrive(int too, String organizat) {
+		if(organizat!=null) {
+			for(Drive dC: r.drives.values()) {
+				if(dC.getCapacity()<=too && dC.getNameOrg().equals(organizat)) {
+					retDrive.add(dC);
+				}
+			}		
+			if(retDrive.isEmpty())
+			     return 2;  //nema odgovarajucih
+			else {
+				return 1;
+			}
+		}
+		else {
+			for(Drive dC: r.drives.values()) {
+				if(dC.getCapacity()<=too) {
+					retDrive.add(dC);
+				}
+			}		
+			if(retDrive.isEmpty())
+			     return 2;  //nema odgovarajucih
+			else {
+				return 1;
+			}
+		}
+	}
+
+	private static int CheckNameFromDrive(int fromm, String organizat) {
+		if(organizat!=null) {
+			for(Drive dC: new ArrayList<Drive>(retDrive)) {
+				if(dC.getCapacity()<=fromm && dC.getNameOrg().equals(organizat)) {
+					retDrive.remove(dC);
+				}
+			}		
+			if(retDrive.isEmpty())
+			     return 2;  //nema odgovarajucih
+			else {
+				return 1;
+			}
+		}
+		else {
+			for(Drive dC: new ArrayList<Drive>(retDrive)) {
+				if(dC.getCapacity()<=fromm) {
+					retDrive.remove(dC);
+				}
+			}		
+			if(retDrive.isEmpty())
+			     return 2;  //nema odgovarajucih
+			else {
+				return 1;
+			}
+		}
+	}
+
+	private static int CheckFromDrive(int fromm, String organizat) {
+		if(organizat!=null) {
+			for(Drive dC: r.drives.values()) {
+				if(dC.getCapacity()>=fromm && dC.getNameOrg().equals(organizat)) {
+					retDrive.add(dC);
+				}
+			}		
+			if(retDrive.isEmpty())
+			     return 2;  //nema odgovarajucih
+			else {
+				return 1;
+			}	
+		}
+		else {
+			for(Drive dC: r.drives.values()) {
+				if(dC.getCapacity()>=fromm) {
+					retDrive.add(dC);
+				}
+			}		
+			if(retDrive.isEmpty())
+			     return 2;  //nema odgovarajucih
+			else {
+				return 1;
+			}
+			
 			
 		}
+	}
+	private static int CheckNameDrive(String name, String organizat) {
+        if(organizat!=null) {
+        	for(Drive dC: r.drives.values()) {
+    			if(dC.getName().equalsIgnoreCase(name) && dC.getNameOrg().equals(organizat)) {
+    				retDrive.add(dC);
+    				return 1;  //moze zato sto je ime unique
+    			}
+    		}		
+    		return 2;  //nije pronasao ime
+        }else {
+        	for(Drive dC: r.drives.values()) {
+    			if(dC.getName().equalsIgnoreCase(name)) {
+    				retDrive.add(dC);
+    				return 1;  //moze zato sto je ime unique
+    			}
+    		}		
+    		return 2;  //nije pronasao ime
+        }
 		
 	}
+
+	
 	private static void manageListsUser(User loggedIn, Boolean remove) {
 		if (remove) {
 			//r.userList.remove(loggedIn);
@@ -1331,63 +1604,8 @@ public class Main {
 		}
 		r.virtMachines.put(v.getName(),v);
 	}
-	private static void troughtDiscType(ArrayList<Drive> ret, String check1) {
-		for (Drive drive : new ArrayList<Drive>(ret)) {
-			if(!drive.getDriveType().equals(DriveType.valueOf(check1))) {
-				ret.remove(drive);
-			}
-		}
-	}
-	private static void troughtDiscVM(ArrayList<Drive> ret, String check2) {
-		for(Drive drive: new ArrayList<Drive>(ret)) {
-			if(!drive.getVirtualMachine().equals(check2)) {
-				ret.remove(drive);
-			}
-		}
-		
-	}
-	private static void troughtDiscUpper(ArrayList<Drive> ret, int to) {
-		for(Drive drive: new ArrayList<Drive>(ret)) {
-			if(drive.getCapacity()>to) {
-				ret.remove(drive);
-			}
-		}
-	}
 
-	private static void troughtDiscLower(ArrayList<Drive> ret, int from) {
-		for(Drive drive: new ArrayList<Drive>(ret)) {
-			if(drive.getCapacity()<from) {
-				ret.remove(drive);
-			}
-		}	
-	}
-
-	private static void removeDrive(Drive drive) {
-		HashMap<String,Drive> mapDrive = new HashMap<String,Drive>();
-		for(Drive dd: r.drives.values()) {
-			if(!dd.getName().equals(drive.getName())) {
-				mapDrive.put(dd.getName(),dd);
-			}
-		}
-		r.drives.clear();
-		for(Drive v: mapDrive.values()) {
-			r.drives.put(v.getName(),v);
-			
-		}
-		mapDrive.clear();
-	}
-
-	private static boolean checkDriveInVM(String name) {
-		boolean i = false;
-		for(VirtualMachine vm : r.virtMachines.values()) 
-		{
-			if(vm.getDrives().contains(name))
-			{
-				i=true;
-			}
-		}
-		return i;
-	}
+	
 	private static void changeUser(User change) {
 		User oldOne = r.users.get(change.getEmail());
 		r.users.remove(oldOne.getEmail(), oldOne);
@@ -1407,19 +1625,18 @@ public class Main {
 	}
 
 	private static Drive checkDrive(Drive drive) {
-		if(r.drives.containsKey(drive.getName()) || drive.getName()==null) {
+		if(drive.getName()==null) {
 			return null;
 		}
-		int ind =0;
-		for (DriveType dt : DriveType.values()) {
-	        if (dt.name().equalsIgnoreCase(drive.getDriveType().toString())){
-	            ind=1;
-	        }
-	    }
-		if(ind ==0) {
-			return null;
+		for(Drive dd: r.drives.values()) {
+			if(dd.getName().equalsIgnoreCase(drive.getName()))
+				return null;
 		}
-		if(drive.getCapacity() <= 0) {
+		for(VirtualMachine dd: r.virtMachines.values()) {
+			if(dd.getName().equalsIgnoreCase(drive.getName()))
+				return null;
+		}
+		if(drive.getCapacity() < 0) {
 			return null;
 		}
 	
@@ -1432,10 +1649,16 @@ public class Main {
 				driv.setName(drive.getName());
 				driv.setCapacity(drive.getCapacity());
 				driv.setDriveType(drive.getDriveType());
-				driv.setVirtualMachine(drive.getVirtualMachine());
+				if(drive.getVirtualMachine()!=null && drive.getVirtualMachine().equals("delete")) {
+					driv.setVirtualMachine(null); //ako otkacim od diska vm
+				}
+				else {
+					driv.setVirtualMachine(drive.getVirtualMachine());
+				}
+				
 			}
 		}
-		
+	
 	}
 
 	private static void refreshDiscORG(Drive drive) {
@@ -1460,6 +1683,26 @@ public class Main {
 			}
 			
 		}
+		if(d.getVirtualMachine()==null) {//drive nije imoa do sada referencu 
+			for(VirtualMachine vm : r.virtMachines.values()) 
+			{
+				if(vm.getName().equalsIgnoreCase(drive.getVirtualMachine())) {
+					vm.getDrives().add(drive.getName());
+				}
+				
+			}
+		}//ako hoce da otkaci vm od diska
+		
+		if(drive.getVirtualMachine()!=null && drive.getVirtualMachine().equals("delete")) {
+			for(VirtualMachine vm : r.virtMachines.values()) 
+			{
+				if(vm.getName().equalsIgnoreCase(d.getVirtualMachine())) {
+					vm.getDrives().remove(d.getName());
+				}
+				
+			}
+		}
+		
 		
 	}
 
@@ -1588,22 +1831,12 @@ public class Main {
 			sv.setActivityLog(vm.getActivityLog());
 			sv.setCategory(vm.getCategory().getName());
 			sv.setDrives(vm.getDrives());
-			
-			for(Organization os : r.organizations.values()) {
-				if(os.getResources().contains(vm.getName()))
-				{
-					i++;
-					sv.setNameORG(os.getName());
-					break;
-				}
-			}
-			if(i ==0) {
-				sv.setNameORG("Nema organizaciju");
-			}
+			sv.setNameORG(vm.getNameOrg());
 			listOfVMO.add(sv);		
 		}
 		return listOfVMO;
 	}
+	
 	private static ArrayList<User> takeUsers(User user) {
 		ArrayList<User> userL = new ArrayList<User>();
 		if (user!=null) {
@@ -1622,8 +1855,7 @@ public class Main {
 			}
 		return userL; 
 	}
-	
-	//DA SMO IMALI CELE OBJEKTE NE BI NAM TREBALE OVE TAKE FJE 
+	 
 	private static ArrayList<Organization> takeOrganizations(User user) {
 		ArrayList<Organization> organizationL = new ArrayList<Organization>();
 		if (user!=null) {
