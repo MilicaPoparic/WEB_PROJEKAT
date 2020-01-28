@@ -1,0 +1,42 @@
+html,body{
+	
+	background-image: url("http://www.alcortech.com/wp3/wp-content/uploads/2016/08/Cloud.jpg");
+	background-size: cover;
+	background-repeat: no-repeat;
+	font-family: 'Numans', sans-serif;
+	
+}
+.titleColor{
+	color:#00b8e6;
+	font-family:"serif";
+	font-size: 45px;
+}
+.containerLogin{
+	margin: auto;
+ 	width: 40%;
+ 	padding: 10px;
+}
+.loginColor{
+	font-family:"serif";
+	color:#00b8e6;
+	font-size: 30px;	
+}
+.formLogin{
+	width="48";
+ 	height="48";
+  	padding: 12px 20px;
+  	margin: 8px 0;
+}
+.buttonLogin{
+	color: #00b8e6;
+	padding: 6px 20px;
+ 	position:absolute;
+    transition: .5s ease;
+    top: 45%;
+    left: 42.84%;
+}
+.table{
+	background-color: white;
+	box-sizing: content-box;
+	width:50%;
+}

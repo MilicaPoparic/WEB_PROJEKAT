@@ -18,8 +18,8 @@ Vue.component("home-page", {
 <div>
 		
 	<p>Virtual machines</p>
-	<table border="1">
-		<tr bgcolor="blue">
+	<table border="1" class="table">
+		<tr bgcolor="#0aadff">
 			<th> Name </th>
 			<th> Core </th>
 			<th> RAM </th>
