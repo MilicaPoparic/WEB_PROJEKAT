@@ -23,7 +23,7 @@ Vue.component("add-vm",{
 	<div>
 	<p>Add new VM:</p> 
 	<p v-if="role==='admin'">Organization: {{organizations}}</p>
-	<table border="1">
+	<table >
 	
 	<tr v-if="role==='superAdmin'">
 		<td>
@@ -120,6 +120,10 @@ Vue.component("add-vm",{
 	,
 	methods:{
 		addV:function(){
+			this.error1='';
+			this.error2='';
+			this.error3='';
+			this.error4='';
 			if(!this.name){
 				this.error1='Name of vm is required!';
 			}
@@ -132,6 +136,7 @@ Vue.component("add-vm",{
 			
 			if(this.name && this.nameOrg && this.nameC)
 			{
+				
 				if(!this.nameD){
 					this.nameD = null;
 				}
@@ -147,6 +152,9 @@ Vue.component("add-vm",{
 			    	  }
 			      })
 			      .catch((response)=>{
+			    	  this.error1='';
+					  this.error2='';
+					  this.error3='';
 			    	  this.error4 = 'Wrong input!';
 			      })
 			}
@@ -167,7 +175,10 @@ Vue.component("add-vm",{
 			    	  }
 			      })
 			      .catch((response)=>{
-			    	  this.error4 = 'Wrong input!';
+			    	  this.error1='';
+					  this.error2='';
+					  this.error3='';
+				  	  this.error4 = 'Wrong input!';
 			      })
 			}	
 		}

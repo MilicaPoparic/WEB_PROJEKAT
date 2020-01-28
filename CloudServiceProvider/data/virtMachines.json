@@ -24,6 +24,20 @@
     "activityLog": []
   },
   {
+    "name": "jojojoVM",
+    "category": {
+      "name": "kategorija2",
+      "coreNumber": 3,
+      "RAM": 4,
+      "GPUcores": 5
+    },
+    "nameOrg": "ORG1",
+    "drives": [
+      "noviDisk"
+    ],
+    "activityLog": []
+  },
+  {
     "name": "WINDOWS10-VM",
     "category": {
       "name": "kategorija2",
@@ -68,6 +82,33 @@
     "drives": [
       "HaloDisk"
     ],
+    "activityLog": []
+  },
+  {
+    "name": "novaVmVm",
+    "category": {
+      "name": "kategorija6",
+      "coreNumber": 5,
+      "RAM": 20,
+      "GPUcores": 1
+    },
+    "nameOrg": "IOS",
+    "drives": [
+      "C",
+      "E"
+    ],
+    "activityLog": []
+  },
+  {
+    "name": "novaVM",
+    "category": {
+      "name": "kategorija2",
+      "coreNumber": 3,
+      "RAM": 4,
+      "GPUcores": 5
+    },
+    "nameOrg": "ORG1",
+    "drives": [],
     "activityLog": []
   }
 ]

@@ -1,7 +1,7 @@
 Vue.component("home-page", {
 	data: function(){
 		return{
-			virtMachines: null,
+			virtMachines: {},
 			pretraga: "",
 			role: "",
 			name:'',
@@ -65,6 +65,7 @@ Vue.component("home-page", {
 		</tr>
 			
 	</table>
+	{{error1}}
 	 <p>
 		<button v-on:click="filter()">Filter</button>
 	</p>
@@ -86,8 +87,9 @@ Vue.component("home-page", {
 				alert("Unesite parametre pretrage");
 			}
 			else{
+				 this.error1 ='';
 				if(!this.name){
-					this.name="null";
+					this.name=null;
 				}if(!this.fromm){
 					this.fromm=0;
 				}if(!this.too){

@@ -657,10 +657,10 @@ public class Main {
 		});
 		post("/rest/filterVM", (req, res) -> {
 			res.type("application/json");
-			System.out.println(req.body());
 			VMFilter filter = gson.fromJson(req.body(), VMFilter.class);
-			retVMs = checkParamSearch(filter);	
-			if(!retVMs.isEmpty()) {
+			User us =  req.session().attribute("user");
+			retVMs = checkParamSearch(filter, us.getOrganization());	
+			if(retVMs != null) {
 				res.status(200);
 				
 			}else{
@@ -901,7 +901,7 @@ public class Main {
 		HashMap<String,String> helpSD = new HashMap<String,String>();
 		for(Organization or: r.organizations.values()){
 			for(Drive driv: r.drives.values()) {
-				if(driv.getVirtualMachine().equals("null") &&    //ovde puca
+				if(driv.getVirtualMachine()==null &&
 						or.getResources().contains(driv.getName())) {
 					helpSD.put(driv.getName(),or.getName());
 				}
@@ -943,7 +943,7 @@ public class Main {
 		return listOfVMO;
 	}
 
-	private static ArrayList<VirtualMachine> checkParamSearch(VMFilter filter) {
+	private static ArrayList<VirtualMachine> checkParamSearch(VMFilter filter, String organizat) {
 		retVMHelper = new ArrayList<VirtualMachine>();
 		int ind = 0;
 		int ind1 = 0;
@@ -954,281 +954,430 @@ public class Main {
 		int ind6 =0;
 		boolean  validation = false;
 		if(!emptySearch(filter)) {
-			
-			if(!filter.name.equals("null")) {
-				ind = checkVMName(filter.name);
+			if(filter.name!=null) {
+				ind = checkVMName(filter.name, organizat);
 			}
+			if(ind ==2) {
+				return null;
+			}
+			ind1 = filter1(filter, ind, organizat);
+			
+			if(ind1 == 2) {
+				return null;
+			}
+			validation = (ind==0) && (ind1==0); 
 
-			if(ind==0 && filter.fromm!=0) {
-				ind1 = checkVMFromEmpty(filter.fromm);
-			}
-			if(ind == 1 && filter.fromm!=0) {
-				System.out.println("dalje");
-				ind1 = checkVMFrom(filter.fromm);
-			}
-			validation = (ind==0 && ind1==1) || (ind==1 && ind1==0) ||(ind==1 && ind1==1);
-						
-			if(validation && filter.too!=0) {//vec nesto filtrirao
-				
-				ind2 = checkVMTo(filter.too);
-			}
-			validation = (ind==0 && ind1==0); 
-
-			if(validation && filter.too!=0) {//znaci ovo je prvi filter
-		
-				ind2 = checkVMToEmpty(filter.too);
+			ind2 = filter2(filter, validation, organizat);
+			
+			if(ind2 == 2) {
+				return null;
 			}
 			
-			validation = ((ind==0 && ind1==1) || (ind==1 && ind1==0) ||(ind==1 && ind1==1)) || ind2==1;
-			
-			if(validation && filter.fromm1!=0) {
-				ind3 = checkVMFrom1(filter.fromm1);
-			}
 			validation = (ind==0 && ind1==0 && ind2==0);
 			
-			if(validation && filter.fromm1!=0) {
-				ind3 = checkVMFrom1Empty(filter.fromm1); 
-			}
-		
-			validation = ((ind==0 && ind1==1) || (ind==1 && ind1==0) ||(ind==1 && ind1==1)) || ind2==1 || ind3==1;
+			ind3 = filter3(filter, validation, organizat);
 			
-			if(validation && filter.too1!=0) {
-				ind4 = checkVMTo1(filter.too1);
+			if(ind3 == 2) {
+				return null;
 			}
+			
 			validation = (ind==0 && ind1==0 && ind2==0 && ind3 ==0); 
 			
-			if(validation && filter.too1!=0) {
-				ind4 = checkVMTo1Empty(filter.too1); 
+			ind4 = filter4(filter, validation, organizat);
+			
+			if(ind4 == 2) {
+				return null;
 			}
 			
-			validation = ((ind==0 && ind1==1) || (ind==1 && ind1==0) ||(ind==1 && ind1==1)) || ind2==1 || ind3==1 || ind4 ==1;
-			
-			if(validation && filter.fromm2!=0) {
-				ind5= checkVMFrom2(filter.fromm2);
-			}
 			validation = (ind==0 && ind1==0 && ind2==0 && ind3 ==0 && ind4 ==0); 
 			
-			if(validation && filter.fromm2!=0) {
-				ind5 = checkVMFrom2Empty(filter.fromm2); 
-			}
-						
-			validation = ((ind==0 && ind1==1) || (ind==1 && ind1==0) ||(ind==1 && ind1==1)) || ind2==1 
-					|| ind3==1 || ind4 ==1 || ind5==1;
+			ind5 = filter5(filter, validation, organizat);
 			
-			if(validation && filter.too2!=0) {
-				checkVMToo2(filter.too2);
+			if(ind5 == 2) {
+				return null;
 			}
 			validation = (ind==0 && ind1==0 && ind2==0 && ind3 ==0 && ind4 ==0 && ind5 ==0); 
 			
-			if(validation && filter.too2!=0) {
-				 checkVMToo2Empty(filter.too2); 
+			ind6 = filter6(filter, validation, organizat);
+			
+			if(ind6 ==2) {
+				return null;
 			}
+			return retVMHelper;
+		}
+		return null;
+		
+	}
+	
+	private static int filter6(VMFilter filter, boolean validation, String organizat) {
+		int ind6 =0;
+		if(validation && filter.too2!=0) {
+			 ind6 =checkVMToo2Empty(filter.too2,organizat); 
+		}		
+		if(!validation && filter.too2!=0) {
+			ind6 =checkVMToo2(filter.too2,organizat);
+		}
+		return ind6;
+	}
+
+	private static int filter5(VMFilter filter, boolean validation, String organizat) {
+		int ind5 = 0;
+		if(validation && filter.fromm2!=0) {
+			ind5 = checkVMFrom2Empty(filter.fromm2,organizat); 
 		}
 		
-		return retVMHelper;
-	}
-
-	private static void checkVMToo2Empty(int too2) {
-		for(VirtualMachine vm : r.virtMachines.values()) 
-		{
-			if(vm.getCategory().getGPUcores() <= too2)
-			{
-				retVMHelper.add(vm);
-			}
-		}		
-	}
-
-	private static void checkVMToo2(int too2) {
-		ArrayList<VirtualMachine> satisfiedConditions= new ArrayList<VirtualMachine>();
-		for(VirtualMachine vm : new ArrayList<VirtualMachine>(retVMHelper)) 
-		{
-			if(vm.getCategory().getGPUcores()<= too2)
-			{
-				satisfiedConditions.add(vm);
-			}
+		if(!validation && filter.fromm2!=0) {
+			ind5= checkVMFrom2(filter.fromm2,organizat);
 		}
-		retVMHelper.clear();  //svakako ocisti
-		if(!satisfiedConditions.isEmpty()) {
-			retVMHelper = satisfiedConditions;
+		return ind5;
+	}
+
+	private static int filter4(VMFilter filter, boolean validation, String organizat) {
+		int ind4 =0;
+		if(validation && filter.too1!=0) {
+			ind4 = checkVMTo1Empty(filter.too1,organizat); 
+		}
+		
+		if(!validation && filter.too1!=0) {
+			ind4 = checkVMTo1(filter.too1,organizat);
+		}
+		return ind4;
+	}
+
+	private static int  filter3(VMFilter filter, boolean validation, String organizat) {
+		int ind3 = 0;
+		if(validation && filter.fromm1!=0) {
+			ind3 = checkVMFrom1Empty(filter.fromm1,organizat); 
+		}
+		
+		if(!validation && filter.fromm1!=0) {
+			ind3 = checkVMFrom1(filter.fromm1,organizat);
+		}
+		return ind3;
+	}
+
+	private static int filter2(VMFilter filter, boolean validation, String organizat) {
+		int ind2 =0;
+		if(validation && filter.too!=0) {//znaci ovo je prvi filter
+			
+			ind2 = checkVMToEmpty(filter.too,organizat);
+		}
+						
+		if(!validation && filter.too!=0) {//vec nesto filtrirao
+			
+			ind2 = checkVMTo(filter.too,organizat);
+		}
+		return ind2;
+	}
+
+	private static int filter1(VMFilter filter, int ind, String organizat) {
+		int ind1 =0;
+		if(ind==0 && filter.fromm!=0) {
+			ind1 = checkVMFromEmpty(filter.fromm,organizat);
+		}
+		if(ind == 1 && filter.fromm!=0) {
+			ind1 = checkVMFrom(filter.fromm,organizat);
+		}
+		return ind1;
+	}
+
+	private static int function() {
+		if(retVMHelper.isEmpty()) {
+			return 2;
+		}else {
+			return 1;
 		}	
 	}
-
-	private static int checkVMFrom2Empty(int fromm2) {
-		boolean ind =false;
-		for(VirtualMachine vm : r.virtMachines.values()) 
-		{
-			if(vm.getCategory().getGPUcores() >= fromm2)
+	
+	private static int checkVMToo2Empty(int too2, String organizat) {
+		if(organizat!=null) {
+			for(VirtualMachine vm : r.virtMachines.values()) 
 			{
-				retVMHelper.add(vm);
-				ind = true;
+				if(vm.getCategory().getGPUcores() <= too2 && vm.getNameOrg().equals(organizat))
+				{
+					retVMHelper.add(vm);
+				}
 			}
 		}
-		if(ind) {
-			return 1;
+		else {
+			for(VirtualMachine vm : r.virtMachines.values()) 
+			{
+				if(vm.getCategory().getGPUcores() <= too2)
+				{
+					retVMHelper.add(vm);
+				}
+			}
 		}
-		return 2;           //usao i nije nasao
+		return function();
+		
+	}
+	
+	private static int checkVMToo2(int too2, String organizat) {
+		if(organizat!=null) {
+			for(VirtualMachine vm : new ArrayList<VirtualMachine>(retVMHelper)) 
+			{
+				if(vm.getCategory().getGPUcores()> too2 && vm.getNameOrg().equals(organizat))
+				{
+					retVMHelper.remove(vm);
+					break;
+				}
+			}
+		}
+		else {
+			for(VirtualMachine vm : new ArrayList<VirtualMachine>(retVMHelper)) 
+			{
+				if(vm.getCategory().getGPUcores()> too2)
+				{
+					retVMHelper.remove(vm);
+					break;
+				}
+			}
+		}
+		return function();
 	}
 
-	private static int checkVMFrom2(int fromm2) {
-		ArrayList<VirtualMachine> satisfiedConditions= new ArrayList<VirtualMachine>();
-		for(VirtualMachine vm : new ArrayList<VirtualMachine>(retVMHelper)) 
-		{
-			if(vm.getCategory().getGPUcores()>= fromm2)
+	private static int checkVMFrom2Empty(int fromm2, String organizat) {
+		if(organizat!=null) {
+			for(VirtualMachine vm : r.virtMachines.values()) 
 			{
-				satisfiedConditions.add(vm);
+				if(vm.getCategory().getGPUcores() >= fromm2 && vm.getNameOrg().equals(organizat))
+				{
+					retVMHelper.add(vm);
+				}
 			}
 		}
-		retVMHelper.clear();  //svakako ocisti
-		if(satisfiedConditions.isEmpty()) {
-			return 2;
+		else {
+			for(VirtualMachine vm : r.virtMachines.values()) 
+			{
+				if(vm.getCategory().getGPUcores() >= fromm2)
+				{
+					retVMHelper.add(vm);
+				}
+			}
 		}
-		retVMHelper = satisfiedConditions;
-		return 1;
+		return function();
 	}
 
-	private static int checkVMTo1Empty(int too1) {
-		boolean ind =false;
-		for(VirtualMachine vm : r.virtMachines.values()) 
-		{
-			if(vm.getCategory().getRAM() <= too1)
+	private static int checkVMFrom2(int fromm2, String organizat) {
+		if(organizat!=null) {
+			for(VirtualMachine vm : new ArrayList<VirtualMachine>(retVMHelper)) 
 			{
-				retVMHelper.add(vm);
-				ind =true;
+				if(vm.getCategory().getGPUcores()< fromm2 && vm.getNameOrg().equals(organizat))
+				{
+					retVMHelper.remove(vm);
+				}
+			}
+		}else {
+			for(VirtualMachine vm : new ArrayList<VirtualMachine>(retVMHelper)) 
+			{
+				if(vm.getCategory().getGPUcores()< fromm2)
+				{
+					retVMHelper.remove(vm);
+				}
 			}
 		}
-		if(ind) {
-			return 1;
-		}
-		return 2;           //usao i nije nasao
+		return function();
 	}
 
-	private static int checkVMTo1(int too1) {
-		ArrayList<VirtualMachine> satisfiedConditions= new ArrayList<VirtualMachine>();
-		for(VirtualMachine vm : new ArrayList<VirtualMachine>(retVMHelper)) 
-		{
-			if(vm.getCategory().getRAM()<= too1)
+	private static int checkVMTo1Empty(int too1, String organizat) {
+		if(organizat!=null) {
+			for(VirtualMachine vm : r.virtMachines.values()) 
 			{
-				satisfiedConditions.add(vm);
+				if(vm.getCategory().getRAM() <= too1 && vm.getNameOrg().equals(organizat))
+				{
+					retVMHelper.add(vm);
+				}
 			}
 		}
-		retVMHelper.clear();  //svakako ocisti
-		if(satisfiedConditions.isEmpty()) {
-			return 2;
+		else {
+			for(VirtualMachine vm : r.virtMachines.values()) 
+			{
+				if(vm.getCategory().getRAM() <= too1)
+				{
+					retVMHelper.add(vm);
+				}
+			}
 		}
-		retVMHelper = satisfiedConditions;
-		return 1;
+		return function();
+	}
+
+	private static int checkVMTo1(int too1, String organizat) {
+		if(organizat!=null) {
+			for(VirtualMachine vm : new ArrayList<VirtualMachine>(retVMHelper)) 
+			{
+				if(vm.getCategory().getRAM()> too1 && vm.getNameOrg().equals(organizat))
+				{
+					retVMHelper.remove(vm);
+				}
+			}
+		}
+		else {
+			for(VirtualMachine vm : new ArrayList<VirtualMachine>(retVMHelper)) 
+			{
+				if(vm.getCategory().getRAM()> too1)
+				{
+					retVMHelper.remove(vm);
+				}
+			}
+		}
+		return function();
 	
 	}
 
-	private static int checkVMFrom1Empty(int fromm1) {
-		boolean ind =false;
-		for(VirtualMachine vm : r.virtMachines.values()) 
-		{
-			if(vm.getCategory().getRAM() >= fromm1)
+	private static int checkVMFrom1Empty(int fromm1, String organizat) {
+	  if(organizat!=null) {
+		  for(VirtualMachine vm : r.virtMachines.values()) 
 			{
-				retVMHelper.add(vm);
-				ind =true;
+				if(vm.getCategory().getRAM() >= fromm1 && vm.getNameOrg().equals(organizat))
+				{
+					retVMHelper.add(vm);
+					
+				}
+			} 
+	  }else {
+		  for(VirtualMachine vm : r.virtMachines.values()) 
+			{
+				if(vm.getCategory().getRAM() >= fromm1)
+				{
+					retVMHelper.add(vm);
+					
+				}
 			}
-		}
-		if(ind) {
-			return 1;
-		}
-		return 2;           //usao i nije nasao
+	  }
+	  return function();
 	}
 
-	private static int checkVMFrom1(int fromm1) {
-		ArrayList<VirtualMachine> satisfiedConditions= new ArrayList<VirtualMachine>();
-		for(VirtualMachine vm : new ArrayList<VirtualMachine>(retVMHelper)) 
-		{
-			if(vm.getCategory().getRAM()>= fromm1)
+	private static int checkVMFrom1(int fromm1, String organizat) {
+		if(organizat!=null) {
+			for(VirtualMachine vm : new ArrayList<VirtualMachine>(retVMHelper)) 
 			{
-				satisfiedConditions.add(vm);
+				if(vm.getCategory().getRAM()< fromm1 && vm.getNameOrg().equals(organizat))
+				{
+					retVMHelper.remove(vm);
+				}
 			}
 		}
-		retVMHelper.clear();  //svakako ocisti
-		if(satisfiedConditions.isEmpty()) {
-			return 2;
-		}
-		retVMHelper = satisfiedConditions;
-		return 1;
-	}
-
-	private static int checkVMToEmpty(int too) {
-		boolean ind =false;
-		for(VirtualMachine vm : r.virtMachines.values()) 
-		{
-			if(vm.getCategory().getCoreNumber() <= too)
+		else {
+			for(VirtualMachine vm : new ArrayList<VirtualMachine>(retVMHelper)) 
 			{
-				retVMHelper.add(vm);
-				ind =true;
+				if(vm.getCategory().getRAM()< fromm1)
+				{
+					retVMHelper.remove(vm);
+				}
 			}
 		}
-		if(ind) {
-			return 1;
-		}
-		return 2;           //usao i nije nasao
+		return function();
 	}
 
-	private static int checkVMTo(int too) {
-		ArrayList<VirtualMachine> satisfiedConditions= new ArrayList<VirtualMachine>();
-		for(VirtualMachine vm :new ArrayList<VirtualMachine>(retVMHelper)) 
-		{
-			if(vm.getCategory().getCoreNumber()<= too)
+	private static int checkVMToEmpty(int too, String organizat) {
+       if(organizat!=null) {
+    	   for(VirtualMachine vm : r.virtMachines.values()) {
+	   			if(vm.getCategory().getCoreNumber() <= too && vm.getNameOrg().equals(organizat))
+	   			{
+	   				retVMHelper.add(vm);
+	   			}
+   			}
+       }else {
+    	   for(VirtualMachine vm : r.virtMachines.values()) {
+	   			if(vm.getCategory().getCoreNumber() <= too)
+	   			{
+	   				retVMHelper.add(vm);
+	   			}
+   			}
+       }
+       return function();
+	}
+
+	private static int checkVMTo(int too, String organizat) {
+		if(organizat!=null) {
+			for(VirtualMachine vm :new ArrayList<VirtualMachine>(retVMHelper)) 
 			{
-				satisfiedConditions.add(vm);
+				if(vm.getCategory().getCoreNumber()> too && vm.getNameOrg().equals(organizat))
+				{
+					retVMHelper.remove(vm);
+				}
 			}
 		}
-		retVMHelper.clear();  //svakako ocisti
-		if(satisfiedConditions.isEmpty()) {
-			return 2;
-		}
-		retVMHelper = satisfiedConditions;
-		return 1;
-	}
-
-	private static int checkVMFrom(int fromm) {
-		boolean ind =false;
-		for(VirtualMachine vm : new ArrayList<VirtualMachine>(retVMHelper)) 
-		{
-			if(vm.getCategory().getCoreNumber()>=fromm)
+		else {
+			for(VirtualMachine vm :new ArrayList<VirtualMachine>(retVMHelper)) 
 			{
-				ind =true;
+				if(vm.getCategory().getCoreNumber()> too)
+				{
+					retVMHelper.remove(vm);
+				}
 			}
 		}
-		if(ind) {
-			return 1;
-		}
-		retVMHelper.clear();  //zato sto je naziv vm jedinstven i ne moze naci vise od jedne
-		return 2;           //usao i nije nasao
+		return function();
 	}
 
-	private static int  checkVMFromEmpty(int fromm) {
-		boolean ind =false;
-		for(VirtualMachine vm : r.virtMachines.values()) 
-		{
-			if(vm.getCategory().getCoreNumber() >= fromm)
+	private static int checkVMFrom(int fromm, String organizat) {
+		if(organizat !=null) {
+			for(VirtualMachine vm : new ArrayList<VirtualMachine>(retVMHelper)) 
 			{
-				retVMHelper.add(vm);
-				ind =true;
+				if(vm.getCategory().getCoreNumber()< fromm && vm.getNameOrg().equals(organizat))
+				{
+					retVMHelper.remove(vm);
+				}
+			}
+			
+		}else {
+			for(VirtualMachine vm : new ArrayList<VirtualMachine>(retVMHelper)) 
+			{
+				if(vm.getCategory().getCoreNumber()< fromm)
+				{
+					retVMHelper.remove(vm);
+				}
 			}
 		}
-		if(ind) {
-			return 1;    //usao i nasao
-		}
-		return 2;           //usao i nije nasao
+		return function();
 	}
 
-	private static int checkVMName(String name) {
+	private static int  checkVMFromEmpty(int fromm, String organizat) {
+		if(organizat!=null) {
+			for(VirtualMachine vm : r.virtMachines.values()) 
+			{
+				if(vm.getCategory().getCoreNumber() >= fromm && vm.getNameOrg().equals(organizat))
+				{
+					retVMHelper.add(vm);
+				}
+			}
+		}else {
+			for(VirtualMachine vm : r.virtMachines.values()) 
+			{
+				if(vm.getCategory().getCoreNumber() >= fromm)
+				{
+					retVMHelper.add(vm);
+				}
+			}
+		}
+		return function();
 		
-		for(VirtualMachine vm : r.virtMachines.values()) 
-		{
-			if(vm.getName().equalsIgnoreCase(name))
+	}
+
+	private static int checkVMName(String name, String organizat) {
+		if(organizat !=null) {
+			for(VirtualMachine vm : r.virtMachines.values()) 
 			{
-				retVMHelper.add(vm);
-				return 1;    //usao i nasao
+				if(vm.getName().equalsIgnoreCase(name) && vm.getNameOrg().equals(organizat))
+				{
+					retVMHelper.add(vm);
+					return 1;    //usao i nasao
+				}
 			}
+			return 2;            //usao i nije nasao
 		}
-		return 2;            //usao i nije nasao
+		else {
+			for(VirtualMachine vm : r.virtMachines.values()) 
+			{
+				if(vm.getName().equalsIgnoreCase(name))
+				{
+					retVMHelper.add(vm);
+					return 1;    //usao i nasao
+				}
+			}
+			return 2;            //usao i nije nasao
+		}
+		
 	}
 
 	private static boolean emptySearch(VMFilter filter) {
@@ -1236,7 +1385,7 @@ public class Main {
 		boolean validation =filter.too == 0 && filter.fromm == 0;
 		boolean validation1 =filter.too1 == 0 && filter.fromm1 == 0 && validation;
 		boolean validation2 =filter.too2 == 0 && filter.fromm2 == 0 && validation1;
-		if(filter.name.equals(null)&&validation2) {
+		if(filter.name==null && validation2) {
 			return true;
 		}
 		return false;

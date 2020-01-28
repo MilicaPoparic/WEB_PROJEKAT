@@ -70,8 +70,8 @@ Vue.component("change-vm",{
 		
 		<br>
 		<table>
-		<td><button v-on:click="change()">Change data</button></td> 
-		<td><button v-on:click="deleteVm()">Delete</button></td>
+		<td><button v-if="role!='user'" v-on:click="change()">Change data</button></td> 
+		<td><button v-if="role=='superAdmin'" v-on:click="deleteVm()">Delete</button></td>
 		</table>
 </div>	`
 ,
