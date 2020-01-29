@@ -53,7 +53,7 @@ public class Main {
 	private static ArrayList<VirtualMachine> retVMHelper;
 	private static String vmName=null;
 	
-	//VRELA KO FAVELA JE
+	
 	private static void writeToFiles1(HashMap<String,Object> listForWrite, String string) throws IOException {
 		String json = gson.toJson(listForWrite.values());
 		FileWriter file = new FileWriter(string);
@@ -104,7 +104,7 @@ public class Main {
 			});
 		
 		//trebace za mesecni izvestaj!
-		get("/rest/checkAdmin", (req, res) -> {
+		get("/rest/getDVM", (req, res) -> {
 			res.type("application/json");
 			User user = req.session(true).attribute("user");
 			if (user != null) {
@@ -127,6 +127,7 @@ public class Main {
 				return g.toJson(r.virtMachines.values());
 			}
 			else {
+				System.out.println("ovde sam");
 				return g.toJson(loadVMOUser(user));
 			}
 		}
@@ -237,6 +238,11 @@ public class Main {
 		get("rest/getVM", (req,res)-> {
 			res.type("application/json");
 			return g.toJson(v);	
+		});
+		
+		post("/rest/findReport", (req,res)-> {
+			//sad cemo ovo da implementiramo!
+			return("OK");
 		});
 		
 		get("/rest/getDVM", (req,res)-> {
@@ -1475,7 +1481,7 @@ public class Main {
 	private static void changeDrivesVM(String v, String vm) {
 		for (Drive d : r.drives.values()) {
 			if (d.getVirtualMachine().equals(v)) {
-				d.setVirtualMachine("");
+				d.setVirtualMachine(vm);
 			}
 		}
 	}
@@ -2078,14 +2084,16 @@ public class Main {
 	
 	private static ArrayList<VirtualMachine> loadVMOUser(User user) {
 		ArrayList<VirtualMachine> machines = new ArrayList<VirtualMachine>();
-		String organization = r.users.get(user.getEmail()).getOrganization();
+		String organization = user.getOrganization();
 		for (String resource : r.organizations.get(organization).getResources()) {
 			for (VirtualMachine vm : r.virtMachines.values()) {
 				if (vm.getName().equals(resource)) {
+					System.out.println(vm.getName());
 					machines.add(vm);
 				}
 			}
 		}
+		System.out.println(machines.size());
 		return machines;
 	}
 	

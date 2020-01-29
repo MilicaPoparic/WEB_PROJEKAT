@@ -17,8 +17,7 @@
     "name": "C",
     "driveType": "SSD",
     "nameOrg": "IOS",
-    "capacity": 256,
-    "nameVM": "novaVmVm"
+    "capacity": 256
   },
   {
     "name": "D",
@@ -31,8 +30,7 @@
     "name": "E",
     "driveType": "SSD",
     "nameOrg": "IOS",
-    "capacity": 4,
-    "nameVM": "novaVmVm"
+    "capacity": 4
   },
   {
     "name": "F",

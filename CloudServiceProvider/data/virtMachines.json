@@ -74,19 +74,29 @@
     "active": "activate"
   },
   {
-    "name": "novaVmVm",
+    "name": "WINDOWS10-VM",
     "category": {
-      "name": "kategorija6",
+      "name": "kata",
       "coreNumber": 5,
-      "RAM": 20,
+      "RAM": 1,
       "GPUcores": 1
     },
-    "nameOrg": "IOS",
+    "nameOrg": "Microsoft",
     "drives": [
-      "C",
-      "E"
+      "D",
+      "rnrnr",
+      "F"
     ],
-    "activityLog": [],
+    "activityLog": [
+      {
+        "start": "Jul 25, 2019 12:00:00 AM",
+        "end": "Aug 11, 2019 12:00:00 AM"
+      },
+      {
+        "start": "Jan 23, 2020 12:00:00 AM",
+        "end": "Jan 28, 2020 12:00:00 AM"
+      }
+    ],
     "active": "activate"
   },
   {
@@ -154,31 +164,5 @@
       }
     ],
     "active": "deactivate"
-  },
-  {
-    "name": "WINDOWS10",
-    "category": {
-      "name": "kata",
-      "coreNumber": 5,
-      "RAM": 1,
-      "GPUcores": 1
-    },
-    "nameOrg": "Microsoft",
-    "drives": [
-      "D",
-      "rnrnr",
-      "F"
-    ],
-    "activityLog": [
-      {
-        "start": "Jul 25, 2019 12:00:00 AM",
-        "end": "Aug 11, 2019 12:00:00 AM"
-      },
-      {
-        "start": "Jan 23, 2020 12:00:00 AM",
-        "end": "Jan 28, 2020 12:00:00 AM"
-      }
-    ],
-    "active": "activate"
   }
 ]

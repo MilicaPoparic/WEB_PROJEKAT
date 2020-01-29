@@ -76,7 +76,7 @@ Vue.component("detailDr",{
 		    <td>
 		    	<select v-model="nameVMS">
 	       			<option default value="delete"> -Select VM- </option>
-			        <option v-for="v in vms" :value="v.nameVM" v-if="v.nameORG==drive.nameOrg">{{ v.nameVM }}</option>
+			        <option v-for="v in vms" :value="v.name" v-if="v.nameOrg==drive.nameOrg">{{ v.name }}</option>
 				</select>
 		    </td>	
 		</tr>	

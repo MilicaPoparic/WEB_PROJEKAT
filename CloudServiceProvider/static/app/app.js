@@ -18,6 +18,7 @@ const Profile = {template: '<profile-info></profile-info>'}
 const ChangeVm = { template: '<change-vm></change-vm>' }
 const SearchVM= {template: '<search-vm></search-vm>'}
 const AddVM= {template: '<add-vm></add-vm>'}
+const Report = {template: '<report></report>'}
 
 const router = new VueRouter({
 	mode: 'hash',
@@ -41,7 +42,8 @@ const router = new VueRouter({
 	    { path: '/profile', component: Profile},
 	    { path: '/changeVM', component: ChangeVm},
 	    { path: '/searchV', component: SearchVM},
-	    { path: '/addVM', component: AddVM}
+	    { path: '/addVM', component: AddVM},
+	    { path: '/report', component: Report}
 	  ]
 });
 

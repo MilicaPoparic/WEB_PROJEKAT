@@ -76,6 +76,7 @@ Vue.component("home-page", {
 	<a href="#/o" v-if="role=='superAdmin' || role=='admin'">Organizations</a> <br>
 	<a href="#/users" v-if="role=='superAdmin' || role=='admin'">Users</a> <br>
 	<a href="#/c" v-if="role=='superAdmin'">Categories</a> <br>
+	<a href="#/report" v-if="role=='admin'">Mothly report</a> <br>
 	<button v-on:click="logout">Logout</button> <br>
 	
 	
