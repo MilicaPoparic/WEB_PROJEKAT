@@ -257,14 +257,26 @@ public class Main {
 			User user = req.session().attribute("user");
 			ChangeActivity dates = g.fromJson(req.body(),ChangeActivity.class);
 			ArrayList<VirtualMachine> machines = loadVMOUser(user);
+			double total =0.0;
 			for (VirtualMachine vm : machines) {
 				ArrayList<Activity> vmActivity = checkInterval(dates, vm.getActivityLog());
 				System.out.println(vmActivity.size()+" duzina liste");
 				double price = getHourPrice(vm); 
 				double activeHours = getActiveHours(vmActivity);
 				System.out.println(price+" cena sata "+activeHours+" aktivni sati");
+				total += price*activeHours;
 				reporthash.put(vm.getName(), price*activeHours);
 			}
+			ArrayList<Drive> drives = getUserDrives(user);
+					
+			
+			for(Drive du: drives) {
+				double price = getHourPriceDrive(du);
+				double activeHours= getActiveHoursDrive(dates);
+				total += price*activeHours;
+				reporthash.put(du.getName(), price*activeHours);
+			}
+			reporthash.put("sum", total);
 			return (g.toJson(reporthash));
 		});
 		
@@ -828,6 +840,33 @@ public class Main {
 		});
 		
 	}
+	private static double getActiveHoursDrive(ChangeActivity dates) throws ParseException {
+		Date start = sdf.parse(dates.newStart);
+		Date end = sdf.parse(dates.newEnd);
+		return (end.getTime()-start.getTime())/(60*60 * 1000);
+	}
+
+	private static double getHourPriceDrive(Drive du) {
+		double sum =0;
+		if(du.getDriveType().equals(DriveType.HDD)) {
+			sum += 0.1* du.getCapacity();
+		}
+		else {
+			sum += 0.3* du.getCapacity();
+		}
+		return sum;
+	}
+
+	private static ArrayList<Drive> getUserDrives(User user) {
+		ArrayList<Drive> dss = new ArrayList<Drive>();
+		String org = user.getOrganization();
+		for (Drive d : r.drives.values()) {
+			if(d.getNameOrg().equals(org))
+				dss.add(d);
+		}
+		return dss;
+	}
+
 	private static double getActiveHours(ArrayList<Activity> vmActivity) {
 		double sum = 0;
 		for (Activity a : vmActivity) {

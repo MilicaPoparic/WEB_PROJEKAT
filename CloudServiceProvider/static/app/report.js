@@ -4,7 +4,8 @@ Vue.component("report",{
 			data: {},
 			date1: '',
 		    date2: '',
-		    err: ''
+		    err: '',
+		    total:''
 		}
 	},
 	template:
@@ -27,17 +28,17 @@ Vue.component("report",{
 		<br>
 		<table border="1">
 			<tr v-for="(v,k) in data"> 
-				<td>{{k}}</td>
-			</tr>
-			<tr v-for="(v,k) in data">
-				<td>{{v}}</td>
+				<td v-if="k!='sum'">{{k}}</td>
+				<td v-if="k!='sum'">{{v}}</td>
 			</tr>
 		</table>
-		
-				 
-				
-				
-		
+		<br>
+			<table border>
+			<tr v-for="(v,k) in data"> 
+				<td v-if="k==='sum'">TOTAL</td>
+				<td v-if="k==='sum'">{{v}}</td>
+			</tr>
+		</table>
 </div>	`
 ,
 	methods : {
