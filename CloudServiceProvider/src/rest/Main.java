@@ -52,6 +52,7 @@ public class Main {
 	private static ArrayList<VirtualMachine> retVMs = new ArrayList<VirtualMachine>();
 	private static ArrayList<VirtualMachine> retVMHelper;
 	private static String vmName=null;
+	private static HashMap<String, Double> reporthash = new HashMap<String, Double>();
 	
 	
 	private static void writeToFiles1(HashMap<String,Object> listForWrite, String string) throws IOException {
@@ -84,6 +85,18 @@ public class Main {
 			User user = req.session(true).attribute("user");
 			if (user != null) {
 				if (!user.getRole().toString().equals("superAdmin")) {
+					res.status(403);
+					return gson.toJson(user);
+				}}
+			res.status(200);
+			return ("OK");
+			});
+		
+		get("/rest/checkAdmin", (req, res) -> {
+			res.type("application/json");
+			User user = req.session(true).attribute("user");
+			if (user != null) {
+				if (!user.getRole().toString().equals("admin")) {
 					res.status(403);
 					return gson.toJson(user);
 				}}
@@ -241,8 +254,18 @@ public class Main {
 		});
 		
 		post("/rest/findReport", (req,res)-> {
-			//sad cemo ovo da implementiramo!
-			return("OK");
+			User user = req.session().attribute("user");
+			ChangeActivity dates = g.fromJson(req.body(),ChangeActivity.class);
+			ArrayList<VirtualMachine> machines = loadVMOUser(user);
+			for (VirtualMachine vm : machines) {
+				ArrayList<Activity> vmActivity = checkInterval(dates, vm.getActivityLog());
+				System.out.println(vmActivity.size()+" duzina liste");
+				double price = getHourPrice(vm); 
+				double activeHours = getActiveHours(vmActivity);
+				System.out.println(price+" cena sata "+activeHours+" aktivni sati");
+				reporthash.put(vm.getName(), price*activeHours);
+			}
+			return (g.toJson(reporthash));
 		});
 		
 		get("/rest/getDVM", (req,res)-> {
@@ -805,6 +828,50 @@ public class Main {
 		});
 		
 	}
+	private static double getActiveHours(ArrayList<Activity> vmActivity) {
+		double sum = 0;
+		for (Activity a : vmActivity) {
+			System.out.println(a.getEnd()+"end");
+			System.out.println(a.getStart()+"start");
+			sum += (a.getEnd().getTime()-a.getStart().getTime())/(60*60 * 1000);
+		}
+		return sum;
+	}
+
+	private static double getHourPrice(VirtualMachine vm) {
+		double monthly = 25*(vm.getCategory().getCoreNumber())+15*(vm.getCategory().getRAM())+vm.getCategory().getGPUcores();
+		return monthly/(24*30);
+	}
+
+	private static ArrayList<Activity> checkInterval(ChangeActivity dates, ArrayList<Activity> log) throws ParseException {
+		Date start = sdf.parse(dates.newStart);
+		Date end = sdf.parse(dates.newEnd);
+		ArrayList<Activity> retVal = new ArrayList<Activity>();
+		for (Activity a : log) {
+			if (start.before(a.getStart()) && (end.after(a.getStart())) && (end.before(a.getEnd()) || end.equals(a.getEnd()))) {
+				Activity newActivity = new Activity(a.getStart(),end);
+				retVal.add(newActivity);
+			}
+			else if ((start.after(a.getStart()) || start.equals(a.getStart())) && (end.before(a.getEnd()) || end.equals(a.getEnd()))) {
+				Activity newActivity = new Activity(start,end);
+				retVal.add(newActivity);
+			}
+			
+			else if ((start.after(a.getStart()) || start.equals(a.getStart())) && (end.after(a.getEnd())) && start.before(a.getEnd())) {
+				Activity newActivity = new Activity(start,a.getEnd());
+				retVal.add(newActivity);
+			}
+			else if(a.getStart().after(start) && a.getEnd().before(end)){
+				System.out.println("U OVOM SAM IFU");
+				//if (a.getStart().after(start) && a.getEnd().before(end)) {
+					retVal.add(a);
+				//}
+			}
+			else {}
+		}
+		return retVal;
+	}
+
 	private static Drive removeDrive(Drive drive) {
 		int indikat =0;
 		for(Drive dremove: r.drives.values()) {

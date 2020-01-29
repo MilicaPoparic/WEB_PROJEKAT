@@ -14,5 +14,11 @@ public class ChangeActivity {
 		this.newEnd = newEnd;
 		this.end = end;
 	}
+	public ChangeActivity(String newStart, String newEnd) {
+		super();
+		this.newStart = newStart;
+		this.newEnd = newEnd;
+	}
+	
 	
 }
