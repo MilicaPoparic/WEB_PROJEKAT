@@ -23,13 +23,13 @@ import com.google.gson.JsonParser;
 
 import beans.cloudprovider.Activity;
 import beans.cloudprovider.Category;
+import beans.cloudprovider.ChangeActivity;
 import beans.cloudprovider.Drive;
 import beans.cloudprovider.DriveSearch;
 import beans.cloudprovider.DriveType;
 import beans.cloudprovider.Organization;
 import beans.cloudprovider.Reader;
 import beans.cloudprovider.Role;
-import beans.cloudprovider.SendVMO;
 import beans.cloudprovider.User;
 import beans.cloudprovider.UserToLog;
 import beans.cloudprovider.VMAdd;
@@ -47,11 +47,11 @@ public class Main {
 	private static Organization o = new Organization();
 	private static Drive d = new Drive();
 	private static User u = new User();
-	private static SendVMO  v = new SendVMO ();
+	private static VirtualMachine v = new VirtualMachine();
 	private static ArrayList<Drive>  retDrive = new ArrayList<Drive>();
 	private static ArrayList<VirtualMachine> retVMs = new ArrayList<VirtualMachine>();
 	private static ArrayList<VirtualMachine> retVMHelper;
-	
+	private static String vmName=null;
 	
 	private static void writeToFiles1(HashMap<String,Object> listForWrite, String string) throws IOException {
 		String json = gson.toJson(listForWrite.values());
@@ -61,7 +61,7 @@ public class Main {
 	}
 	
 	public static void main(String[] args) throws IOException, ParseException {
-		port(8080);
+		port(8000);
 		webSocket("/ws", WsHandler.class);		
 		staticFiles.externalLocation(new File("./static").getCanonicalPath()); 
 
@@ -120,16 +120,13 @@ public class Main {
 			User user = req.session().attribute("user");
 			if (user!=null) {
 			if (user.getRole().toString().equals("user")) {
-				ArrayList<SendVMO> listOfVMO = loadVMOUser(user);
-				return g.toJson(listOfVMO);
+				return g.toJson(loadVMOUser(user));
 			}
 			else if  (user.getRole().toString().equals("superAdmin")){
-				ArrayList<SendVMO> listOfVMO = loadVMO();
-				return g.toJson(listOfVMO);
+				return g.toJson(r.virtMachines.values());
 			}
 			else {
-				ArrayList<SendVMO> listOfVMO = loadVMOUser(user);
-				return g.toJson(listOfVMO);
+				return g.toJson(loadVMOUser(user));
 			}
 		}
 		return "OK";
@@ -148,6 +145,7 @@ public class Main {
 			User user = req.session().attribute("user");
 			return gson.toJson(takeOrganizations(user));
 		});
+		
 		//ne brisi, iste su al razlicite objekte saljemo, ne moze kastovanje
 		get("/rest/getOrganizationss", (req, res) -> {
 			res.type("application/json");
@@ -270,17 +268,16 @@ public class Main {
 		get("/rest/getSearchVMS", (req,res)-> {
 			res.type("application/json");
 			User user = req.session().attribute("user");
-			ArrayList<SendVMO> listOfVMO =null;
+			ArrayList<VirtualMachine> listOfVMO =null;
 			if (user!=null) {
 				if (user.getRole().toString().equals("user")) {
-					listOfVMO = loadVMOSUser(user);
+					listOfVMO = loadVMOUser(user);
 				}
 				else if  (user.getRole().toString().equals("superAdmin")){
-					listOfVMO = loadVMOS();
-					
+					listOfVMO = retVMs;
 				}
 				else {
-					listOfVMO = loadVMOSUser(user);
+					listOfVMO = loadVMOUser(user);
 					
 				}
 			}
@@ -305,11 +302,6 @@ public class Main {
 			}
 			return "OK";
 		});
-		//ovo vec imamo samo se drugacije zove tako da moze to da pozove
-		/*get("/rest/getCategoriesForVM", (req,res)-> {
-			res.type("application/json");
-			return g.toJson(r.categoryList);
-		});*/
 		
 		get("/rest/getDrivesForVM", (req,res)-> {
 			res.type("application/json");
@@ -346,10 +338,11 @@ public class Main {
 			}
 			return ("OK");
 		});
-		
+
+
 		post("/rest/captureVM", (req,res)-> {
 			res.type("application/json");
-			SendVMO checkMe = g.fromJson(req.body(), SendVMO.class);
+			VirtualMachine checkMe = g.fromJson(req.body(), VirtualMachine.class);
 			if (checkMe !=null) {
 				v = checkMe;
 			}
@@ -397,31 +390,36 @@ public class Main {
 			res.status(400);
 			return ("OK");
 		});
-		
+
 		post("/rest/changeVM", (req,res)-> {
 			res.type("application/json");
-			SendVMO vm = gson.fromJson(req.body(),SendVMO.class);
-			if (!v.getNameVM().equals(vm.getNameVM()) && r.virtMachines.get(vm.getNameVM())==null) {
-				System.out.println("ime prosla "+v.getNameVM());
-				//da podesi i aktiviti log za slucaj da je menjan!!!
-				VirtualMachine old = r.virtMachines.get(v.getNameVM());
-				VirtualMachine virtual = r.virtMachines.get(v.getNameVM());
-				manageListsVM(old, true);
-				virtual.setName(vm.getNameVM());
-				manageListsVM(virtual, false);
-				changeDrivesVM(v.getNameVM(), vm.getNameVM());
+			VirtualMachine vm = gson.fromJson(req.body(), VirtualMachine.class);
+			System.out.println(vm.getName());
+			if (!v.getName().equals(vm.getName()) && r.virtMachines.get(vm.getName())==null) {
+				changeDrivesVM(v.getName(), vm.getName());
 				changeOrgVM(v, vm);
+				manageListsVM(v, true);
+				manageListsVM(vm, false);
 				writeDependencies();
 				res.status(200);
 				return ("OK");
 			}
-			if (!v.getNameVM().equals(vm.getNameVM()) && r.virtMachines.get(vm.getNameVM())!=null) {
-				System.out.println("JBG");
+			if (!v.getName().equals(vm.getName()) && r.virtMachines.get(vm.getName())!=null) {
 				res.status(400);
 				return ("OK");
 			}
+			if (vmName != null) {
+				System.out.println("OVDE SAM");
+				
+				manageListsVM(r.virtMachines.get(vmName), true);
+				manageListsVM(vm, false);
+				writeToFiles1((HashMap<String,Object>)(Object) r.virtMachines, "./data/virtMachines.json");
+				vmName = null;
+			}
 			return ("OK");
-		});
+
+		}); 
+		
 		post("/rest/changeOrg", (req,res)-> {
 			res.type("application/json");
 			Organization org = g.fromJson(req.body(), Organization.class);
@@ -484,11 +482,56 @@ public class Main {
 		
 		post("/rest/deleteVM", (req,res)-> {
 			res.type("application/json");
-			SendVMO vm = g.fromJson(req.body(), SendVMO.class);
+			VirtualMachine vm = g.fromJson(req.body(), VirtualMachine.class);
 			removeFromLists(vm);
 			writeDependencies();
 			return ("OK");
 		});
+		
+		post("/rest/deleteActivity", (req,res)-> {
+			Activity aa = g.fromJson(req.body(), Activity.class);
+			ArrayList<Activity> newOne = new ArrayList<Activity>();
+			if (v.getActivityLog().size()==1) { 
+				vmName = v.getName();
+				v.getActivityLog().clear();
+				return g.toJson(v);
+			}
+			else {
+				for (Activity a : v.getActivityLog()) {
+					if (!(a.getStart().equals(aa.getStart()))) 
+						newOne.add(a);
+				}
+			v.getActivityLog().clear();
+			v.setActivityLog(newOne);
+			vmName = v.getName();
+			return g.toJson(v);
+				}
+		});
+		
+		//ovde sam vracala vm zbog moguce izmene naziva mada moze i ovako
+		//vracam v sa svim samo promenim u v naziv na vm.getName
+		post("/rest/changeActivity", (req,res)-> {
+			res.type("application/json");
+			VirtualMachine vm = g.fromJson(req.body(), VirtualMachine.class);
+			if (v.getActive().equals("activate")) {
+				v.getActivityLog().add(new Activity(new Date(), null));
+				v.setActive("deactivate");
+			}
+			else {
+				//gasi onaj koji nije bio ugasen
+				for (Activity a: v.getActivityLog()) {
+					if (a.getEnd()==null) {
+						a.setEnd(new Date());
+					}
+				}
+				v.setActive("activate");
+			}
+			vmName = v.getName();
+			v.setName(vm.getName());
+			return (g.toJson(v));
+		});
+		
+		
 		
 		post("/rest/deleteUser", (req,res)-> {
 			res.type("application/json");
@@ -526,6 +569,66 @@ public class Main {
 			c = g.fromJson(req.body(),Category.class);
 	
 			return "OK";
+		});
+		
+		post("/rest/captureCategory", (req,res)-> {
+			res.type("application/json");
+			String id = g.fromJson(req.body(), String.class);
+			if (r.categories.get(id)!=null) {
+				c = r.categories.get(id);
+			}
+			return "OK";
+		});
+		
+		
+		post("/rest/captureActivity", (req,res)->{
+			ChangeActivity change = g.fromJson(req.body(), ChangeActivity.class);
+			for (Activity a : v.getActivityLog()) {
+				if (a.getStart().equals(change.start) && a.getEnd().equals(change.end)) {
+					Date now = new Date();
+					if (!change.newStart.equals("") && !change.newEnd.equals("")) {
+						//ako su oba menjana
+						//validiraj datume
+						if (validateDate(sdf.parse(change.newStart),a) && validateDate(sdf.parse(change.newStart),a)) {
+							//samo ako su oba validna 
+							if (sdf.parse(change.newEnd).after(sdf.parse(change.newStart))) {
+								//ako su uzajamno ok, u redu je menjamo ih
+								a.setStart(sdf.parse(change.newStart));
+								a.setEnd(sdf.parse(change.newEnd));
+								vmName = v.getName();
+								res.status(200);
+								//v.setActive("activate");
+								return gson.toJson(v);
+							}
+						}
+					}
+					else if(!change.newStart.equals("")) {
+						//ako menjan samo start, validira se datum 
+						if (validateDate(sdf.parse(change.newStart),a)) {
+							a.setStart(sdf.parse(change.newStart));
+							vmName = v.getName();
+							res.status(200);
+							//v.setActive("activate");
+							return gson.toJson(v);
+						}
+					}
+					else if(!change.newEnd.equals("")) {
+						//ako menjan samo start, validira se datum 
+						if (validateDate(sdf.parse(change.newEnd),a)) {
+							a.setStart(sdf.parse(change.newEnd));
+							vmName = v.getName();
+							res.status(200);
+							//v.setActive("activate");
+							return gson.toJson(v);
+						}
+					}
+					//else {}
+				}
+			}
+			res.status(400);
+			vmName = v.getName();
+			//v.setActive("activate");
+			return gson.toJson(v);
 		});
 		
 		post("/rest/forChange", (req,res)-> {
@@ -780,10 +883,10 @@ public class Main {
 		writeToFiles1((HashMap<String,Object>)(Object) r.categories, "./data/categories.json"); 
 		
 	}
-	private static void removeFromLists(SendVMO vm) {
-		VirtualMachine v = r.virtMachines.get(vm.getNameVM());
-		manageListsVM(v, true);
-		changeDrivesVM(vm.getNameVM(), null);
+
+	private static void removeFromLists(VirtualMachine vm) {
+		manageListsVM(vm, true);
+		changeDrivesVM(vm.getName(), null);
 		changeOrgVM(vm, null);
 	}
 
@@ -908,39 +1011,6 @@ public class Main {
 			}
 		}
 		return helpSD;
-	}
-
-	private static ArrayList<SendVMO> loadVMOSUser(User user) {
-		ArrayList<SendVMO> data = new ArrayList<SendVMO>();
-		ArrayList<VirtualMachine> machines = new ArrayList<VirtualMachine>();
-		String organization = r.users.get(user.getEmail()).getOrganization();
-		for (String resource : r.organizations.get(organization).getResources()) {
-			for (VirtualMachine vm : retVMs) {
-				if (vm.getName().equals(resource)) {
-					machines.add(vm);
-				}
-			}
-		}
-		for (VirtualMachine vm : machines) {
-			SendVMO sendData = new SendVMO(vm.getName(),vm.getCategory().getCoreNumber(), vm.getCategory().getRAM(),vm.getCategory().getGPUcores(),organization);
-			data.add(sendData);
-		}
-		return data;
-	}
-
-	private static ArrayList<SendVMO> loadVMOS() {
-		ArrayList<SendVMO> listOfVMO = new ArrayList<SendVMO>();
-		for(VirtualMachine vm : retVMs) {
-			SendVMO sv = new SendVMO();
-			int i = 0;
-			sv.setCategoryCoreNumber(vm.getCategory().getCoreNumber());
-			sv.setCategoryGPU(vm.getCategory().getGPUcores());
-			sv.setCategoryRAM(vm.getCategory().getRAM());
-			sv.setNameVM(vm.getName());
-			sv.setNameORG(vm.getNameOrg());
-			listOfVMO.add(sv);		
-		}
-		return listOfVMO;
 	}
 
 	private static ArrayList<VirtualMachine> checkParamSearch(VMFilter filter, String organizat) {
@@ -1408,12 +1478,12 @@ public class Main {
 			}
 		}
 	}
-	private static void changeOrgVM(SendVMO v,SendVMO vm) {
-		if (r.organizations.get(v.getNameORG())!=null) {
-			if (r.organizations.get(v.getNameORG()).getResources().contains(v.getNameVM())) {
-				r.organizations.get(v.getNameORG()).getResources().remove(v.getNameVM());
+	private static void changeOrgVM(VirtualMachine v,VirtualMachine vm) {
+		if (r.organizations.get(v.getNameOrg())!=null) {
+			if (r.organizations.get(v.getNameOrg()).getResources().contains(v.getName())) {
+				r.organizations.get(v.getNameOrg()).getResources().remove(v.getName());
 				if (vm!=null) {
-				r.organizations.get(v.getNameORG()).getResources().add(vm.getNameVM());}
+				r.organizations.get(v.getNameOrg()).getResources().add(vm.getName());}
 			}
 			}
 	}
@@ -1748,7 +1818,7 @@ public class Main {
 
 	private static void manageListsVM(VirtualMachine v, Boolean remove)  {
 		if (remove) {
-			r.virtMachines.remove(v.getName(),v);
+			r.virtMachines.remove(v.getName());	
 			return;
 		}
 		r.virtMachines.put(v.getName(),v);
@@ -1968,24 +2038,6 @@ public class Main {
 		}
 	}
 	
-	private static ArrayList<SendVMO> loadVMO() {
-		ArrayList<SendVMO> listOfVMO = new ArrayList<SendVMO>();
-		for(VirtualMachine vm : r.virtMachines.values()) {
-			SendVMO sv = new SendVMO();
-			int i = 0;
-			sv.setCategoryCoreNumber(vm.getCategory().getCoreNumber());
-			sv.setCategoryGPU(vm.getCategory().getGPUcores());
-			sv.setCategoryRAM(vm.getCategory().getRAM());
-			sv.setNameVM(vm.getName());
-			sv.setActivityLog(vm.getActivityLog());
-			sv.setCategory(vm.getCategory().getName());
-			sv.setDrives(vm.getDrives());
-			sv.setNameORG(vm.getNameOrg());
-			listOfVMO.add(sv);		
-		}
-		return listOfVMO;
-	}
-	
 	private static ArrayList<User> takeUsers(User user) {
 		ArrayList<User> userL = new ArrayList<User>();
 		if (user!=null) {
@@ -2023,8 +2075,7 @@ public class Main {
 		return organizationL;
 	}
 	
-	private static ArrayList<SendVMO> loadVMOUser(User user) {
-		ArrayList<SendVMO> data = new ArrayList<SendVMO>();
+	private static ArrayList<VirtualMachine> loadVMOUser(User user) {
 		ArrayList<VirtualMachine> machines = new ArrayList<VirtualMachine>();
 		String organization = r.users.get(user.getEmail()).getOrganization();
 		for (String resource : r.organizations.get(organization).getResources()) {
@@ -2034,10 +2085,28 @@ public class Main {
 				}
 			}
 		}
-		for (VirtualMachine vm : machines) {
-			SendVMO sendData = new SendVMO(vm.getName(),vm.getCategory().getName(), vm.getCategory().getCoreNumber(), vm.getCategory().getRAM(),vm.getCategory().getGPUcores(),organization, vm.getActivityLog(), vm.getDrives());
-			data.add(sendData);
+		return machines;
+	}
+	
+	private static Boolean validateDate(Date d, Activity a) {
+		int index = 0;
+		System.out.println(v.getActivityLog().size()+" velicina liste");
+		for (Activity activity : v.getActivityLog()) {
+			if (!activity.equals(a)) {
+			if (d.before(activity.getStart()) || d.after(activity.getEnd())) {
+				//mora da vidi sa ostalima iz liste pa ide continue ovde
+			}
+			else {
+				index += 1;
+			}
 		}
-		return data;
+		}
+		if (index == v.getActivityLog().size()-1) {
+			return false;
+		}
+		if (d.after(new Date())) {
+			return false; 
+		}
+		return true;
 	}
 }

@@ -8,6 +8,7 @@ public class VirtualMachine {
 	private String nameOrg;
 	private ArrayList<String> drives;
 	private ArrayList<Activity> activityLog;
+	private String active;
 	
 	public VirtualMachine() {}
 
@@ -18,6 +19,7 @@ public class VirtualMachine {
 		this.setNameOrg(s);
 		this.drives = new ArrayList<String>();
 		this.activityLog = new ArrayList<Activity>();
+		this.active="activate";
 	}
 	
 	public VirtualMachine(String name, Category category,String s, ArrayList<String> drives) {
@@ -27,6 +29,7 @@ public class VirtualMachine {
 		this.setNameOrg(s);
 		this.drives = drives;
 		this.activityLog = new ArrayList<Activity>();
+		this.active="activate";
 	}
 	
 
@@ -37,8 +40,28 @@ public class VirtualMachine {
 		this.setNameOrg(s);
 		this.drives = drives;
 		this.activityLog = activityLog;
+		this.active="activate";
 	}
 	
+
+	public VirtualMachine(String name, Category category, String nameOrg, ArrayList<String> drives,
+			ArrayList<Activity> activityLog, String active) {
+		super();
+		this.name = name;
+		this.category = category;
+		this.nameOrg = nameOrg;
+		this.drives = drives;
+		this.activityLog = activityLog;
+		this.active = active;
+	}
+
+	public String getActive() {
+		return active;
+	}
+
+	public void setActive(String active) {
+		this.active = active;
+	}
 
 	public ArrayList<Activity> getActivityLog() {
 		return activityLog;

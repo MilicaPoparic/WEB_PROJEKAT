@@ -19,11 +19,11 @@ Vue.component("search-vm",{
 		</tr>
 		
 		<tr v-for="m in vms">
-			<td>{{m.nameVM }}</td>
-			<td>{{m.categoryCoreNumber}}</td>
-			<td>{{m.categoryRAM}}</td>
-			<td>{{m.categoryGPU}}</td>
-			<td>{{m.nameORG}}</td>
+			<td>{{m.name}}</td>
+			<td>{{m.category.coreNumber}}</td>
+			<td>{{m.category.RAM}}</td>
+			<td>{{m.category.GPUcores}}</td>
+			<td>{{m.nameOrg}}</td>
 		</tr>
 	</table>
 	<br>

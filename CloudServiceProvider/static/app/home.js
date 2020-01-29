@@ -27,12 +27,13 @@ Vue.component("home-page", {
 			<th> Organization </th>
 		</tr>
 		
+		
 		<tr v-for="m in virtMachines">
-			<td><a href="#" v-on:click="showDetails(m)">{{m.nameVM}}</a></td>
-			<td>{{m.categoryCoreNumber}}</td>
-			<td>{{m.categoryRAM}}</td>
-			<td>{{m.categoryGPU}}</td>
-			<td>{{m.nameORG}}</td>
+			<td><a href="#" v-on:click="showDetails(m)">{{m.name}}</a></td>
+			<td>{{m.category.coreNumber}}</td>
+			<td>{{m.category.RAM}}</td>
+			<td>{{m.category.GPUcores}}</td>
+			<td>{{m.nameOrg}}</td>
 		</tr>
 	</table>
 	<br>

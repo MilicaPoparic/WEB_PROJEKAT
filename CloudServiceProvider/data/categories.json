@@ -6,10 +6,10 @@
     "GPUcores": 4
   },
   {
-    "name": "kategorija2",
-    "coreNumber": 3,
-    "RAM": 4,
-    "GPUcores": 5
+    "name": "kata",
+    "coreNumber": 5,
+    "RAM": 1,
+    "GPUcores": 1
   },
   {
     "name": "kategorija1",

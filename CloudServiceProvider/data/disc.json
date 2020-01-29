@@ -40,12 +40,5 @@
     "nameOrg": "Microsoft",
     "capacity": 256,
     "nameVM": "WINDOWS10-VM"
-  },
-  {
-    "name": "noviDisk",
-    "driveType": "SSD",
-    "nameOrg": "ORG1",
-    "capacity": 345,
-    "nameVM": "jojojoVM"
   }
 ]

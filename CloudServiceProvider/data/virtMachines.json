@@ -1,15 +1,38 @@
 [
   {
-    "name": "JAVA-VM",
+    "name": "JAFA",
     "category": {
-      "name": "kategorija2",
-      "coreNumber": 3,
-      "RAM": 4,
-      "GPUcores": 5
+      "name": "kategorija4",
+      "coreNumber": 4,
+      "RAM": 3,
+      "GPUcores": 4
     },
     "nameOrg": "IOS",
     "drives": [],
-    "activityLog": []
+    "activityLog": [
+      {
+        "start": "Jan 29, 2020 2:02:27 PM",
+        "end": "Jan 29, 2020 2:02:28 PM"
+      },
+      {
+        "start": "Jan 29, 2020 2:02:29 PM",
+        "end": "Jan 29, 2020 2:02:29 PM"
+      }
+    ],
+    "active": "activate"
+  },
+  {
+    "name": "JAVA-VM",
+    "category": {
+      "name": "kata",
+      "coreNumber": 5,
+      "RAM": 1,
+      "GPUcores": 1
+    },
+    "nameOrg": "IOS",
+    "drives": [],
+    "activityLog": [],
+    "active": "activate"
   },
   {
     "name": "ORACLE-VM",
@@ -21,42 +44,21 @@
     },
     "nameOrg": "Oracle",
     "drives": [],
-    "activityLog": []
+    "activityLog": [],
+    "active": "activate"
   },
   {
     "name": "jojojoVM",
     "category": {
-      "name": "kategorija2",
-      "coreNumber": 3,
-      "RAM": 4,
-      "GPUcores": 5
+      "name": "kata",
+      "coreNumber": 5,
+      "RAM": 1,
+      "GPUcores": 1
     },
     "nameOrg": "ORG1",
-    "drives": [
-      "noviDisk"
-    ],
-    "activityLog": []
-  },
-  {
-    "name": "WINDOWS10-VM",
-    "category": {
-      "name": "kategorija2",
-      "coreNumber": 3,
-      "RAM": 4,
-      "GPUcores": 5
-    },
-    "nameOrg": "Microsoft",
-    "drives": [
-      "D",
-      "rnrnr",
-      "F"
-    ],
-    "activityLog": [
-      {
-        "start": "Jul 25, 0017 12:00:00 AM",
-        "end": "Aug 11, 0020 12:00:00 AM"
-      }
-    ]
+    "drives": [],
+    "activityLog": [],
+    "active": "activate"
   },
   {
     "name": "NOVA",
@@ -68,21 +70,8 @@
     },
     "nameOrg": "Oracle",
     "drives": [],
-    "activityLog": []
-  },
-  {
-    "name": "VM2",
-    "category": {
-      "name": "kategorija4",
-      "coreNumber": 4,
-      "RAM": 3,
-      "GPUcores": 4
-    },
-    "nameOrg": "ORG1",
-    "drives": [
-      "HaloDisk"
-    ],
-    "activityLog": []
+    "activityLog": [],
+    "active": "activate"
   },
   {
     "name": "novaVmVm",
@@ -97,18 +86,99 @@
       "C",
       "E"
     ],
-    "activityLog": []
+    "activityLog": [],
+    "active": "activate"
+  },
+  {
+    "name": "VM2",
+    "category": {
+      "name": "kategorija4",
+      "coreNumber": 4,
+      "RAM": 3,
+      "GPUcores": 4
+    },
+    "nameOrg": "ORG1",
+    "drives": [
+      "HaloDisk"
+    ],
+    "activityLog": [],
+    "active": "activate"
   },
   {
     "name": "novaVM",
     "category": {
-      "name": "kategorija2",
-      "coreNumber": 3,
-      "RAM": 4,
-      "GPUcores": 5
+      "name": "kata",
+      "coreNumber": 5,
+      "RAM": 1,
+      "GPUcores": 1
     },
     "nameOrg": "ORG1",
     "drives": [],
-    "activityLog": []
+    "activityLog": [],
+    "active": "activate"
+  },
+  {
+    "name": "JAFA-HH",
+    "category": {
+      "name": "kategorija4",
+      "coreNumber": 4,
+      "RAM": 3,
+      "GPUcores": 4
+    },
+    "nameOrg": "IOS",
+    "drives": [],
+    "activityLog": [],
+    "active": "activate"
+  },
+  {
+    "name": "JAFA-mmm",
+    "category": {
+      "name": "kategorija4",
+      "coreNumber": 4,
+      "RAM": 3,
+      "GPUcores": 4
+    },
+    "nameOrg": "IOS",
+    "drives": [],
+    "activityLog": [
+      {
+        "start": "Jan 8, 2020 12:00:00 AM",
+        "end": "Jan 21, 2020 12:00:00 AM"
+      },
+      {
+        "start": "Jan 29, 2020 3:08:36 AM",
+        "end": "Jan 29, 2020 3:26:14 AM"
+      },
+      {
+        "start": "Jan 29, 2020 3:29:52 AM"
+      }
+    ],
+    "active": "deactivate"
+  },
+  {
+    "name": "WINDOWS10",
+    "category": {
+      "name": "kata",
+      "coreNumber": 5,
+      "RAM": 1,
+      "GPUcores": 1
+    },
+    "nameOrg": "Microsoft",
+    "drives": [
+      "D",
+      "rnrnr",
+      "F"
+    ],
+    "activityLog": [
+      {
+        "start": "Jul 25, 2019 12:00:00 AM",
+        "end": "Aug 11, 2019 12:00:00 AM"
+      },
+      {
+        "start": "Jan 23, 2020 12:00:00 AM",
+        "end": "Jan 28, 2020 12:00:00 AM"
+      }
+    ],
+    "active": "activate"
   }
 ]
