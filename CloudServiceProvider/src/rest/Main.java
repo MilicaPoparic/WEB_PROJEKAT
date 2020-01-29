@@ -53,6 +53,7 @@ public class Main {
 	private static ArrayList<VirtualMachine> retVMHelper;
 	private static String vmName=null;
 	
+	//VRELA KO FAVELA JE
 	private static void writeToFiles1(HashMap<String,Object> listForWrite, String string) throws IOException {
 		String json = gson.toJson(listForWrite.values());
 		FileWriter file = new FileWriter(string);
