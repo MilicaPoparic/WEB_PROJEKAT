@@ -18,7 +18,7 @@ Vue.component("drive",{
 <div>
 	View drives:
 	<table border="1">
-	<tr bgcolor="gray">
+	<tr bgcolor="#f2f2f2">
 			<th> Name </th>
 			<th> Capacity </th>
 			<th> VM </th>

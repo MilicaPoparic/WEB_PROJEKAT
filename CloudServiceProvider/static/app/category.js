@@ -10,8 +10,8 @@ Vue.component("categ",{
 	<div>
 		
 	Categories:
-	<table border="1">
-	<tr bgcolor="blue">
+	<table class="table" border="1">
+	<tr bgcolor="#f2f2f2">
 			<th> Name </th>
 			<th> CORE </th>
 			<th> RAM </th>

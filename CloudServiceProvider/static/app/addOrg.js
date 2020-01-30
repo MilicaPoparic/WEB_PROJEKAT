@@ -37,7 +37,10 @@ Vue.component("add-org", {
 			this.captionErr = 'Caption is required!'
 		}
 		
-		if(this.name && this.caption && this.logo) {
+		if(this.name && this.caption) {
+			if (!this.logo) {
+				this.logo="https://www.freelogodesign.org/Content/img/logo-samples/sophia.png"
+			}
 			axios
 			.post('rest/addOrganization', {"name":this.name, "caption":this.caption, "logo":this.logo})
 			.then((response) => {
@@ -47,9 +50,7 @@ Vue.component("add-org", {
 		      })
 			.catch(response=> this.nameErr='Name must me unique!')
 			}
-		else {
-			this.logoErr = 'Logo required';
-		}
+		
 		},
 		onUpload(event) {
 			this.logo = (event.target.files)[0].name;

@@ -25,7 +25,7 @@ Vue.component("change-org",{
 		
 		<tr >
 				<td v-if="role=='superAdmin'"> Upload logo: </td>
-				<td><input type="file" v-if="role=='superAdmin'" @change = "onUpload" ></td> {{logoErr}}
+				<td><input type="file" v-if="role=='superAdmin'" @change = "onUpload" ></td> 
 				
 		</tr>
 		<tr>

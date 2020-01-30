@@ -79,7 +79,6 @@ Vue.component("report",{
 			      .catch((response)=>{
 			    	  location.href = '#/';
 			      })
-
         axios
           .get('rest/getRole')
           .then(response => (this.role = response.data));

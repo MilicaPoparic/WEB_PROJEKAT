@@ -116,7 +116,7 @@ public class Main {
 			return ("OK");
 			});
 		
-		//trebace za mesecni izvestaj!
+		//trebace za mesecni izvestaj!, msm da nije trebalo protumaci pa brisi ja necu
 		get("/rest/getDVM", (req, res) -> {
 			res.type("application/json");
 			User user = req.session(true).attribute("user");
@@ -140,7 +140,6 @@ public class Main {
 				return g.toJson(r.virtMachines.values());
 			}
 			else {
-				System.out.println("ovde sam");
 				return g.toJson(loadVMOUser(user));
 			}
 		}
@@ -150,8 +149,6 @@ public class Main {
 		get("/rest/getUsers", (req, res) -> {
 			res.type("application/json");
 			User user = req.session().attribute("user");
-			
-			System.out.println(takeUsers(user).size());
 			return gson.toJson(takeUsers(user));
 		});
 		
@@ -180,7 +177,6 @@ public class Main {
 			return g.toJson(u);
 		});
 		
-		//ovo je moglo tipa onde gde vraca ulogu da vraca usera pa da uzima ulogu, a ovde vraca usera!!
 		get("/rest/getLoggedInUser", (req, res) -> {
 			res.type("application/json");
 			User loggedUser = req.session().attribute("user");
@@ -260,16 +256,12 @@ public class Main {
 			double total =0.0;
 			for (VirtualMachine vm : machines) {
 				ArrayList<Activity> vmActivity = checkInterval(dates, vm.getActivityLog());
-				System.out.println(vmActivity.size()+" duzina liste");
 				double price = getHourPrice(vm); 
 				double activeHours = getActiveHours(vmActivity);
-				System.out.println(price+" cena sata "+activeHours+" aktivni sati");
 				total += price*activeHours;
 				reporthash.put(vm.getName(), price*activeHours);
 			}
-			ArrayList<Drive> drives = getUserDrives(user);
-					
-			
+			ArrayList<Drive> drives = getUserDrives(user);	
 			for(Drive du: drives) {
 				double price = getHourPriceDrive(du);
 				double activeHours= getActiveHoursDrive(dates);
@@ -319,8 +311,7 @@ public class Main {
 					listOfVMO = retVMs;
 				}
 				else {
-					listOfVMO = loadVMOUser(user);
-					
+					listOfVMO = loadVMOUser(user);	
 				}
 			}
 			return g.toJson(listOfVMO);
@@ -436,7 +427,6 @@ public class Main {
 		post("/rest/changeVM", (req,res)-> {
 			res.type("application/json");
 			VirtualMachine vm = gson.fromJson(req.body(), VirtualMachine.class);
-			System.out.println(vm.getName());
 			if (!v.getName().equals(vm.getName()) && r.virtMachines.get(vm.getName())==null) {
 				changeDrivesVM(v.getName(), vm.getName());
 				changeOrgVM(v, vm);
@@ -451,8 +441,6 @@ public class Main {
 				return ("OK");
 			}
 			if (vmName != null) {
-				System.out.println("OVDE SAM");
-				
 				manageListsVM(r.virtMachines.get(vmName), true);
 				manageListsVM(vm, false);
 				writeToFiles1((HashMap<String,Object>)(Object) r.virtMachines, "./data/virtMachines.json");
@@ -491,16 +479,15 @@ public class Main {
 			User change = g.fromJson(req.body(), User.class);
 			User loggedIn = req.session().attribute("user");
 			change.setOrganization(loggedIn.getOrganization());
-			if (!change.getEmail().equals(loggedIn.getEmail())) {	//ako menja email
-				manageListsUser(loggedIn, true); //brise starog
-				if (r.users.get(change.getEmail())==null) { //ako email nije zauzet vec
+			if (!change.getEmail().equals(loggedIn.getEmail())) {	
+				manageListsUser(loggedIn, true); 
+				if (r.users.get(change.getEmail())==null) { 
 					res.status(200);
-					System.out.println(change.getOrganization());  
-					manageListsUser(change, false); //dodaje novog
+					manageListsUser(change, false); 
 					removeOrgUser(loggedIn); 
 					if (!loggedIn.getRole().toString().equals("superAdmin")) {
 						r.organizations.get(change.getOrganization()).getUsers().add(change.getEmail());
-					}req.session().attribute("user",change); //NAPOMENA,
+					}req.session().attribute("user",change); 
 				}
 				else {
 					res.status(400); 
@@ -629,38 +616,29 @@ public class Main {
 				if (a.getStart().equals(change.start) && a.getEnd().equals(change.end)) {
 					Date now = new Date();
 					if (!change.newStart.equals("") && !change.newEnd.equals("")) {
-						//ako su oba menjana
-						//validiraj datume
 						if (validateDate(sdf.parse(change.newStart),a) && validateDate(sdf.parse(change.newStart),a)) {
-							//samo ako su oba validna 
 							if (sdf.parse(change.newEnd).after(sdf.parse(change.newStart))) {
-								//ako su uzajamno ok, u redu je menjamo ih
 								a.setStart(sdf.parse(change.newStart));
 								a.setEnd(sdf.parse(change.newEnd));
 								vmName = v.getName();
 								res.status(200);
-								//v.setActive("activate");
 								return gson.toJson(v);
 							}
 						}
 					}
 					else if(!change.newStart.equals("")) {
-						//ako menjan samo start, validira se datum 
 						if (validateDate(sdf.parse(change.newStart),a)) {
 							a.setStart(sdf.parse(change.newStart));
 							vmName = v.getName();
 							res.status(200);
-							//v.setActive("activate");
 							return gson.toJson(v);
 						}
 					}
 					else if(!change.newEnd.equals("")) {
-						//ako menjan samo start, validira se datum 
 						if (validateDate(sdf.parse(change.newEnd),a)) {
 							a.setStart(sdf.parse(change.newEnd));
 							vmName = v.getName();
 							res.status(200);
-							//v.setActive("activate");
 							return gson.toJson(v);
 						}
 					}
@@ -669,7 +647,6 @@ public class Main {
 			}
 			res.status(400);
 			vmName = v.getName();
-			//v.setActive("activate");
 			return gson.toJson(v);
 		});
 		
@@ -756,7 +733,6 @@ public class Main {
 		
 		post("/rest/addNewDrive", (req, res) -> {
 			res.type("application/json");
-			System.out.println(req.body());
 			Drive drive = g.fromJson(req.body(), Drive.class);
 			Drive dCheck = checkDrive(drive);
 			
@@ -870,8 +846,6 @@ public class Main {
 	private static double getActiveHours(ArrayList<Activity> vmActivity) {
 		double sum = 0;
 		for (Activity a : vmActivity) {
-			System.out.println(a.getEnd()+"end");
-			System.out.println(a.getStart()+"start");
 			sum += (a.getEnd().getTime()-a.getStart().getTime())/(60*60 * 1000);
 		}
 		return sum;
@@ -901,10 +875,7 @@ public class Main {
 				retVal.add(newActivity);
 			}
 			else if(a.getStart().after(start) && a.getEnd().before(end)){
-				System.out.println("U OVOM SAM IFU");
-				//if (a.getStart().after(start) && a.getEnd().before(end)) {
 					retVal.add(a);
-				//}
 			}
 			else {}
 		}
@@ -948,7 +919,7 @@ public class Main {
 	private static Drive checkForChangeDrive(Drive fromClientDrive) {
 		for(Drive driv: r.drives.values()) {
 			if(driv.getName().equalsIgnoreCase(fromClientDrive.getName()) && 
-					!fromClientDrive.getName().equalsIgnoreCase(d.getName())) {//sme da promeni u prethodno ime
+					!fromClientDrive.getName().equalsIgnoreCase(d.getName())) { //sme da promeni u prethodno ime
 				return null;	
 			}
 		}
@@ -1040,7 +1011,6 @@ public class Main {
         if (checkIt(gpu)) {
         	GPUcores = gpu.getAsInt();
         } 
-        System.out.println(RAM+" "+coreNumber+" "+GPUcores);
 		Category category = new Category(name, coreNumber, RAM,GPUcores);
 	
 		return category;
@@ -1909,21 +1879,18 @@ public class Main {
 	
 	private static void manageListsUser(User loggedIn, Boolean remove) {
 		if (remove) {
-			//r.userList.remove(loggedIn);
+			//ako nesto ne radi ovde staviti da brise samo key
 			r.users.remove(loggedIn.getEmail(), loggedIn);
 			return;
 		}
-		//r.userList.add(loggedIn);
 		r.users.put(loggedIn.getEmail(), loggedIn);
 		
 	}
 	private static void manageListsOrg(Organization o, Boolean remove) {
 		if (remove) {
-			//r.organizationList.remove(o);
 			r.organizations.remove(o.getName(), o);
 			return;
 		}
-		//r.organizationList.add(o);
 		r.organizations.put(o.getName(), o);
 		
 	}
@@ -2194,18 +2161,15 @@ public class Main {
 		for (String resource : r.organizations.get(organization).getResources()) {
 			for (VirtualMachine vm : r.virtMachines.values()) {
 				if (vm.getName().equals(resource)) {
-					System.out.println(vm.getName());
 					machines.add(vm);
 				}
 			}
 		}
-		System.out.println(machines.size());
 		return machines;
 	}
 	
 	private static Boolean validateDate(Date d, Activity a) {
-		int index = 0;
-		System.out.println(v.getActivityLog().size()+" velicina liste");
+		int index = 0;		
 		for (Activity activity : v.getActivityLog()) {
 			if (!activity.equals(a)) {
 			if (d.before(activity.getStart()) || d.after(activity.getEnd())) {

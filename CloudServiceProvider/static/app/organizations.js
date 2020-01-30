@@ -7,9 +7,9 @@ Vue.component("organization", {
 	},
 	template: ` 
 <div>
-	Organizations:
-	<table border="1">
-	<tr bgcolor="lightgrey">
+	<h3><b>Organizations</b></h3>:
+	<table class="table" border="1">
+	<tr bgcolor="#f2f2f2">
 		<th>Name</th>
 		<th>Caption</th>
 		<th>Logo</th>

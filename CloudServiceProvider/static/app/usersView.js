@@ -8,8 +8,8 @@ Vue.component("users", {
 	template: ` 
 <div>
 	Users:
-	<table border="1">
-	<tr bgcolor="lightgrey">
+	<table class="table" border="1">
+	<tr bgcolor="#f2f2f2">
 		<th>Email</th>
 		<th>Name</th>
 		<th>Surname</th>
