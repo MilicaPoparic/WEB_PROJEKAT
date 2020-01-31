@@ -63,7 +63,7 @@ public class Main {
 	}
 	
 	public static void main(String[] args) throws IOException, ParseException {
-		port(8000);
+		port(8080);
 		webSocket("/ws", WsHandler.class);		
 		staticFiles.externalLocation(new File("./static").getCanonicalPath()); 
 
@@ -115,20 +115,7 @@ public class Main {
 			res.status(200);
 			return ("OK");
 			});
-		
-		//trebace za mesecni izvestaj!, msm da nije trebalo protumaci pa brisi ja necu
-		get("/rest/getDVM", (req, res) -> {
-			res.type("application/json");
-			User user = req.session(true).attribute("user");
-			if (user != null) {
-				if (!user.getRole().toString().equals("admin")) {
-					res.status(403);
-					return gson.toJson(user);
-				}}
-			res.status(200);
-			return ("OK");
-			});
-
+	
 		get("/rest/virtualne", (req, res) -> {		
 			res.type("application/json");
 			User user = req.session().attribute("user");
@@ -158,7 +145,6 @@ public class Main {
 			return gson.toJson(takeOrganizations(user));
 		});
 		
-		//ne brisi, iste su al razlicite objekte saljemo, ne moze kastovanje
 		get("/rest/getOrganizationss", (req, res) -> {
 			res.type("application/json");
 			User user = req.session().attribute("user");
@@ -247,42 +233,6 @@ public class Main {
 		get("rest/getVM", (req,res)-> {
 			res.type("application/json");
 			return g.toJson(v);	
-		});
-		
-		post("/rest/findReport", (req,res)-> {
-			User user = req.session().attribute("user");
-			ChangeActivity dates = g.fromJson(req.body(),ChangeActivity.class);
-			ArrayList<VirtualMachine> machines = loadVMOUser(user);
-			double total =0.0;
-			for (VirtualMachine vm : machines) {
-				ArrayList<Activity> vmActivity = checkInterval(dates, vm.getActivityLog());
-				double price = getHourPrice(vm); 
-				double activeHours = getActiveHours(vmActivity);
-				total += price*activeHours;
-				reporthash.put(vm.getName(), price*activeHours);
-			}
-			ArrayList<Drive> drives = getUserDrives(user);	
-			for(Drive du: drives) {
-				double price = getHourPriceDrive(du);
-				double activeHours= getActiveHoursDrive(dates);
-				total += price*activeHours;
-				reporthash.put(du.getName(), price*activeHours);
-			}
-			reporthash.put("sum", total);
-			return (g.toJson(reporthash));
-		});
-		
-		get("/rest/getDVM", (req,res)-> {
-			res.type("application/json");
-			HashMap<String, Integer> dvm = new HashMap<String, Integer>();
-			ArrayList<VirtualMachine> virtMachineList = new ArrayList<VirtualMachine>();
-			for (VirtualMachine masina : r.virtMachines.values()) {
-				virtMachineList.add(masina);
-			}
-			for(VirtualMachine vmm: virtMachineList) {
-				dvm.put(vmm.getName(), virtMachineList.indexOf(vmm));
-			}
-			return g.toJson(dvm);	
 		});
 		
 		get("/rest/getDTypes", (req,res)-> {
@@ -432,7 +382,7 @@ public class Main {
 				changeOrgVM(v, vm);
 				manageListsVM(v, true);
 				manageListsVM(vm, false);
-				writeDependencies();
+				refreshAfter();
 				res.status(200);
 				return ("OK");
 			}
@@ -513,7 +463,7 @@ public class Main {
 			res.type("application/json");
 			VirtualMachine vm = g.fromJson(req.body(), VirtualMachine.class);
 			removeFromLists(vm);
-			writeDependencies();
+			refreshAfter();
 			return ("OK");
 		});
 		
@@ -580,9 +530,12 @@ public class Main {
 			Category cat = checkSendDataCateg(req.body());
 			Category cc = null;
 			if(cat !=null) {
-				cc = checkCategory(cat);
+				cc = checkCategory1(cat);
 			}
-			if(c != null && cc!=null) {
+			else {
+				res.status(400);
+			}
+			if(cc!=null) {
 				res.status(200);
 				refreshCategory(cc);
 			}
@@ -652,10 +605,8 @@ public class Main {
 		
 		post("/rest/forChange", (req,res)-> {
 			res.type("application/json");
-
-			Category cat =  checkSendDataCateg(req.body());
-			
-			if(cat.getName() == "null") {
+			Category cat = g.fromJson(req.body(), Category.class);
+			if(cat.getName() == null) {
 				cat.setName(c.getName());
 			}
 			if(cat.getCoreNumber() == 0) {
@@ -755,9 +706,7 @@ public class Main {
 			}
 			else {
 				res.status(200);
-				writeToFiles1((HashMap<String,Object>)(Object)r.drives, "./data/disc.json"); 
-				writeToFiles1((HashMap<String,Object>)(Object)r.organizations, "./data/organizations.json"); 
-				writeToFiles1((HashMap<String,Object>)(Object)r.virtMachines, "./data/virtMachines.json"); 
+				refreshAfter();
 			}
 			return ("OK");
 		});
@@ -814,8 +763,51 @@ public class Main {
 	        res.status(400);
 			return ("OK");
 		});
+		post("/rest/findReport", (req,res)-> {
+			User user = req.session().attribute("user");
+			ChangeActivity dates = g.fromJson(req.body(),ChangeActivity.class);
+			ArrayList<VirtualMachine> machines = loadVMOUser(user);
+			double total =0.0;
+			for (VirtualMachine vm : machines) {
+				ArrayList<Activity> vmActivity = checkInterval(dates, vm.getActivityLog());
+				double price = getHourPrice(vm); 
+				double activeHours = getActiveHours(vmActivity);
+				total += price*activeHours;
+				reporthash.put(vm.getName(), price*activeHours);
+			}
+			ArrayList<Drive> drives = getUserDrives(user);	
+			for(Drive du: drives) {
+				double price = getHourPriceDrive(du);
+				double activeHours= getActiveHoursDrive(dates);
+				total += price*activeHours;
+				reporthash.put(du.getName(), price*activeHours);
+			}
+			reporthash.put("sum", total);
+			return (g.toJson(reporthash));
+		});
 		
 	}
+	private static void refreshCat() throws IOException {
+		writeToFiles1((HashMap<String,Object>)(Object) r.categories, "./data/categories.json");
+	}
+	private static void refreshDrive() throws IOException {
+		writeToFiles1((HashMap<String,Object>)(Object)r.drives, "./data/disc.json"); 		
+	}
+	private static void refreshOrg() throws IOException {
+		writeToFiles1((HashMap<String,Object>)(Object)r.organizations, "./data/organizations.json"); 		
+	}
+	private static void refreshVM() throws IOException {
+		writeToFiles1((HashMap<String,Object>)(Object)r.virtMachines, "./data/virtMachines.json"); 
+	}
+	private static void refreshUser() throws IOException {
+		writeToFiles1((HashMap<String,Object>)(Object) r.users, "./data/users.json");
+	}
+	private static void refreshAfter() throws IOException {
+		refreshDrive();
+		refreshOrg(); 
+		refreshVM();
+	}
+
 	private static double getActiveHoursDrive(ChangeActivity dates) throws ParseException {
 		Date start = sdf.parse(dates.newStart);
 		Date end = sdf.parse(dates.newEnd);
@@ -935,21 +927,19 @@ public class Main {
 		refreshDiscORG(fromClientDrive);
 		refreshDisc(fromClientDrive);		
 		
-		writeToFiles1((HashMap<String,Object>)(Object) r.virtMachines, "./data/virtMachines.json"); 
-		writeToFiles1((HashMap<String,Object>)(Object) r.organizations, "./data/organizations.json"); 
-		writeToFiles1((HashMap<String,Object>)(Object) r.drives, "./data/disc.json");
+		refreshAfter();//nebitan naziv
 		
 	}
 
 	private static void refreshNewDiscVM(Drive drive) throws IOException {
 		r.drives.put(drive.getName(),drive);
-		writeToFiles1((HashMap<String,Object>)(Object) r.drives, "./data/disc.json"); 
+		refreshDrive();
 		if(drive.getVirtualMachine()!=null) {
 			
 			for(VirtualMachine vm: r.virtMachines.values()) {
 				if(vm.getName().equalsIgnoreCase(drive.getVirtualMachine())) {
 					vm.getDrives().add(drive.getName());
-					writeToFiles1((HashMap<String,Object>)(Object) r.virtMachines, "./data/virtMachines.json");
+					refreshVM();
 				}
 			}
 			
@@ -957,14 +947,14 @@ public class Main {
 		for(Organization o: r.organizations.values()) {
 			if(o.getName().equalsIgnoreCase(drive.getNameOrg())) {
 				o.getResources().add(drive.getName());
-				writeToFiles1((HashMap<String,Object>)(Object) r.organizations, "./data/organizations.json");
+				refreshOrg();
 			}
 		}
 	}
 
 	private static void refreshRemovedCategory(String name)throws IOException {
 		removeCategory(name);
-		writeToFiles1((HashMap<String,Object>)(Object) r.categories, "./data/categories.json"); 
+		refreshCat(); 
 		
 	}
 
@@ -977,55 +967,38 @@ public class Main {
 	private static void refreshReferencedCategory(Category category)throws IOException {
 		checkCategoryChangeVM(category);
 		categoryChange(category);
-		writeToFiles1((HashMap<String,Object>)(Object) r.categories, "./data/categories.json");
-		writeToFiles1((HashMap<String,Object>)(Object) r.virtMachines, "./data/virtMachines.json"); 
+		refreshCat(); 
+		refreshVM();  
 	}
 
 	private static void refreshCategory(Category cc) throws IOException {
 		r.categories.put(cc.getName(),cc);
-		writeToFiles1((HashMap<String,Object>)(Object) r.categories, "./data/categories.json");
+		refreshCat(); 
 	}
 
 	private static Category checkSendDataCateg(String reqData) throws Exception{
-        
-		int coreNumber =0;
-	    int RAM=0;
-	    int	GPUcores=0;
-		JsonObject jsonObject = new JsonParser().parse(reqData).getAsJsonObject();
-		
-		String nameCK = ((JsonElement) ((JsonObject) jsonObject).get("nameID")).toString();
-        String name = null;
-        if (!nameCK.toString().isEmpty()) {
-            name = nameCK.replace("\"", "");
+	    
+        Category cat = g.fromJson(reqData, Category.class);
+        if(cat.getName()==null)
+        {
+        	return null;
         }
-        JsonElement core =((JsonObject) jsonObject).get("numCPU");
-       
-        if (checkIt(core)) {
-       		coreNumber = core.getAsInt();
-        } 
-        JsonElement ramm =((JsonObject) jsonObject).get("numRAM");
-        if (checkIt(ramm)) {
-        	RAM = ramm.getAsInt();
-        } 
-        JsonElement gpu =((JsonObject) jsonObject).get("numGPU");
-        if (checkIt(gpu)) {
-        	GPUcores = gpu.getAsInt();
-        } 
-		Category category = new Category(name, coreNumber, RAM,GPUcores);
-	
-		return category;
+        	
+        if(cat.getCoreNumber()<0)
+        {
+        	return null;
+        }
+        if(cat.getGPUcores()<0)
+        {
+        	return null;
+        }
+        	
+        if(cat.getRAM()<0)
+        {
+        	return null;
+        }
+		return cat;
 	}
-
-	private static boolean checkIt(JsonElement ramm){
-		    try {
-		        ramm.getAsInt();
-		        return true;
-		    }
-		    catch( Exception e ) {
-		        return false;
-		    }
-	}
-
 	private static void asRefresh(VMAdd vm) throws IOException {
 		
 		Category cat = r.categories.get(vm.nameC);
@@ -1040,7 +1013,7 @@ public class Main {
 		addToOrg(vm.nameOrg,vm.name);
 		
 		r.virtMachines.put(vm.name, v);
-		writeToFiles1((HashMap<String,Object>)(Object) r.virtMachines, "./data/virtMachines.json");
+		refreshVM(); 
 		
 	}
 
@@ -1050,7 +1023,7 @@ public class Main {
 				dd.getResources().add(name);
 			}
 		}
-		writeToFiles1((HashMap<String,Object>)(Object) r.organizations, "./data/organizations.json");
+		refreshOrg(); 
 	}
 
 	private static void changeRefVM(ArrayList<String> nameD, String name) throws IOException {
@@ -1061,7 +1034,7 @@ public class Main {
 				}
 			}
 		}
-		writeToFiles1((HashMap<String,Object>)(Object) r.drives, "./data/disc.json");
+		refreshDrive(); 
 		}
 
 	private static VMAdd checkReqFields(VMAdd newVM) {
@@ -1504,7 +1477,6 @@ public class Main {
 			}
 		}
 		return function();
-		
 	}
 
 	private static int checkVMName(String name, String organizat) {
@@ -1530,7 +1502,6 @@ public class Main {
 			}
 			return 2;            //usao i nije nasao
 		}
-		
 	}
 
 	private static boolean emptySearch(VMFilter filter) {
@@ -1544,15 +1515,10 @@ public class Main {
 		return false;
 	}
 	private static void refreshFiles() throws IOException {
-		writeToFiles1((HashMap<String,Object>)(Object) r.users, "./data/users.json");
-		writeToFiles1((HashMap<String,Object>)(Object) r.organizations, "./data/organizations.json");
+		refreshDrive(); 
+		refreshOrg(); 
 	}
 	
-	public static void writeDependencies() throws IOException {
-		writeToFiles1((HashMap<String,Object>)(Object) r.virtMachines, "./data/virtMachines.json");
-		writeToFiles1((HashMap<String,Object>)(Object) r.drives, "./data/disc.json");
-		writeToFiles1((HashMap<String,Object>)(Object) r.organizations, "./data/organizations.json");
-	}
 
 	private static void changeDrivesVM(String v, String vm) {
 		for (Drive d : r.drives.values()) {
@@ -2000,9 +1966,7 @@ public class Main {
 				}
 				
 			}
-		}
-		
-		
+		}	
 	}
 
 	private static int checkCategoryExistVM(String nameID) {
@@ -2055,6 +2019,25 @@ public class Main {
 			
 	private static Category checkCategory(Category cat) {
 		for(Category check : r.categories.values()) {
+		
+			if(check.getName().equalsIgnoreCase(cat.getName()) && !cat.getName().equalsIgnoreCase(c.getName())) {
+				return null;
+			}
+		}
+		if(cat.getCoreNumber() <= 0) {
+			return null;
+		}
+		if(cat.getRAM() <=0) {
+			return null;
+		}
+		if(cat.getGPUcores()<0) {
+			return null;
+		}
+		return cat;
+	}
+	private static Category checkCategory1(Category cat) {
+		for(Category check : r.categories.values()) {
+		
 			if(check.getName().equalsIgnoreCase(cat.getName())) {
 				return null;
 			}

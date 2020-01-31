@@ -17,17 +17,17 @@ Vue.component("addCateg",{
 		
 	Add category:
 	<br>
-	<table>
+	<table class="table">
 	<tr>
 		<td>Name</td>
-	    <td><input type="text" style="width:60px" size="5" v-model="nameID" name="nameID">{{error1}}</td>
+	    <td><input type="text"  v-model="nameID" name="nameID">{{error1}}</td>
 	</tr>
 	<tr>
 		<td>
 	    	CORE
 	    </td>
 	    <td>
-	    	<input type="text" style="width:60px" size="5" v-model="numCPU" name="numCPU">{{error2}}
+	    	<input type="number" v-model="numCPU" name="numCPU">{{error2}}
 	    </td>
 	</tr>
 	<tr>
@@ -35,7 +35,7 @@ Vue.component("addCateg",{
 	    	RAM 
 	    </td>
 	    <td>
-	    	<input type="text" style="width:60px" size="5" v-model="numRAM" name="numRAM"> {{error3}}
+	    	<input type="number"  v-model="numRAM" name="numRAM"> {{error3}}
 	    </td>
 	</tr>
 	 
@@ -44,7 +44,7 @@ Vue.component("addCateg",{
 	    	GPU 
 	    </td>
 	    <td>
-	    	<input type="text" style="width:60px" size="5" v-model="numGPU" name="numGPU"> 
+	    	<input type="number" v-model="numGPU" name="numGPU"> 
 	    </td>	
 	</tr>	
 	</table>
@@ -68,9 +68,13 @@ Vue.component("addCateg",{
 			}else {this.error3='';}
 			if(this.nameID && this.numCPU && this.numRAM)
 			{
+				let obj =
+				{
+				 "name":this.nameID, "coreNumber":this.numCPU,"RAM":this.numRAM,"GPUcores":this.numGPU
+				}
 				this.error4='';
 				axios
-			      .post("rest/addNewCategory", {"nameID":this.nameID, "numCPU":this.numCPU, "numRAM":this.numRAM, "numGPU":this.numGPU })
+			      .post("rest/addNewCategory", obj)
 			      .then((response) => {
 			    	  if(response.status == 200) {
 			    		  this.error4= '';
@@ -81,7 +85,7 @@ Vue.component("addCateg",{
 			    	  this.error1='';
 			    	  this.error2='';
 			    	  this.error3='';
-			    	  this.error4 = 'Wrong ID, number of cores or number of ram!';
+			    	  this.error4 = 'You send wrong values!';
 			      })
 			}	
 		}

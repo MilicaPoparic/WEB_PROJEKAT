@@ -43,26 +43,26 @@ Vue.component("home-page", {
 	<table border="1">
 		<tr>
 			<td> Name: </td>
-			<td><input type="text" v-model="name" name="name"></td>
+			<td><input type="text"  v-model="name" name="name"></td>
 		</tr>
 		
 		<tr>
 			<td> Number of CPU: </td>
-			<td><input type="number" style="width:60px" size="5" v-model="fromm" name="fromm">
+			<td><input type="number" style="width:84.5px" v-model="fromm" name="fromm">
 			-
-			<input type="number" style="width:60px" size="5" v-model="too" name="too"></td>
+			<input type="number" style="width:84.5px"  v-model="too" name="too"></td>
 		</tr>
 		<tr>
 		   <td> Number of RAM: </td>
-			<td><input type="number" style="width:60px" size="5" v-model="fromm1" name="fromm1">
+			<td><input type="number" style="width:84.5px" v-model="fromm1" name="fromm1">
 			-
-			<input type="number" style="width:60px" size="5" v-model="too1" name="too1"></td>
+			<input type="number" style="width:84.5px" v-model="too1" name="too1"></td>
 		</tr>
 		<tr>
 			<td> Number of GPU: </td>
-			<td><input type="number" style="width:60px" size="5" v-model="fromm2" name="fromm2">
+			<td><input type="number" style="width:84.5px" v-model="fromm2" name="fromm2">
 			-
-			<input type="number" style="width:60px" size="5" v-model="too2" name="too2"></td>
+			<input type="number" style="width:84.5px"  v-model="too2" name="too2"></td>
 		</tr>
 			
 	</table>

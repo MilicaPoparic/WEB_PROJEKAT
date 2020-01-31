@@ -64,10 +64,9 @@ Vue.component("drive",{
 			<td>
 				<select v-model="checkedNames2">
 					<option default value=""> -Select vm- </option>
-	       			<option v-for="(v,key) in names" :value="key" >{{key}}</option>
+	       			  <option v-for="v in vms" :value="v.name" v-if="v.nameOrg==drive.nameOrg">{{ v.name }}</option>
 				</select>
 			</td>
-			
 		</tr>
 	</table>
 	<br>
@@ -138,7 +137,7 @@ Vue.component("drive",{
       	.then(response => (this.types = response.data));
       	
       	axios
-      	.get('rest/getDVM')
+      	.get('rest/virtualne')
       	.then(response => (this.names = response.data))
 	}
 

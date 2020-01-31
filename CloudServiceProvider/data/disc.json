@@ -36,7 +36,6 @@
     "name": "F",
     "driveType": "HDD",
     "nameOrg": "Microsoft",
-    "capacity": 256,
-    "nameVM": "WINDOWS10-VM"
+    "capacity": 256
   }
 ]

@@ -24,8 +24,8 @@
   {
     "name": "JAVA-VM",
     "category": {
-      "name": "kata",
-      "coreNumber": 5,
+      "name": "kategorija123",
+      "coreNumber": 42,
       "RAM": 1,
       "GPUcores": 1
     },
@@ -50,8 +50,8 @@
   {
     "name": "jojojoVM",
     "category": {
-      "name": "kata",
-      "coreNumber": 5,
+      "name": "kategorija123",
+      "coreNumber": 42,
       "RAM": 1,
       "GPUcores": 1
     },
@@ -63,7 +63,7 @@
   {
     "name": "NOVA",
     "category": {
-      "name": "kategorija6",
+      "name": "kategorija66",
       "coreNumber": 5,
       "RAM": 20,
       "GPUcores": 1
@@ -76,16 +76,15 @@
   {
     "name": "WINDOWS10-VM",
     "category": {
-      "name": "kata",
-      "coreNumber": 5,
+      "name": "kategorija123",
+      "coreNumber": 42,
       "RAM": 1,
       "GPUcores": 1
     },
     "nameOrg": "Microsoft",
     "drives": [
       "D",
-      "rnrnr",
-      "F"
+      "rnrnr"
     ],
     "activityLog": [
       {
@@ -117,8 +116,8 @@
   {
     "name": "novaVM",
     "category": {
-      "name": "kata",
-      "coreNumber": 5,
+      "name": "kategorija123",
+      "coreNumber": 42,
       "RAM": 1,
       "GPUcores": 1
     },

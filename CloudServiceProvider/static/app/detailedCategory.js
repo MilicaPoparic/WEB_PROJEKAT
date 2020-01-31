@@ -14,7 +14,8 @@ Vue.component("detailCateg",{
 		`
 <div>
 		Category:
-		<table>
+		<br>
+		<table border="1" class="table">
 		<tr>
 				<td> Name: </td>
 				<td>{{category.name}}</td>
@@ -36,15 +37,15 @@ Vue.component("detailCateg",{
 				<td>{{category.GPUcores}}</td>
 		</tr>
         </table>
+		<p>Change:</p>
 		<br>
-		<table border="1">
-		Change:
+		<table class="table">
 		<tr>
 			<td>
 		    	Name 
 		    </td>
 		    <td>
-		    	<input type="text" style="width:60px" size="5"   v-model="nameID" name="nameID">
+		    	<input type="text"  v-model="nameID" name="nameID">
 		    </td>
 		</tr>
 		<tr>
@@ -52,7 +53,7 @@ Vue.component("detailCateg",{
 		    	CORE 
 		    </td>
 		    <td>
-		    	<input type="text" style="width:60px" size="5" v-model="numCPU" name="numCPU" >
+		    	<input type="number"  v-model="numCPU" name="numCPU" >
 		    </td>
 		</tr>
 		<tr>
@@ -60,7 +61,7 @@ Vue.component("detailCateg",{
 		    	RAM 
 		    </td>
 		    <td>
-		    	<input type="text" style="width:60px" size="5" v-model="numRAM" name="numRAM" >
+		    	<input type="number" v-model="numRAM" name="numRAM" >
 		    </td>
 		</tr>
 		<tr>
@@ -68,15 +69,12 @@ Vue.component("detailCateg",{
 		    	GPU 
 		    </td>
 		    <td>
-		    	<input type="text" style="width:60px" size="5" v-model="numGPU" name="numGPU" > 
+		    	<input type="number"  v-model="numGPU" name="numGPU" > 
 		    </td>	
 		</tr>	
-		<tr><button v-on:click="change()">Change</button> {{error1}}</tr>	
+		<tr><button v-on:click="change()">Change</button> </tr>	
 		</table>
-		<br>
-		
-		
-		<br>
+		{{error1}}
 		<br>
 		<button v-on:click="removeCategory()">Delete</button>{{error2}}
 </div>
@@ -86,7 +84,7 @@ Vue.component("detailCateg",{
 		change : function() {
 			if(this.nameID || this.numCPU || this.numRAM ||this.numGPU){
 				if(!this.nameID){
-					this.nameID="null";
+					this.nameID=null;
 				}if(!this.numCPU){
 					this.numCPU=0;
 				}if(!this.numRAM){
@@ -94,8 +92,12 @@ Vue.component("detailCateg",{
 				}if(!this.numGPU){
 					this.numGPU=0;
 				}
+				let obj =
+					{
+					 "name":this.nameID, "coreNumber":this.numCPU,"RAM":this.numRAM,"GPUcores":this.numGPU
+					}
 				axios
-			      .post('rest/forChange', {"nameID":this.nameID, "numCPU":this.numCPU,"numRAM":this.numRAM,"numGPU":this.numGPU})
+			      .post('rest/forChange',obj)
 			      .then((response) => {
 			    	  if(response.status == 200) {
 			    		  this.error1 = '';

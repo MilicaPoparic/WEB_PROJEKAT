@@ -6,10 +6,16 @@
     "GPUcores": 4
   },
   {
-    "name": "kata",
+    "name": "kategorija66",
     "coreNumber": 5,
-    "RAM": 1,
+    "RAM": 20,
     "GPUcores": 1
+  },
+  {
+    "name": "kategorija225883",
+    "coreNumber": 24,
+    "RAM": 21,
+    "GPUcores": 0
   },
   {
     "name": "kategorija1",
@@ -18,9 +24,21 @@
     "GPUcores": 23
   },
   {
-    "name": "kategorija6",
-    "coreNumber": 5,
-    "RAM": 20,
+    "name": "kategorijaNova",
+    "coreNumber": 54,
+    "RAM": 23,
+    "GPUcores": 0
+  },
+  {
+    "name": "kategorija123",
+    "coreNumber": 42,
+    "RAM": 1,
     "GPUcores": 1
+  },
+  {
+    "name": "kategorija5",
+    "coreNumber": 33,
+    "RAM": 32,
+    "GPUcores": 321
   }
 ]
