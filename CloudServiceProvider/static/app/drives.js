@@ -32,7 +32,7 @@ Vue.component("drive",{
 	</table>
 	<br>
 	
-	<button v-if="role!='user'" v-on:click="addDrive()">Add drive</button>	
+	<button v-on:click="addDrive()"  v-if="role!='user'">Add drive</button>	
 	
 	<br>
 	<br>
@@ -141,7 +141,10 @@ Vue.component("drive",{
       	
       	axios
       	.get('rest/virtualne')
-      	.then(response => (this.vms = response.data))
+      	.then(response => (this.vms = response.data));
+      	 axios
+         .get('rest/getRole')
+         .then(response => (this.role = response.data));
 	}
 
 });

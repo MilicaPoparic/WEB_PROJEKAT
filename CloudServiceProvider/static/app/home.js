@@ -24,7 +24,7 @@ Vue.component("home-page", {
 			<th> Core </th>
 			<th> RAM </th>
 			<th> GPU </th>
-			<th> Organization </th>
+			<th  v-if="role=='superAdmin'"> Organization </th>
 		</tr>
 		
 		
@@ -33,14 +33,14 @@ Vue.component("home-page", {
 			<td>{{m.category.coreNumber}}</td>
 			<td>{{m.category.RAM}}</td>
 			<td>{{m.category.GPUcores}}</td>
-			<td>{{m.nameOrg}}</td>
+			<td  v-if="role=='superAdmin'">{{m.nameOrg}}</td>
 		</tr>
 	</table>
 	<br>
 	<button v-on:click="dodajVM()" v-if="role!='user'">Add new vm</button>
 	<br> <br>
 	Find a VM:
-	<table border="1">
+	<table border="1" class="table">
 		<tr>
 			<td> Name: </td>
 			<td><input type="text"  v-model="name" name="name"></td>
@@ -68,7 +68,7 @@ Vue.component("home-page", {
 	</table>
 	{{error1}}
 	 <p>
-		<button v-on:click="filter()">Filter</button>
+		<button v-on:click="filter()">Search</button>
 	</p>
 	 
 	<a href="#/profile">Profile</a> <br>

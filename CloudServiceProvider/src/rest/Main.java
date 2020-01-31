@@ -255,13 +255,13 @@ public class Main {
 			ArrayList<VirtualMachine> listOfVMO =null;
 			if (user!=null) {
 				if (user.getRole().toString().equals("user")) {
-					listOfVMO = loadVMOUser(user);
+					listOfVMO = retVMs;//loadVMOUser(user);
 				}
 				else if  (user.getRole().toString().equals("superAdmin")){
 					listOfVMO = retVMs;
 				}
 				else {
-					listOfVMO = loadVMOUser(user);	
+					listOfVMO = retVMs;	
 				}
 			}
 			return g.toJson(listOfVMO);
@@ -726,6 +726,7 @@ public class Main {
 			res.type("application/json");
 			VMFilter filter = gson.fromJson(req.body(), VMFilter.class);
 			User us =  req.session().attribute("user");
+			retVMs = new ArrayList<VirtualMachine>();
 			retVMs = checkParamSearch(filter, us.getOrganization());	
 			if(retVMs != null) {
 				res.status(200);

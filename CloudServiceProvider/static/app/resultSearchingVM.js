@@ -9,7 +9,7 @@ Vue.component("search-vm",{
 <div>
 	<p>Results of searching VMs:</p>
 	
-	<table border="1">
+	<table border="1" class="table">
 		<tr bgcolor="#f2f2f2">
 			<th> Name </th>
 			<th> Core </th>
@@ -37,9 +37,7 @@ Vue.component("search-vm",{
   
 	methods : {
 		back: function(){
-			axios
-		      .post('rest/viewVirt', "")
-		      .then(response => location.href = '#/h');
+			location.href = '#/h';
 		}
 		
 	},

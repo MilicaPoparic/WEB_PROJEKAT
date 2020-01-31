@@ -19,6 +19,7 @@
     "email": "k1",
     "name": "SENIDA",
     "surname": "k1",
+    "nameORG": "ORG1",
     "role": "user",
     "password": "k1"
   },
@@ -31,7 +32,7 @@
     "password": "j"
   },
   {
-    "email": "covekimastan@gmail.com",
+    "email": "userUser",
     "name": "a",
     "surname": "a",
     "nameORG": "Microsoft",
