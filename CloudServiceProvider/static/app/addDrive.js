@@ -22,9 +22,9 @@ Vue.component("addDr",{
 	`
 	<div>
 		
-	Add drive:
+	<p>Add drive:</p>
 	<br>
-	<table >
+	<table class="table">
 	<tr>
 		<td>
 	        Name 
@@ -42,7 +42,7 @@ Vue.component("addDr",{
 	    </td>
 	    <td>
 			<select v-model="driveType">
-				<option default value=""> -Select TYPE- </option>
+				<option default value=""> -Select- </option>
 	       		<option v-for="(val, key) in types" :value="key" >{{key}}</option>
 			</select>
 	    </td>
@@ -54,7 +54,7 @@ Vue.component("addDr",{
 	    </td>
 	    <td v-if="role =='superAdmin'">
 	    	<select v-model="organizat">
-				<option default value=""> -Select ORGANIZATION- </option>
+				<option default value=""> -Select-</option>
 	       		<option v-for="v in orgs" :value="v" >{{v.name}}</option>
 			</select>
 	    </td>
@@ -80,14 +80,14 @@ Vue.component("addDr",{
 	    </td>
 	    <td v-if="role =='superAdmin'">
 	    	<select v-model="nameVM">
-				<option default value=""> -Select VM- </option>
-	       		<option v-for="v in vms":value="v.nameVM"  v-if="v.nameORG == organizat.name" >{{v.nameVM}}</option>
+				<option default value=""> -Select- </option>
+	       		<option v-for="v in vms":value="v.name"  v-if="v.nameOrg == organizat.name" >{{v.name}}</option>
 			</select>
 	    </td>
 	    <td v-if="role =='admin'">
 	    	<select v-model="nameVM">
-				<option default value=""> -Select VM- </option>
-	       		<option v-for="v in vms" :value="v.nameVM">{{v.nameVM}}</option>
+				<option default value=""> -Select- </option>
+	       		<option v-for="v in vms" :value="v.name">{{v.name}}</option>
 			</select>
 	    </td>	
 	</tr>	

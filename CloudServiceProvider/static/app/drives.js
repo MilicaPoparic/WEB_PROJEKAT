@@ -3,7 +3,7 @@ Vue.component("drive",{
 		return{
 			drivess: {},
 			types: {},
-			names: {},
+			vms: {},
 			fromm:'',
 			too:'',
 			name:'',
@@ -16,8 +16,8 @@ Vue.component("drive",{
 	template:
 	`
 <div>
-	View drives:
-	<table border="1">
+	<p>Drives:</p>
+	<table border="1" class="table">
 	<tr bgcolor="#f2f2f2">
 			<th> Name </th>
 			<th> Capacity </th>
@@ -31,13 +31,14 @@ Vue.component("drive",{
 	</tr>
 	</table>
 	<br>
+	
 	<button v-if="role!='user'" v-on:click="addDrive()">Add drive</button>	
 	
 	<br>
 	<br>
 	Find a drive:
 	<br>
-	<table border ="1">
+	<table border ="1" class="table">
 		<tr>
 			<td> Name: </td>
 			<td><input type="text" v-model="name" name="name"></td>
@@ -45,16 +46,16 @@ Vue.component("drive",{
 		
 		<tr>
 			<td> Category: </td>
-			<td><input type="number" style="width:92px" v-model="fromm" name="fromm">
+			<td><input type="number" style="width:84.5px" v-model="fromm" name="fromm">
 			-
-			<input type="number" style="width:92px"  v-model="too" name="too"></td>
+			<input type="number" style="width:84.5px" v-model="too" name="too"></td>
 		</tr>
 		
 		<tr>
 			<td> Type: </td>
 			<td>
-				<select v-model="checkedNames1">
-					<option default value=""> -Select type- </option>
+				<select v-model="checkedNames1" >
+					<option default value=""> -Select- </option>
 	       			<option v-for="(val,k) in types" :value="k" >{{k}}</option>
 				</select>
 			</td>
@@ -63,8 +64,8 @@ Vue.component("drive",{
 			<td> Name VM:</td>
 			<td>
 				<select v-model="checkedNames2">
-					<option default value=""> -Select vm- </option>
-	       			  <option v-for="v in vms" :value="v.name" v-if="v.nameOrg==drive.nameOrg">{{ v.name }}</option>
+					<option default value=""> -Select- </option>
+	       			  <option v-for="v in vms" :value="v.name">{{ v.name }}</option>
 				</select>
 			</td>
 		</tr>
@@ -93,8 +94,10 @@ Vue.component("drive",{
 				if(!this.checkedNames2){
 					this.checkedNames2=null;
 				}
+				let obj =
+				{"name":this.name, "fromm":this.fromm,"too":this.too, "checked1":this.checkedNames1, "checked2":this.checkedNames2 }
 				axios
-			      .post('rest/filterDrive', {"name":this.name, "fromm":this.fromm,"too":this.too, "checked1":this.checkedNames1, "checked2":this.checkedNames2 })
+			      .post('rest/filterDrive',obj)
 			      .then((response) => {
 			    	  if(response.status == 200) {
 			    		  this.error1 ='';
@@ -138,7 +141,7 @@ Vue.component("drive",{
       	
       	axios
       	.get('rest/virtualne')
-      	.then(response => (this.names = response.data))
+      	.then(response => (this.vms = response.data))
 	}
 
 });

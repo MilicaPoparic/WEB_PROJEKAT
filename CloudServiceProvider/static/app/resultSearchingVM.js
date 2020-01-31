@@ -10,7 +10,7 @@ Vue.component("search-vm",{
 	<p>Results of searching VMs:</p>
 	
 	<table border="1">
-		<tr bgcolor="blue">
+		<tr bgcolor="#f2f2f2">
 			<th> Name </th>
 			<th> Core </th>
 			<th> RAM </th>

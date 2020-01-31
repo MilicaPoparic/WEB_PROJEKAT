@@ -647,11 +647,8 @@ public class Main {
 
 		post("/rest/detailDrive", (req,res)-> {
 			res.type("application/json");
-            Drive detailD = g.fromJson(req.body(), Drive.class);
-            if(r.drives.containsKey(detailD.getName())) {
-            	d =r.drives.get(detailD.getName()); 
-            }
-			return"OK";
+            d = g.fromJson(req.body(), Drive.class);
+			return g.toJson(d);
 		});
 	
 		post("/rest/forChangeDrive", (req,res)-> {
@@ -1023,7 +1020,7 @@ public class Main {
 				dd.getResources().add(name);
 			}
 		}
-		refreshOrg(); 
+		refreshOrg();
 	}
 
 	private static void changeRefVM(ArrayList<String> nameD, String name) throws IOException {
@@ -1939,15 +1936,7 @@ public class Main {
 	}
 
 	private static void refreshDiscVM(Drive drive) {
-		for(VirtualMachine vm : r.virtMachines.values()) 
-		{
-			if(vm.getDrives().contains(d.getName())) //getDrives je lista
-			{
-				int index =vm.getDrives().indexOf(d.getName());
-				vm.getDrives().set(index, drive.getName());//setujem samo naziv 
-			}
-			
-		}
+		
 		if(d.getVirtualMachine()==null) {//drive nije imoa do sada referencu 
 			for(VirtualMachine vm : r.virtMachines.values()) 
 			{
@@ -1956,7 +1945,22 @@ public class Main {
 				}
 				
 			}
-		}//ako hoce da otkaci vm od diska
+		}else {// u dr naziv menja
+			for(VirtualMachine vm : r.virtMachines.values()) 
+			{
+				if(vm.getDrives().contains(d.getName())) 
+				{
+					vm.getDrives().remove(d.getName());//obrisi stari, ko zna hoce sta on hoce sa novim
+					
+				}
+				if(vm.getName().equalsIgnoreCase(drive.getVirtualMachine())) {
+					vm.getDrives().add(drive.getName());//setujem samo naziv 
+				}
+				
+			}
+		}
+		
+		//ako hoce da otkaci vm od diska
 		
 		if(drive.getVirtualMachine()!=null && drive.getVirtualMachine().equals("delete")) {
 			for(VirtualMachine vm : r.virtMachines.values()) 
@@ -1966,7 +1970,8 @@ public class Main {
 				}
 				
 			}
-		}	
+		}
+		
 	}
 
 	private static int checkCategoryExistVM(String nameID) {

@@ -7,9 +7,9 @@ Vue.component("searchDr",{
 	template:
 	`
 <div>
-	View drives:
-	<table border="1">
-	<tr bgcolor="gray">
+	<p>Result of searchig drives:</p>
+	<table border="1" class="table">
+	<tr bgcolor="#f2f2f2">
 			<th> Name </th>
 			<th> Capacity </th>
 			<th> VM </th>

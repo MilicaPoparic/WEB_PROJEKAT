@@ -4,7 +4,9 @@
     "caption": "kak",
     "logo": "20190517_203145.jpg",
     "users": [],
-    "resources": []
+    "resources": [
+      "proveraDisk"
+    ]
   },
   {
     "name": "honey",
@@ -26,7 +28,8 @@
       "VM2",
       "HaloDisk",
       "novaVM",
-      "jojojoVM"
+      "jojojoVM",
+      "diskOrg"
     ]
   },
   {
@@ -41,7 +44,6 @@
     "resources": [
       "D",
       "F",
-      "rnrnr",
       "WINDOWS10-VM"
     ]
   },
@@ -65,7 +67,8 @@
     "users": [],
     "resources": [
       "ORACLE-VM",
-      "NOVA"
+      "NOVA",
+      "diskOracle"
     ]
   }
 ]

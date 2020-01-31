@@ -17,8 +17,8 @@ Vue.component("detailDr",{
 	template:
 		`
 <div>
-		Drive:
-		<table>
+		<p>Drive:</p>
+		<table class="table" border="1">
 		<tr>
 				<td> Name : </td>
 				<td>{{drive.name}}</td>
@@ -40,14 +40,14 @@ Vue.component("detailDr",{
 		</tr>
         </table>
         <br>
-		<table v-if="role!='user'" >
+		<table v-if="role!='user'" class="table">
 		Change:
 		<tr>
 			<td>
 		    	Name 
 		    </td>
 		    <td>
-		    	<input type="text" style="width:60px" size="5"  v-model="name" name="name">
+		    	<input type="text" style="width:84.5px" v-model="name" name="name">
 		    </td>
 		</tr>
 		<tr>
@@ -55,8 +55,8 @@ Vue.component("detailDr",{
 		    	Type 
 		    </td>
 		    <td>
-		    	<select v-model="driveType">
-					<option default value=""> -Select TYPE- </option>
+		    	<select v-model="driveType"> 
+					<option default value=""> -Select- </option>
 	       			<option v-for="(val, key) in types" :value="key" >{{key}}</option>
 				</select>
 		    </td>
@@ -66,7 +66,7 @@ Vue.component("detailDr",{
 		    	Capacity 
 		    </td>
 		    <td>
-		    	<input type="number" style="width:60px" size="5" v-model="capacity" name="capacity" >
+		    	<input type="number" style="width:84.5px" v-model="capacity" name="capacity" >
 		    </td>
 		</tr>
 		<tr>
@@ -75,7 +75,7 @@ Vue.component("detailDr",{
 		    </td>
 		    <td>
 		    	<select v-model="nameVMS">
-	       			<option default value="delete"> -Select VM- </option>
+	       			<option default value="delete"> -Select- </option>
 			        <option v-for="v in vms" :value="v.name" v-if="v.nameOrg==drive.nameOrg">{{ v.name }}</option>
 				</select>
 		    </td>	
@@ -87,16 +87,14 @@ Vue.component("detailDr",{
 		<br>
 		<button v-if="role=='superAdmin'" v-on:click="removeDrive()">Remove</button>{{error2}}
 		<br>
-		<button v-if="role=='admin'" v-on:click="switchVM()">Switch on/off VM</button>{{error3}}
+		<button v-on:click="back()">Back</button>
 </div>
 			`
 ,
 	methods : {
 		change : function() {
 			if(!this.name && !this.nameVMS && !this.driveType && !this.capacity ){
-				axios
-			      .post('rest/viewDrives', "")
-			      .then(response => location.href = '#/drives');
+				location.href = '#/drives';
 			}
 			if(this.name || this.driveType || this.capacity ||this.nameVMS){
 				this.error1='';
@@ -123,10 +121,6 @@ Vue.component("detailDr",{
 			      })
 			      .catch((response)=>{
 			    	  this.error1 = 'The data is invalid!';
-			    	  console.log(this.name);
-			    	  console.log(this.driveType);
-			    	  console.log(this.capacity);
-			    	  console.log(this.nameVM);
 			      })
 			
 			} 
@@ -145,9 +139,9 @@ Vue.component("detailDr",{
 		    	  this.error2 = 'Couldnt remove drive!';
 		      })
 		},
-		switchVM: function(){
-			alert("Not implemented yet.SWITCH OFF ON VM");
-		} 
+		back: function(){
+             location.href = '#/drives';
+		}
 	}
 	,
 	mounted () {
@@ -174,4 +168,5 @@ Vue.component("detailDr",{
          .get('rest/getRole')
          .then(response => (this.role = response.data));
 		  }
+	
 });
