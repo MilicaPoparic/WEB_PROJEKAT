@@ -12,7 +12,7 @@ Vue.component("report",{
 		`
 <div>
 		<p>MONTHLY REPORT</p>
-		<table>
+		<table class="table">
 		<tr>
 				<td> Start date: </td>
 				<td><input type="date" v-model="date1" name="name"></td>
@@ -21,19 +21,19 @@ Vue.component("report",{
 				<td> End date: </td>		
 				<td><input type="date" v-model="date2" name="noname"></td> 
 		</tr>
-		{{err}}
+		
 		<td><button v-on:click="find()">Find</button></td>
+		{{err}}
 		</table>
 		
 		<br>
-		<table border="1">
+		<table border="1"  class="table">
 			<tr v-for="(v,k) in data"> 
 				<td v-if="k!='sum'">{{k}}</td>
 				<td v-if="k!='sum'">{{v}}</td>
 			</tr>
 		</table>
-		<br>
-			<table border>
+		<table border="1"  class="table">
 			<tr v-for="(v,k) in data"> 
 				<td v-if="k==='sum'">TOTAL</td>
 				<td v-if="k==='sum'">{{v}}</td>
@@ -43,19 +43,20 @@ Vue.component("report",{
 ,
 	methods : {
 		find : function() {
-			//samo ako je oba popunio
 			if(this.date1 && this.date2){
-			axios
-			.post('rest/findReport',  {"newStart":this.date1, "newEnd":this.date2})
-			.then((response) => {
-	    	  if(response.status == 200) {
-	    		  this.data = response.data;
-	    	  }
-			})
-			.catch((response)=>{
-		    	  this.err='INVALID DATE!'
-		      })
-			this.date1=''; this.date2=''; this.err='';
+				this.err='';
+				axios
+				.post('rest/findReport',  {"newStart":this.date1, "newEnd":this.date2})
+				.then((response) => {
+		    	  if(response.status == 200) {
+		    		  this.data = response.data;
+		    	  }
+				})
+				.catch((response)=>{
+					  this.date1='';
+	                  this.date2='';
+			    	  this.err='INVALID DATE!'
+			      })
 			}
 		}
 	},

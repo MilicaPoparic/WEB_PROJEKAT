@@ -1,5 +1,114 @@
 [
   {
+    "name": "vmHHH",
+    "category": {
+      "name": "kategorija66",
+      "coreNumber": 5,
+      "RAM": 20,
+      "GPUcores": 1
+    },
+    "nameOrg": "hhhhh",
+    "drives": [
+      "noviDisk"
+    ],
+    "activityLog": [],
+    "active": "activate"
+  },
+  {
+    "name": "jojojoVM",
+    "category": {
+      "name": "kategorija123",
+      "coreNumber": 42,
+      "RAM": 1,
+      "GPUcores": 1
+    },
+    "nameOrg": "ORG1",
+    "drives": [
+      "HaloDisk"
+    ],
+    "activityLog": [],
+    "active": "activate"
+  },
+  {
+    "name": "novaVMPoslProvera",
+    "category": {
+      "name": "kategorija225883",
+      "coreNumber": 24,
+      "RAM": 21,
+      "GPUcores": 0
+    },
+    "nameOrg": "hhhhh",
+    "drives": [],
+    "activityLog": [],
+    "active": "activate"
+  },
+  {
+    "name": "NOVA",
+    "category": {
+      "name": "kategorija66",
+      "coreNumber": 5,
+      "RAM": 20,
+      "GPUcores": 1
+    },
+    "nameOrg": "Oracle",
+    "drives": [],
+    "activityLog": [],
+    "active": "activate"
+  },
+  {
+    "name": "WINDOWS10-VM",
+    "category": {
+      "name": "kategorija123",
+      "coreNumber": 42,
+      "RAM": 1,
+      "GPUcores": 1
+    },
+    "nameOrg": "Microsoft",
+    "drives": [
+      "D",
+      "F"
+    ],
+    "activityLog": [
+      {
+        "start": "Jul 25, 2019 12:00:00 AM",
+        "end": "Aug 11, 2019 12:00:00 AM"
+      },
+      {
+        "start": "Jan 23, 2020 12:00:00 AM",
+        "end": "Jan 28, 2020 12:00:00 AM"
+      }
+    ],
+    "active": "activate"
+  },
+  {
+    "name": "novaVM",
+    "category": {
+      "name": "kategorija123",
+      "coreNumber": 42,
+      "RAM": 1,
+      "GPUcores": 1
+    },
+    "nameOrg": "ORG1",
+    "drives": [
+      "diskOrg"
+    ],
+    "activityLog": [],
+    "active": "activate"
+  },
+  {
+    "name": "JAFA-HH",
+    "category": {
+      "name": "kategorija44",
+      "coreNumber": 4,
+      "RAM": 3,
+      "GPUcores": 4
+    },
+    "nameOrg": "IOS",
+    "drives": [],
+    "activityLog": [],
+    "active": "activate"
+  },
+  {
     "name": "JAFA",
     "category": {
       "name": "kategorija44",
@@ -53,56 +162,16 @@
     "active": "activate"
   },
   {
-    "name": "jojojoVM",
+    "name": "vmVmvm",
     "category": {
-      "name": "kategorija123",
-      "coreNumber": 42,
-      "RAM": 1,
-      "GPUcores": 1
+      "name": "kategorijaNova",
+      "coreNumber": 54,
+      "RAM": 23,
+      "GPUcores": 0
     },
     "nameOrg": "ORG1",
-    "drives": [
-      "HaloDisk"
-    ],
-    "activityLog": [],
-    "active": "activate"
-  },
-  {
-    "name": "NOVA",
-    "category": {
-      "name": "kategorija66",
-      "coreNumber": 5,
-      "RAM": 20,
-      "GPUcores": 1
-    },
-    "nameOrg": "Oracle",
     "drives": [],
     "activityLog": [],
-    "active": "activate"
-  },
-  {
-    "name": "WINDOWS10-VM",
-    "category": {
-      "name": "kategorija123",
-      "coreNumber": 42,
-      "RAM": 1,
-      "GPUcores": 1
-    },
-    "nameOrg": "Microsoft",
-    "drives": [
-      "D",
-      "F"
-    ],
-    "activityLog": [
-      {
-        "start": "Jul 25, 2019 12:00:00 AM",
-        "end": "Aug 11, 2019 12:00:00 AM"
-      },
-      {
-        "start": "Jan 23, 2020 12:00:00 AM",
-        "end": "Jan 28, 2020 12:00:00 AM"
-      }
-    ],
     "active": "activate"
   },
   {
@@ -114,34 +183,6 @@
       "GPUcores": 4
     },
     "nameOrg": "ORG1",
-    "drives": [],
-    "activityLog": [],
-    "active": "activate"
-  },
-  {
-    "name": "novaVM",
-    "category": {
-      "name": "kategorija123",
-      "coreNumber": 42,
-      "RAM": 1,
-      "GPUcores": 1
-    },
-    "nameOrg": "ORG1",
-    "drives": [
-      "diskOrg"
-    ],
-    "activityLog": [],
-    "active": "activate"
-  },
-  {
-    "name": "JAFA-HH",
-    "category": {
-      "name": "kategorija44",
-      "coreNumber": 4,
-      "RAM": 3,
-      "GPUcores": 4
-    },
-    "nameOrg": "IOS",
     "drives": [],
     "activityLog": [],
     "active": "activate"

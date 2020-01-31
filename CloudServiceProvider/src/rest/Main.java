@@ -743,12 +743,7 @@ public class Main {
 		post("/rest/viewDrives", (req, res) -> {
 			res.type("application/json");
 			return ("OK");
-		});
-		post("/rest/addVM", (req, res) -> {
-			res.type("application/json");
-			return ("OK");
-		});
-		
+		});	
 		post("/rest/addNewVM", (req, res) -> {
 			res.type("application/json");
 	        VMAdd newVM = g.fromJson(req.body(), VMAdd.class);
@@ -766,25 +761,43 @@ public class Main {
 			ChangeActivity dates = g.fromJson(req.body(),ChangeActivity.class);
 			ArrayList<VirtualMachine> machines = loadVMOUser(user);
 			double total =0.0;
-			for (VirtualMachine vm : machines) {
-				ArrayList<Activity> vmActivity = checkInterval(dates, vm.getActivityLog());
-				double price = getHourPrice(vm); 
-				double activeHours = getActiveHours(vmActivity);
-				total += price*activeHours;
-				reporthash.put(vm.getName(), price*activeHours);
-			}
-			ArrayList<Drive> drives = getUserDrives(user);	
-			for(Drive du: drives) {
-				double price = getHourPriceDrive(du);
-				double activeHours= getActiveHoursDrive(dates);
-				total += price*activeHours;
-				reporthash.put(du.getName(), price*activeHours);
-			}
+			if(countDrives(dates)) {
+				for (VirtualMachine vm : machines) {
+					ArrayList<Activity> vmActivity = checkInterval(dates, vm.getActivityLog());
+					double price = getHourPrice(vm); 
+					double activeHours = getActiveHours(vmActivity);
+					total += price*activeHours;
+					reporthash.put(vm.getName(), price*activeHours);
+				}
+			 }
+		   if(countDrives(dates)) {
+			   ArrayList<Drive> drives = getUserDrives(user);
+			   for(Drive du: drives) {
+					double price = getHourPriceDrive(du);
+					double activeHours= getActiveHoursDrive(dates);
+					total += price*activeHours;
+					reporthash.put(du.getName(), price*activeHours);
+				}
+		   }
+		    if(reporthash.size()==0 )
+				res.status(400);
+			else
+				res.status(200);
 			reporthash.put("sum", total);
+			
 			return (g.toJson(reporthash));
 		});
 		
 	}
+	private static boolean countDrives(ChangeActivity dates) throws ParseException {
+		Date start = sdf.parse(dates.newStart);
+		Date end = sdf.parse(dates.newEnd);
+		if(end.getTime()-start.getTime()<=0) {
+			return false;
+		}
+		return true;	
+	}
+
 	private static void refreshCat() throws IOException {
 		writeToFiles1((HashMap<String,Object>)(Object) r.categories, "./data/categories.json");
 	}
@@ -1036,6 +1049,16 @@ public class Main {
 		}
 
 	private static VMAdd checkReqFields(VMAdd newVM) {
+		if(newVM.name ==null) {
+			return null; //obavezno ime, org i categ
+		}
+		if(newVM.nameC ==null) {
+			return null; //obavezno ime, org i categ
+		}
+		if(newVM.nameOrg ==null) {
+			return null; //obavezno ime, org i categ
+		}
+		
 		for(String vms : r.virtMachines.keySet()) {
 			if(vms.equalsIgnoreCase(newVM.name))//ukoliko postoji ne moze
 				{
@@ -1048,7 +1071,8 @@ public class Main {
 			}
 			
 		}
-		if(!newVM.name.equals("null") && !newVM.nameC.equals("null")) {
+		if(newVM.name!=null && newVM.nameOrg!=null && newVM.nameC !=null) {//mozda mi fali neki uslov a da nisam sigurna da 
+																			//ce se desiti
 			return newVM;
 		}
 		return null;
@@ -1900,6 +1924,12 @@ public class Main {
 				return null;
 		}
 		if(drive.getCapacity() < 0) {
+			return null;
+		}
+		if(drive.getNameOrg() ==null) {
+			return null;
+		}
+		if(drive.getDriveType() ==null) {
 			return null;
 		}
 	

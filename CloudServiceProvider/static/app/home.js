@@ -126,9 +126,7 @@ Vue.component("home-page", {
 			}
 		},
 		dodajVM : function() {
-			axios
-		      .post('rest/addVM', "")
-		      .then(response => location.href = '#/addVM');
+			location.href = '#/addVM';
 		},
 		logout : function() {
 			axios

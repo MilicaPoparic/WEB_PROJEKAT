@@ -2,12 +2,12 @@ Vue.component("add-vm",{
 	data: function(){
 		return{
 			name:'',
-			numCPU:0,
-			numRAM:0,
-			numGPU:0,
-			categories:null,
-			organizations:null,
-			drives: null,
+			numCPU:'',
+			numRAM:'',
+			numGPU:'',
+			categories:{},
+			organizations:{},
+			drives: {},
 			nameOrg:'',
 			nameC:'',
 			nameD:[],
@@ -23,7 +23,7 @@ Vue.component("add-vm",{
 	<div>
 	<p>Add new VM:</p> 
 	<p v-if="role==='admin'">Organization: {{organizations}}</p>
-	<table >
+	<table class="table">
 	
 	<tr v-if="role==='superAdmin'">
 		<td>
@@ -31,7 +31,7 @@ Vue.component("add-vm",{
 	    </td>
 	    <td>
 	       <select v-model="nameOrg">
-	       		<option value=""> -Select organization- </option>
+	       		<option value=""> -Select- </option>
 			    <option v-for="o in organizations" :value="o.name" >{{ o.name }}</option>
 			</select>
 	    </td>	
@@ -43,7 +43,7 @@ Vue.component("add-vm",{
 	    	Name of VM: 
 	    </td>
 	    <td>
-	    	<input type="text" style="width:60px" size="5" v-model="name" name="name">
+	    	<input type="text" style="width:84.5px" v-model="name" name="name">
 	    </td>
 	    
 	    {{error1}}
@@ -55,7 +55,7 @@ Vue.component("add-vm",{
 	    </td>
 	    <td>
 	    	<select  v-model="nameC">
-	    		<option value=""> -Select criteria- </option>
+	    		<option value=""> -Select- </option>
 			    <option v-for="c in categories" v-bind:value="c.name" >{{ c.name }}</option>
 			</select>
 	    </td>

@@ -72,11 +72,16 @@ Vue.component("drive",{
 	</table>
 	<br>
 	<button v-on:click="search()">Search</button>{{error1}}
+	<br>
+	<button v-on:click="back()">Back</button>
 </div>
 `
   ,
   
 	methods : {
+		back: function(){
+			location.href = '#/h';
+		},
 		search: function(){
 			if(!this.name && !this.fromm && !this.too && !this.checkedNames1 && !this.checkedNames2){
 				alert("Enter the search parameters!");
