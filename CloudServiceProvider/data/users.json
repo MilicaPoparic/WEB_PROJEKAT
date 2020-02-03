@@ -16,19 +16,20 @@
     "password": "AGJAWR"
   },
   {
-    "email": "k1",
-    "name": "SENIDA",
-    "surname": "k1",
-    "role": "user",
-    "password": "k1"
-  },
-  {
-    "email": "mile",
+    "email": "at",
     "name": "cile",
     "surname": "j",
     "nameORG": "ORG1",
     "role": "admin",
-    "password": "j"
+    "password": "at"
+  },
+  {
+    "email": "k1",
+    "name": "SENIDA",
+    "surname": "k1",
+    "nameORG": "ORG1",
+    "role": "user",
+    "password": "k1"
   },
   {
     "email": "covekimastan@gmail.com",
@@ -37,6 +38,14 @@
     "nameORG": "Microsoft",
     "role": "user",
     "password": "a"
+  },
+  {
+    "email": "trajkovicka.9909@gmail.com",
+    "name": "ew",
+    "surname": "ew",
+    "nameORG": "ORG1",
+    "role": "admin",
+    "password": "we"
   },
   {
     "email": "novi",
