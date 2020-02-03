@@ -1,59 +1,81 @@
 Vue.component("add-user", {
 	data: function () {
 	    return {
-	     email: '',
-	     name: '',
-	     surname: '',
-	     password: '',
+	     user: {},
 	     organizations: null,
 	     organization: '',
 	     err: '',
 	     newRole: '',
-	     role: ''
+	     role: '',
+	     errEmail: '',
+	     errName: '',
+	     errSurname: '',
+	     errPass: ''
 	    }
 },
 	template: ` 
 <div>
 	<p>ADDING USER</p>
 	<table>
-		<tr><td>Email:</td><td><input type="text" style="width:60px" size="5" v-model="email" name="email" required></td></tr>
-		<tr><td>Name:</td><td><input type="text" style="width:60px" size="5" v-model="name" name="name" required></td></tr>
-		<tr><td>Surname:</td><td><input type="text" style="width:60px" size="5" v-model="surname" name="surname" required></td> </tr>
-		<tr><td>Password:</td><td><input type="text" style="width:60px" size="5" v-model="password" name="password" required></td> </tr>
-		<tr v-if="role=='superAdmin'"><td>Organization:</td><td><select v-model="organization">
+		<tr><td>Email:</td>
+		<td><input type="text"  v-model="user.email" name="email" required></td> {{errEmail}} </tr>
+		
+		<tr><td>Name:</td><td>
+		<input type="text" v-model="user.name" name="name" required></td> {{errName}} </tr>
+		
+		<tr><td>Surname:</td>
+		<td><input type="text" v-model="user.surname" name="surname" required></td> {{errSurname}}  </tr>
+		
+		<tr><td>Password:</td>
+		<td><input type="text" v-model="user.password" name="password" required></td> {{errPass}} </tr>
+		
+		<tr v-if="role=='superAdmin'"><td>Organization:</td>
+		<td><select v-model="user.organization">
 		<option v-for="o in organizations">{{o.name}}</option>
 		</select></td></tr>
-		<tr><td>Role: </td><td><select v-model="newRole">
+		
+		<tr><td>Role: </td>
+		<td><select v-model="user.role">
 		<option >admin</option>
 		<option >user</option>
 		</select></td></tr>
 		<tr><button v-on:click="add">Add</button></tr>
-		<tr>{{err}}</tr>
 	</table>
+		{{err}}
 </div>		  
 `
 		
 	, 
 	methods : {
 		add : function() {
+			this.errEmail=''; this.errName=''; this.errSurname=''; this.errPass='';  this.err='';
 			if (this.organizations.length==1){
-				
-				this.organization = this.organizations[0].name; 
-				console.log(this.organization);
+				this.user.organization = this.organizations[0].name; 
+				console.log(this.user.organization);
 			}
-			if (this.email && this.name && this.surname && this.password && this.organization) {
+			if (this.user.email && this.user.name && this.user.surname && this.user.password && this.user.organization) {
 				axios
-				.post('rest/addUser', {"email":this.email, "name":this.name, "surname":this.surname, "nameORG":this.organization, "role": this.newRole, "password":this.password})
+				.post('rest/addUser', this.user)
 				.then((response) => {
 					if(response.status == 200) {
 						location.href = '#/users';
 					}
 				})
-				.catch(response=> this.err='Email must be unique!')
-				}
-				else {
-					this.err='Incomplete data!'
-				}
+				.catch(response=> this.errEmail='Email must be unique!')
+				return;
+			}
+			if (!this.user.email) {
+				this.errEmail = 'Email is required';
+			}
+			if (!this.user.name) {
+				this.errName= 'Name is required!';
+			}
+			if (!this.user.surname) {
+				this.errSurname = 'Surname is required!';
+			}
+			if (!this.user.password) {
+				this.errPass = 'Password is required!';
+			}
 		}
 
 	},

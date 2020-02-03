@@ -38,11 +38,12 @@ Vue.component("change-user",{
 				<option >user</option>
 			</select></td>
 		</tr>
+		<tr>{{err}}</tr>
 		<tr>
 			<td><button v-on:click="change()">Change data</button></td> 
 			<td><button v-on:click="deleteUser()">Delete</button></td> 
 		</tr>
-		<tr>{{err}}</tr>
+		
 		</table>
 		
 
@@ -65,14 +66,14 @@ Vue.component("change-user",{
 		    		  location.href = '#/users';
 		    	  }
 		      })
-				.catch(response=>this.err = 'GRESKA SA SERVERA!')
+				.catch(response=>this.err = 'You cannot change your role!')
 			}
 		},
 		deleteUser : function() {
 		axios
 		.post('rest/deleteUser', this.user)
 		.then(response => location.href = '#/users')
-		.catch(response=>this.err = 'ERROR 400!')
+		.catch(response=>this.err = 'You cannot delete yourself :(')
 		}
 	},
 	mounted () {
@@ -80,7 +81,6 @@ Vue.component("change-user",{
         .get('rest/testLogin')
         .then((response) => {
 			    	  if(response.status == 200) {
-			    		  //location.href = '#/c';
 			    		  axios
 			  	        .get('rest/checkSuperAdminAdmin')
 			  	        .then((response) => {

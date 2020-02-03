@@ -19,7 +19,7 @@ Vue.component("change-vm",{
 		<tr>
 				<td> Name: </td>
 				<td v-if="role=='superAdmin' || role=='admin'" ><input type="text" v-model="vm.name" ></td> 
-				<td><button v-if="role=='superAdmin'" v-on:click="changeActivity()">{{vm.active}}</button></td> {{nameErr}}
+				<td><button v-if="role=='superAdmin' || role=='admin'" v-on:click="changeActivity()">{{vm.active}}</button></td> {{nameErr}}
 				<td v-if="role=='user'"> {{vm.name}} </td>
 				 
 		</tr>

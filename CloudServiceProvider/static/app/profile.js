@@ -14,23 +14,23 @@ Vue.component("profile-info",{
 		<table>
 		<tr >
 				<td>Name: </td>
-				<td><input type="text" style="width:60px" size="3" v-model="user.name" name="name" ></td> 	
+				<td><input type="text"  v-model="user.name" name="name" ></td> 	
 		</tr>
 		<tr >
 				<td>Surname: </td>
-				<td><input type="text" style="width:60px" size="3" v-model="user.surname" name="surname" ></td> 	
+				<td><input type="text" v-model="user.surname" name="surname" ></td> 	
 		</tr>
 		<tr>
 				<td> Email: </td>
-				<td><input type="text" style="width:60px" size="3" v-model="user.email" name="email" ></td> 	
+				<td><input type="text" v-model="user.email" name="email" ></td> 	
 		</tr>
 		<tr >
 				<td>Password: </td>
-				<td><input type="text" style="width:60px" size="3" v-model="user.password" name="password"></td> 	
+				<td><input type="text" v-model="user.password" name="password"></td> 	
 		</tr>
 		<tr >
 				<td>Password: </td>
-				<td><input type="text" style="width:60px" size="3" v-model="confirmation" name="password" > {{passErr}} </td> 	
+				<td><input type="text" v-model="confirmation" name="password" > {{passErr}} </td> 	
 		</tr>
 		<tr >
 			<td>Role: </td>
@@ -48,7 +48,7 @@ Vue.component("profile-info",{
 ,
 	methods : {
 		change : function() {
-			if (this.user.password === this.confirmation) {
+			if (this.user.password === this.confirmation && this.user.name && this.user.surname && this.user.email && this.user.password) {
 				axios
 				.post('rest/changeProfile', this.user)
 				.then((response) => {
@@ -56,11 +56,12 @@ Vue.component("profile-info",{
 		    		  location.href = '#/h';
 		    	  }
 		      })
-				.catch(response=>this.err = 'GRESKA SA SERVERA!')
+				.catch(response=>this.err = 'Server error!')
 				
 			}
 			else {
 				this.passErr = "Please confirm password!";
+				this.err="Incomplete data!";
 			}
 		}
 	},

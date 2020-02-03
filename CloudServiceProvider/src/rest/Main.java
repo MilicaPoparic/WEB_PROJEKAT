@@ -53,6 +53,7 @@ public class Main {
 	private static ArrayList<VirtualMachine> retVMHelper;
 	private static String vmName=null;
 	private static HashMap<String, Double> reporthash = new HashMap<String, Double>();
+	private static VirtualMachine oldOneVM = new VirtualMachine();
 	
 	
 	private static void writeToFiles1(HashMap<String,Object> listForWrite, String string) throws IOException {
@@ -367,6 +368,7 @@ public class Main {
 				r.organizations.get(newUser.getOrganization()).getUsers().add(newUser.getEmail());
 				manageListsUser(newUser, false);
 				res.status(200);
+				refreshUser();
 				refreshFiles();
 				return ("OK");
 			}
@@ -391,9 +393,12 @@ public class Main {
 				return ("OK");
 			}
 			if (vmName != null) {
-				manageListsVM(r.virtMachines.get(vmName), true);
-				manageListsVM(vm, false);
-				writeToFiles1((HashMap<String,Object>)(Object) r.virtMachines, "./data/virtMachines.json");
+				System.out.println("ovde sam");
+				changeDrivesVM(vmName, v.getName());
+				changeOrgVM(oldOneVM,v);
+				manageListsVM(v, false);
+				manageListsVM(oldOneVM, true);
+				refreshAfter();
 				vmName = null;
 			}
 			return ("OK");
@@ -409,6 +414,7 @@ public class Main {
 			}
 			res.status(200);
 			refreshOrgData(org);
+			refreshUser();
 			refreshFiles();
 			return ("OK");
 		
@@ -416,7 +422,14 @@ public class Main {
 		
 		post("/rest/changeUser", (req,res)-> {
 			res.type("application/json");
+			User user = req.session().attribute("user");
 			User change= g.fromJson(req.body(), User.class);
+			if (user.getEmail().equals(change.getEmail())) {
+				if (!user.getRole().equals(change.getRole())) {
+					res.status(400);
+					return "OK";
+				}
+			}
 			res.status(200);
 			changeUser(change);
 			writeToFiles1((HashMap<String,Object>)(Object) r.users, "./data/users.json"); 
@@ -446,17 +459,11 @@ public class Main {
 			else {
 				changeUser(change);
 			}
+			req.session().attribute("user",change);
 			refreshFiles();
+			writeToFiles1((HashMap<String,Object>)(Object) r.users, "./data/users.json");
 			return ("OK");
 		
-		});
-		
-		post("/rest/deleteOrg", (req,res)-> {
-			res.type("application/json");
-			Organization org = g.fromJson(req.body(), Organization.class);
-			deleteOrgData();
-			refreshFiles();
-			return ("OK");
 		});
 		
 		post("/rest/deleteVM", (req,res)-> {
@@ -483,6 +490,7 @@ public class Main {
 			v.getActivityLog().clear();
 			v.setActivityLog(newOne);
 			vmName = v.getName();
+			oldOneVM = r.virtMachines.get(vmName);
 			return g.toJson(v);
 				}
 		});
@@ -505,8 +513,12 @@ public class Main {
 				}
 				v.setActive("activate");
 			}
-			vmName = v.getName();
-			v.setName(vm.getName());
+			if(!v.getName().equals(vm.getName())) {
+				vmName = v.getName(); //za brisanje
+				oldOneVM = r.virtMachines.get(vmName);
+				v.setName(vm.getName());
+			}
+
 			return (g.toJson(v));
 		});
 		
@@ -600,6 +612,7 @@ public class Main {
 			}
 			res.status(400);
 			vmName = v.getName();
+			oldOneVM = r.virtMachines.get(vmName);
 			return gson.toJson(v);
 		});
 		
@@ -1544,7 +1557,7 @@ public class Main {
 
 	private static void changeDrivesVM(String v, String vm) {
 		for (Drive d : r.drives.values()) {
-			if (d.getVirtualMachine().equals(v)) {
+			if (d.getVirtualMachine()!=null && d.getVirtualMachine().equals(v)) {
 				d.setVirtualMachine(vm);
 			}
 		}
@@ -1867,7 +1880,6 @@ public class Main {
 	
 	private static void manageListsUser(User loggedIn, Boolean remove) {
 		if (remove) {
-			//ako nesto ne radi ovde staviti da brise samo key
 			r.users.remove(loggedIn.getEmail(), loggedIn);
 			return;
 		}
@@ -2111,6 +2123,7 @@ public class Main {
 		r.organizations.get(u.getOrganization()).getUsers().remove(u.getEmail());
 		removeOrgUser(u);
 		r.users.remove(u.getEmail(),u);
+		writeToFiles1((HashMap<String,Object>)(Object) r.users, "./data/users.json");
 		refreshFiles();
 	}
 	
@@ -2177,6 +2190,7 @@ public class Main {
 	private static ArrayList<VirtualMachine> loadVMOUser(User user) {
 		ArrayList<VirtualMachine> machines = new ArrayList<VirtualMachine>();
 		String organization = user.getOrganization();
+		//ovde pukne!
 		for (String resource : r.organizations.get(organization).getResources()) {
 			for (VirtualMachine vm : r.virtMachines.values()) {
 				if (vm.getName().equals(resource)) {

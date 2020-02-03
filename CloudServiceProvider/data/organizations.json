@@ -4,12 +4,14 @@
     "caption": "kak",
     "logo": "20190517_203145.jpg",
     "users": [],
-    "resources": [
-      "proveraDisk",
-      "noviDisk",
-      "novaVMPoslProvera",
-      "vmHHH"
-    ]
+    "resources": []
+  },
+  {
+    "name": "fghjk",
+    "caption": "ghjk",
+    "logo": "https://www.freelogodesign.org/Content/img/logo-samples/sophia.png",
+    "users": [],
+    "resources": []
   },
   {
     "name": "honey",
@@ -24,16 +26,14 @@
     "logo": "https://dkt6rvnu67rqj.cloudfront.net/cdn/ff/6FlNM-g1OIr90_hQaYRwcY6YrTJHsRadfPx3nOKEF-E/1579139837/public/styles/600x400/public/media/int_files/1018199.jpg?itok\u003dToKCLt0X",
     "users": [
       "novi",
-      "at",
+      "mile",
       "LEGO"
     ],
     "resources": [
       "VM2",
       "HaloDisk",
       "novaVM",
-      "jojojoVM",
-      "diskOrg",
-      "vmVmvm"
+      "jojojoVM"
     ]
   },
   {
@@ -48,6 +48,7 @@
     "resources": [
       "D",
       "F",
+      "rnrnr",
       "WINDOWS10-VM"
     ]
   },
@@ -71,8 +72,7 @@
     "users": [],
     "resources": [
       "ORACLE-VM",
-      "NOVA",
-      "diskOracle"
+      "NOVA"
     ]
   }
 ]

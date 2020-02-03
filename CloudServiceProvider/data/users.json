@@ -19,20 +19,19 @@
     "email": "k1",
     "name": "SENIDA",
     "surname": "k1",
-    "nameORG": "ORG1",
     "role": "user",
     "password": "k1"
   },
   {
-    "email": "at",
-    "name": "ttt",
+    "email": "mile",
+    "name": "cile",
     "surname": "j",
     "nameORG": "ORG1",
     "role": "admin",
-    "password": "at"
+    "password": "j"
   },
   {
-    "email": "userUser",
+    "email": "covekimastan@gmail.com",
     "name": "a",
     "surname": "a",
     "nameORG": "Microsoft",

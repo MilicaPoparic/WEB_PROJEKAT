@@ -30,7 +30,6 @@ Vue.component("change-org",{
 		</tr>
 		<tr>
 			<td><button v-on:click="change()">Change data</button></td> 
-			<td><button v-on:click="deleteOrg()">Delete</button></td> 
 		</tr>
 		</table>
 		
@@ -57,11 +56,6 @@ Vue.component("change-org",{
 				.catch(response=>this.nameErr = 'Name must me unique!')
 			}
 		},
-		deleteOrg : function() {
-		axios
-		.post('rest/deleteOrg', this.org)
-		.then(response => location.href = '#/o');	
-		},
 		onUpload(event) {
 			this.org.logo = (event.target.files)[0].name;
 		}
@@ -71,7 +65,6 @@ Vue.component("change-org",{
 	        .get('rest/testLogin')
 	        .then((response) => {
 				    	  if(response.status == 200) {
-				    		  //location.href = '#/c';
 				    		  axios
 				  	        .get('rest/checkSuperAdminAdmin')
 				  	        .then((response) => {

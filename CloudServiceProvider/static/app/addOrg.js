@@ -30,6 +30,8 @@ Vue.component("add-org", {
 	, 
 	methods : {
 		add : function() {
+		this.nameErr='';
+		this.captionErr='';
 		if(!this.name){
 			this.nameErr = 'Name is required!'
 		}

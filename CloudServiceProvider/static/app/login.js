@@ -28,8 +28,10 @@ Vue.component("log-in", {
             <label for="login-password">Password</label>
             <input id="login-password" type="password" v-model="password" required>
           </div>
+          {{error3}}
         </fieldset>
         <button type="submit" class="btn-login" v-on:click="attemptLog()">Login</button>
+		
       </form>
     </div>
     <div class="form-wrapper">

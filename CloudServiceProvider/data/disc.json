@@ -1,17 +1,23 @@
 [
   {
+    "name": "rnrnr",
+    "driveType": "HDD",
+    "nameOrg": "Microsoft",
+    "capacity": 342,
+    "nameVM": "WINDOWS10-VM"
+  },
+  {
     "name": "HaloDisk",
     "driveType": "SSD",
     "nameOrg": "ORG1",
     "capacity": 21,
-    "nameVM": "jojojoVM"
+    "nameVM": "VM2"
   },
   {
     "name": "C",
     "driveType": "SSD",
     "nameOrg": "IOS",
-    "capacity": 256,
-    "nameVM": "JAVA-VM"
+    "capacity": 256
   },
   {
     "name": "D",
@@ -21,18 +27,10 @@
     "nameVM": "WINDOWS10-VM"
   },
   {
-    "name": "diskOrg",
-    "driveType": "SSD",
-    "nameOrg": "ORG1",
-    "capacity": 512,
-    "nameVM": "novaVM"
-  },
-  {
     "name": "E",
     "driveType": "SSD",
     "nameOrg": "IOS",
-    "capacity": 4,
-    "nameVM": "JAVA-VM"
+    "capacity": 4
   },
   {
     "name": "F",
@@ -40,25 +38,5 @@
     "nameOrg": "Microsoft",
     "capacity": 256,
     "nameVM": "WINDOWS10-VM"
-  },
-  {
-    "name": "proveraDisk",
-    "driveType": "SSD",
-    "nameOrg": "hhhhh",
-    "capacity": 41
-  },
-  {
-    "name": "noviDisk",
-    "driveType": "SSD",
-    "nameOrg": "hhhhh",
-    "capacity": 3,
-    "nameVM": "vmHHH"
-  },
-  {
-    "name": "diskOracle",
-    "driveType": "HDD",
-    "nameOrg": "Oracle",
-    "capacity": 23,
-    "nameVM": "ORACLE-VM"
   }
 ]
