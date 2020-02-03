@@ -396,8 +396,8 @@ public class Main {
 				System.out.println("ovde sam");
 				changeDrivesVM(vmName, v.getName());
 				changeOrgVM(oldOneVM,v);
-				manageListsVM(v, false);
-				manageListsVM(oldOneVM, true);
+				manageListsVM(oldOneVM, true);//brise
+				manageListsVM(v, false);//dodaje
 				refreshAfter();
 				vmName = null;
 			}
@@ -443,7 +443,7 @@ public class Main {
 			User loggedIn = req.session().attribute("user");
 			change.setOrganization(loggedIn.getOrganization());
 			if (!change.getEmail().equals(loggedIn.getEmail())) {	
-				manageListsUser(loggedIn, true); 
+				manageListsUser(loggedIn, true); //obrise
 				if (r.users.get(change.getEmail())==null) { 
 					res.status(200);
 					manageListsUser(change, false); 
